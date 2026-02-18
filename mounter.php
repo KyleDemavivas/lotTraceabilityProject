@@ -215,13 +215,13 @@ if (!isset($_SESSION['user_namefl'])) {
                         $('#qr_code').val('').focus().select();
                     }
                 },
-                error: function() {
+                error: function(response) {
                     isSubmitting = false;
 
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'Submission failed.',
+                        title: response.data,
+                        text: response.message,
                         toast: true,
                         position: 'top-right',
                         showConfirmButton: false,

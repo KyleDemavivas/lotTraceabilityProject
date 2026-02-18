@@ -77,7 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $response['message'] = 'Mounter Process recorded and Trace Process updated successfully.';
         // $response['final_qtyinput'] = $final_qtyinput;
     } catch (PDOException $e) {
-        $response['message'] = 'Error submitting form: ' . $e->getMessage();
+        $response['status'] = false;
+        $response['data'] = "Database Error";
+        $response['message'] = "A database error has occured.";
     }
 }
 
