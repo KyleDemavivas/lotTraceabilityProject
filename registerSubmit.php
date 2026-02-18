@@ -67,7 +67,7 @@ echo json_encode($response);
 exit;
 } catch (PDOException $e) {
 $response['success'] = false;
-$response['message'] = "Database error: " . $e->getMessage();
+$response['message'] = "An error has occured";
 $response['data'] = "Database Error";
 echo json_encode($response);
 exit;

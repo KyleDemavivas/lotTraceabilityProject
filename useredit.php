@@ -64,10 +64,14 @@ WHERE user_id = :user_id";
             ]);
         }
 
-        $response = ['success' => true, 'message' => 'User account successfully updated.'];
+        $response['success'] = true;
+        $response['message'] = 'User account successfully updated.';
+        $response['data'] = 'Successfully Updated';
+        
     } catch (Exception $e) {
         $response['success'] = false;
-        $response['message'] = $e->getMessage();
+        $response['data']="Database Error";
+        $response['message'] = "An error has occured.";
     }
     echo json_encode($response);
 }

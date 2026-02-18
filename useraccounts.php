@@ -255,7 +255,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 if (response.success === true) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success',
+                        title: response.data,
                         text: response.message,
                         toast: true,
                         position: 'top-right',
@@ -267,7 +267,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
+                        title: response.data,
                         text: response.message,
                         toast: true,
                         position: 'top-right',
@@ -276,6 +276,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     })
                 }
                 closeModal();
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
             }
         });
     });
