@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('content-type: application/json');
 include 'db_connect.php';
 date_default_timezone_set('Asia/Manila');
@@ -25,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ":created_by"=>$created_by,
             ":created_date"=>$created_date
         ]);
-        
+
         $response['success']=true;
         $response['data']= 'Model Registration Successful';
         $response['message'] = 'Model was added successfully';

@@ -1,41 +1,5 @@
-<?php include 'sidebar.php'; ?>
-<?php
+<?php include 'sidebar.php'; 
 include 'db_connect.php';
-
-date_default_timezone_set('Asia/Manila');
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    $assy_code = strtoupper($_POST['assy_code']);
-    $model_name = strtoupper($_POST['model_name']);
-    $letter_allocation = strtoupper($_POST['letter_allocation']);
-    $serial_qty = $_POST['serial_qty'];
-    $created_by = $_SESSION['user_namefl'] ?? 'Unknown';
-    $created_date = date('Y-m-d H:i:s');
-
-    try {
-        $sql = "INSERT INTO model_data (assy_code, model_name, letter_allocation, serial_qty, created_by, created_date) 
-                VALUES (:assy_code, :model_name, :letter_allocation, :serial_qty, :created_by, :created_date)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':assy_code', $assy_code, PDO::PARAM_STR);
-        $stmt->bindParam(':model_name', $model_name, PDO::PARAM_STR);
-        $stmt->bindParam(':letter_allocation', $letter_allocation, PDO::PARAM_STR);
-        $stmt->bindParam(':serial_qty', $serial_qty, PDO::PARAM_INT);
-        $stmt->bindParam(':created_by', $created_by, PDO::PARAM_STR);
-        $stmt->bindParam(':created_date', $created_date, PDO::PARAM_STR);
-
-        if ($stmt->execute()) {
-            echo "<script>
-            alert('Model added successfully!');
-            window.location.href='add_model.php';
-            </script>";
-        } else {
-            echo "<script>alert('Error adding model.');</script>";
-        }
-    } catch (PDOException $e) {
-        echo "<script>alert('Database error: " . $e->getMessage() . "');</script>";
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
