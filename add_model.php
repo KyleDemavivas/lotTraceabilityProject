@@ -44,11 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/add_model.css">
-    <script>
-        function convertToUppercase(input) {
-            input.value = input.value.toUpperCase();
-        }
-    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -77,3 +74,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
+
+<script>
+    function convertToUppercase(input) {
+        input.value = input.value.toUpperCase();
+    }
+
+    $(document).ready(function() {
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+
+            var data = new FormData(this);
+            $.ajax({
+                url: 'modelSubmit.php',
+                type: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(response){
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.data,
+                        text: response.message,
+                        toast: true,
+                        position: 'top-right',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(function() {
+                        window.location.reload();
+                    });
+                },
+                error: function(response) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: response.data,
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+    });
+</script>
