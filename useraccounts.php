@@ -23,7 +23,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <div class="container">
+    <div class="container" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <h2>USER ACCOUNTS</h2>
         <div class="table-container">
             <table>
@@ -302,50 +302,39 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        Swal.fire({
-                            title: 'Press Delete Key to Delete',
-                            showCancelButton: true,
-                            confirmButtonText: 'Delete',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#d33'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: 'useredit.php',
-                                    type: 'POST',
-                                    data: {
-                                        action: 'delete',
-                                        user_id: user_id
-                                    },
-                                    dataType: 'json',
-                                    success: function(response) {
-                                        if (response.success === true) {
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'User Data Deleted Successfully',
-                                                toast: true,
-                                                position: 'top-right',
-                                                timer: 1500,
-                                                showConfirmButton: false
-                                            }).then(() => {
-                                                window.location.reload();
-                                            });
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Error',
-                                                text: response.message,
-                                                toast: true,
-                                                position: 'top-right',
-                                                timer: 1500,
-                                                showConfirmButton: false
-                                            })
-                                        }
-                                    }
-                                });
+                        $.ajax({
+                            url: 'useredit.php',
+                            type: 'POST',
+                            data: {
+                                action: 'delete',
+                                user_id: user_id
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success === true) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'User Data Deleted Successfully',
+                                        toast: true,
+                                        position: 'top-right',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-right',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    })
+                                }
                             }
-
-                        })
+                        });
                     }
 
                 })
