@@ -104,7 +104,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $response['boardCount'] = $board_counter;
         $response['lastBoardCount'] = $lastCounter+1;
     } catch (PDOException $e) {
-        $response['message'] = 'Error submitting form: ' . $e->getMessage();
+        $response['success'] = false;
+        $response['data'] = "Insert Unsuccessful.";
+        $response['message'] = "Insert of AI Data is unsuccussful.";
     }
 }
 

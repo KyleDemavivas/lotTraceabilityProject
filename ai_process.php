@@ -310,7 +310,7 @@ try {
                                     $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="qty_input"], input[name="final_qtyinput"]').val('');
                                     Swal.fire({
                                         icon: 'warning',
-                                        title: response.title,
+                                        title: response.data,
                                         text: response.message,
                                         confirmButtonText: 'OK'
                                     });
