@@ -1,0 +1,73 @@
+<?php
+include 'db_connect.php';
+header('Content-Type: application/json');
+
+$response = ['status' => 'error', 'message' => 'Something went wrong.'];
+date_default_timezone_set('Asia/Manila');
+$created_at = date('Y-m-d H:i:s');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+
+        if (isset($_POST['action']) && $_POST['action'] === 'delete') {
+            $user_id = $_POST['user_id'];
+            $query = "DELETE FROM user_account WHERE user_id = :user_id";
+            $stmt = $conn->prepare($query);
+            $stmt->execute([':user_id' => $user_id]);
+            $response = ['success' => true, 'message' => 'User account successfully deleted.'];
+            echo json_encode($response);
+            exit;
+        }
+
+        $user_id = $_POST['user_id'];
+        $user_namefl = $_POST['user_namefl'];
+        $user_process = $_POST['user_process'];
+        $user_username = $_POST['user_username'];
+        $user_type = $_POST['user_type'];
+        $user_line = strval($_POST['user_line']);
+        $user_section = $_POST['user_section'];
+
+        if (isset($_POST['new_password']) && !empty($_POST['new_password'])) {
+            $user_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+
+            $query = "UPDATE user_account 
+SET user_namefl = :user_namefl, user_process = :user_process, 
+user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, user_password = :user_password
+WHERE user_id = :user_id";
+
+            $stmt = $conn->prepare($query);
+            $stmt->execute([
+                ':user_namefl' => $user_namefl,
+                ':user_process' => $user_process,
+                ':user_username' => $user_username,
+                ':user_type' => $user_type,
+                ':user_line' => $user_line,
+                ':user_section' => $user_section,
+                ':user_password' => $user_password,
+                ':user_id' => $user_id
+            ]);
+        } else {
+            $query = "UPDATE user_account 
+SET user_namefl = :user_namefl, user_process = :user_process, 
+user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section 
+WHERE user_id = :user_id";
+
+            $stmt = $conn->prepare($query);
+            $stmt->execute([
+                ':user_namefl' => $user_namefl,
+                ':user_process' => $user_process,
+                ':user_username' => $user_username,
+                ':user_type' => $user_type,
+                ':user_line' => $user_line,
+                ':user_section' => $user_section,
+                ':user_id' => $user_id
+            ]);
+        }
+
+        $response = ['success' => true, 'message' => 'User account successfully updated.'];
+    } catch (Exception $e) {
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+    }
+    echo json_encode($response);
+}

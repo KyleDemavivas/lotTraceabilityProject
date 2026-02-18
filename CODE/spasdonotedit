@@ -1,0 +1,371 @@
+<?php include 'sidebar.php'; ?>
+<?php
+session_start();
+if (!isset($_SESSION['user_namefl'])) {
+    $_SESSION['user_namefl'];
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="css/spa_process.css">
+</head>
+
+<body>
+    <div class="form-container">
+        <form method="POST">
+            <div class="two-column-layout">
+                <div class="column">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">QR Code:</label>
+                            <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" maxlength="21" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">QTY INPUT:</label>
+                            <input type="text" class="form-input" name="qty_input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">FINAL QTY INPUT:</label>
+                            <input type="text" class="form-input" name="final_qtyinput" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">OPERATOR:</label>
+                            <input type="text" class="form-input" name="operator_name" value="<?php echo isset($_SESSION['user_namefl']) ? $_SESSION['user_namefl'] : ''; ?>" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SHIFT:</label>
+                            <select class="form-input" name="shift" required>
+                                <option value="">Select Shift</option>
+                                <option value="Dayshift">Day</option>
+                                <option value="Night Shift">Night</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LINE:</label>
+                            <select class="form-input" name="line" required>
+                                <option value="">Select Line</option>
+                                <option value="SMT L1">Line 1</option>
+                                <option value="SMT L2">Line 2</option>
+                                <option value="SMT L3">Line 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">ASSY NO:</label>
+                            <input type="text" class="form-input" name="assy_code" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">MODEL NAME:</label>
+                            <input type="text" class="form-input" name="model_name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LOT NO:</label>
+                            <input type="text" class="form-input" name="kepi_lot" readonly>
+                        </div>
+                        <div class="form-group">
+                            <input type="hidden" class="form-input" name="serial_qty" readonly>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="qr_count" value="0">
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit">Submit</button>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">ADHESIVE:</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="adhesive" value="SOLDER PASTE" onclick="showSection('solderPaste')">
+                                    SOLDER PASTE
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="adhesive" value="BONDING" onclick="showSection('bonding')">
+                                    BONDING
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="solderPasteSection" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">SERIAL CODE:</label>
+                            <input type="text" class="form-input" name="serial_paste" id="serial_paste" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SOLDER PASTE:</label>
+                            <input type="text" class="form-input" name="solder_paste" id="solder_paste" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PART LOT:</label>
+                            <input type="text" class="form-input" name="part_lot" id="part_lot" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME PULLED OUT:</label>
+                            <input type="text" class="form-input" name="time_pulledout" id="time_pulledout" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME USE:</label>
+                            <input type="text" class="form-input" name="time_use" id="time_use" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="bondingSection" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">SERIAL CODE:</label>
+                            <input type="text" class="form-input" name="serial_bonding" id="serial_bonding" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">BONDING:</label>
+                            <input type="text" class="form-input" name="bonding" id="bonding" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PART LOT:</label>
+                            <input type="text" class="form-input" name="part_lot" id="bonding_part_lot" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME PULLED OUT:</label>
+                            <input type="text" class="form-input" name="time_pulledout" id="bonding_time_pulledout" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME USE:</label>
+                            <input type="text" class="form-input" name="time_use" id="bonding_time_use" required readonly>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">STENCIL NO:</label>
+                            <input type="text" class="form-input" name="stencil_no" id="stencil_no" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="total_stroke" id="total_stroke" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TOTAL NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="current_stroke" id="stenciltotal_strokes" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">SQUEEGEE BLADE NO:</label>
+                            <input type="text" class="form-input" name="squeegee_no" id="squeegee_no" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="total_strokes" id="total_strokes" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TOTAL NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="squeegeetotal_strokes" required readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            function showSection(section) {
+                let solderPasteSection = document.getElementById('solderPasteSection');
+                let bondingSection = document.getElementById('bondingSection');
+
+                [solderPasteSection, bondingSection].forEach(sec => {
+                    sec.style.display = 'none';
+                    sec.querySelectorAll('input').forEach(input => {
+                        input.value = '';
+                        input.checked = false;
+                        input.removeAttribute('required');
+                    });
+                });
+                if (section === 'solderPaste') {
+                    solderPasteSection.style.display = 'block';
+                    solderPasteSection.querySelectorAll('input').forEach(input => input.setAttribute('required', 'required'));
+                } else if (section === 'bonding') {
+                    bondingSection.style.display = 'block';
+                    bondingSection.querySelectorAll('input').forEach(input => input.setAttribute('required', 'required'));
+                }
+            }
+        </script>
+
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        let qrCounts = {};
+
+        $('#qr_code').on('input', function() {
+            var qr_code = $(this).val();
+            if (qr_code.length > 3) {
+                $.ajax({
+                    url: 'fetch_qrdata.php',
+                    type: 'POST',
+                    data: {
+                        qr_code: qr_code
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('input[name="assy_code"]').val(response.assy_code);
+                            $('input[name="model_name"]').val(response.model_name);
+                            $('input[name="kepi_lot"]').val(response.kepi_lot);
+                            $('input[name="serial_qty"]').val(response.serial_qty);
+                            $('input[name="curren_stroke"]').val(response.stenciltotal_strokes);
+
+                            let kepi_lot = response.kepi_lot;
+                            qrCounts[kepi_lot] = (qrCounts[kepi_lot] || 0) + 1;
+                            $('input[name="qr_count"]').val(qrCounts[kepi_lot]);
+
+                            let serial_qty = parseInt(response.serial_qty) || 0;
+                            $('input[name="qty_input"]').val(serial_qty);
+                            $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                        } else {
+                            $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="serial_qty"], input[name="qty_input"], input[name="final_qtyinput"], input[name="current_stroke"]').val('');
+                        }
+                    }
+                });
+            }
+        });
+
+        $('form').submit(function(event) {
+            event.preventDefault();
+
+            let stencil_strokes = parseInt($('input[name="current_stroke"]').val()) || 0;
+            stencil_strokes++;
+
+            $('input[name="current_stroke"]').val(stencil_strokes);
+
+            $.ajax({
+                url: 'spaprocess_form.php',
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Form submitted successfully!',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+
+                        $('#qr_code').val('').focus();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }
+                }
+            });
+        });
+
+        $('#qr_code').focus();
+    });
+    $(document).ready(function() {
+        $('#stencil_no').on('input', function() {
+            var stencil_no = $(this).val();
+            if (stencil_no.length > 3) {
+                $.ajax({
+                    url: 'fetch_rightdata.php',
+                    type: 'POST',
+                    data: {
+                        stencil_no: stencil_no
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('input[name="total_stroke"]').val(response.total_stroke);
+                        }
+                    }
+                });
+            }
+        });
+    });
+    $(document).ready(function() {
+        $('#squeegee_no').on('input', function() {
+            var squeegee_no = $(this).val();
+            if (squeegee_no.length > 3) {
+                $.ajax({
+                    url: 'fetch_rightdata.php',
+                    type: 'POST',
+                    data: {
+                        squeegee_no: squeegee_no
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('input[name="total_strokes"]').val(response.total_strokes);
+                        }
+                    }
+                });
+            }
+        });
+    });
+    $(document).ready(function() {
+        $('#serial_paste').on('input', function() {
+            var serial_paste = $(this).val();
+            if (serial_paste.length > 3) {
+                $.ajax({
+                    url: 'fetch_rightdata.php',
+                    type: 'POST',
+                    data: {
+                        serial_paste: serial_paste
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('input[name="solder_paste"]').val(response.solder_paste);
+                            $('input[name="part_lot"]').val(response.part_lot);
+                            $('input[name="time_pulledout"]').val(response.time_pulledout);
+                            $('input[name="time_use"]').val(response.time_use);
+                        }
+                    }
+                });
+            }
+        });
+    });
+    $(document).ready(function() {
+        $('#serial_bonding').on('input', function() {
+            var serial_bonding = $(this).val();
+            if (serial_bonding.length > 3) {
+                $.ajax({
+                    url: 'fetch_rightdata.php',
+                    type: 'POST',
+                    data: {
+                        serial_bonding: serial_bonding
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('input[name="bonding"]').val(response.bonding);
+                            $('input[name="part_lot"]').val(response.part_lot);
+                            $('input[name="time_pulledout"]').val(response.time_pulledout);
+                            $('input[name="time_use"]').val(response.time_use);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+</html>

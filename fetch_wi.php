@@ -1,0 +1,52 @@
+<?php
+include 'db_connect.php';
+
+header('Content-Type: application/json');
+error_reporting(0);
+
+if (!isset($_POST['serial_code'])) {
+    echo json_encode(['success' => false, 'message' => 'No serial provided']);
+    exit;
+}
+
+$serial_code = strtoupper(trim($_POST['serial_code']));
+
+try {
+    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM micro_process WHERE TRIM(UPPER(serial_code)) = :serial_code");
+    $stmt->execute([':serial_code' => $serial_code]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row) {
+        echo json_encode(['success' => false, 'message' => 'Serial not found']);
+        exit;
+    }
+
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM micro_process WHERE serial_code = :serial_code AND (serial_status = 'NO GOOD')");
+    $stmt->execute([':serial_code' => $serial_code]);
+    $holdCount = $stmt->fetchColumn();
+
+    if($holdCount > 0){
+        echo json_encode(['success' => false, 'errorcode' => 'onhold', 'message' => 'This Serial Code is currently on HOLD and cannot be processed.']);
+        exit;
+    }
+
+    $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM micro_process WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
+    $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
+    $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+
+    echo json_encode([
+        'success' => true,
+        'qr_code' => $row['qr_code'],
+        'assy_code' => $row['assy_code'],
+        'model_name' => $row['model_name'],
+        'kepi_lot' => $row['kepi_lot'],
+        'operator_name' => $row['operator_name'],
+        'shift' => $row['shift'],
+        'asmline' => $row['asmline'],
+        'line' => $row['line'],
+        'qty_input' => $row['qty_input'],
+        'final_qtyinput' => $final_qtyinput
+    ]);
+} catch (PDOException $e) {
+    echo json_encode(['success' => false, 'message' => 'Database error']);
+}

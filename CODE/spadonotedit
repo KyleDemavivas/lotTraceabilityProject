@@ -1,0 +1,295 @@
+<?php include 'sidebar.php'; ?>
+<?php
+session_start();
+if (!isset($_SESSION['user_namefl'])) {
+    $_SESSION['user_namefl'];
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="css/spa_process.css">
+</head>
+
+<body>
+    <div class="form-container">
+        <form method="POST">
+            <div class="two-column-layout">
+                <div class="column">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">VERIFY ASSY CODE:</label>
+                            <input type="text" class="form-input" id="verify_assy_code" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">QR Code:</label>
+                            <input type="text" class="form-input" name="qr_code" autocomplete="off" id="qr_code" autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">QTY INPUT:</label>
+                            <input type="text" class="form-input" name="qty_input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">FINAL QTY INPUT:</label>
+                            <input type="text" class="form-input" name="final_qtyinput" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">OPERATOR:</label>
+                            <input type="text" class="form-input" name="operator_name" value="<?php echo isset($_SESSION['user_namefl']) ? $_SESSION['user_namefl'] : ''; ?>" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SHIFT:</label>
+                            <select class="form-input" name="shift" required>
+                                <option value="">Select Shift</option>
+                                <option value="Dayshift">Day</option>
+                                <option value="Nightshift">Night</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LINE:</label>
+                            <select class="form-input" name="line" required>
+                                <option value="">Select Line</option>
+                                <option value="SMT L1">Line 1</option>
+                                <option value="SMT L2">Line 2</option>
+                                <option value="SMT L3">Line 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">ASSY NO:</label>
+                            <input type="text" class="form-input" name="assy_code" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">MODEL NAME:</label>
+                            <input type="text" class="form-input" name="model_name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LOT NO:</label>
+                            <input type="text" class="form-input" name="kepi_lot" readonly>
+                        </div>
+                        <div class="form-group">
+                            <input type="hidden" class="form-input" name="serial_qty" readonly>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="qr_count" value="0">
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit">Submit</button>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">ADHESIVE:</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="adhesive" value="SOLDER PASTE" onclick="showSection('solderPaste')">
+                                    SOLDER PASTE
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="adhesive" value="BONDING" onclick="showSection('bonding')">
+                                    BONDING
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="solderPasteSection" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">SOLDER PASTE:</label>
+                            <input type="text" class="form-input" name="solder_paste" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PART LOT:</label>
+                            <input type="text" class="form-input" name="part_lot" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME PULLED OUT:</label>
+                            <input type="text" class="form-input" name="time_pulled_out" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME USE:</label>
+                            <input type="text" class="form-input" name="time_use" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="bondingSection" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">BONDING:</label>
+                            <input type="text" class="form-input" name="bonding" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PART LOT:</label>
+                            <input type="text" class="form-input" name="bonding_part_lot" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME PULLED OUT:</label>
+                            <input type="text" class="form-input" name="bonding_time_pulled_out" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TIME USE:</label>
+                            <input type="text" class="form-input" name="bonding_time_use" required readonly>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">STENCIL NO:</label>
+                            <input type="text" class="form-input" name="stencil_no" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="stencil_strokes" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TOTAL NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="stenciltotal_strokes" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">SQUEEGEE BLADE NO:</label>
+                            <input type="text" class="form-input" name="squeegee_no" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="squeegee_strokes" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">TOTAL NO. OF STROKES:</label>
+                            <input type="text" class="form-input" name="squeegeetotal_strokes" required readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            function showSection(section) {
+                document.getElementById('solderPasteSection').style.display = 'none';
+                document.getElementById('bondingSection').style.display = 'none';
+
+                if (section === 'solderPaste') {
+                    document.getElementById('solderPasteSection').style.display = 'block';
+                } else if (section === 'bonding') {
+                    document.getElementById('bondingSection').style.display = 'block';
+                }
+            }
+        </script>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        let qrCounts = {};
+
+        $('#qr_code').on('input', function() {
+            var qr_code = $(this).val();
+            if (qr_code.length > 3) {
+                $.ajax({
+                    url: 'fetch_qrdata.php',
+                    type: 'POST',
+                    data: {
+                        qr_code: qr_code
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+
+                        if (response.success) {
+                            $('input[name="assy_code"]').val(response.assy_code);
+                            $('input[name="model_name"]').val(response.model_name);
+                            $('input[name="kepi_lot"]').val(response.kepi_lot);
+                            $('input[name="serial_qty"]').val(response.serial_qty);
+
+                            let kepi_lot = response.kepi_lot;
+                            qrCounts[kepi_lot] = (qrCounts[kepi_lot] || 0) + 1;
+                            $('input[name="qr_count"]').val(qrCounts[kepi_lot]);
+
+                            let serial_qty = parseInt(response.serial_qty) || 0;
+                            $('input[name="qty_input"]').val(serial_qty);
+
+                            let final_qtyinput = parseInt(response.final_qtyinput) || 0;
+                            $('input[name="final_qtyinput"]').val(final_qtyinput);
+                        } else {
+                            $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="serial_qty"], input[name="qty_input"], input[name="final_qtyinput"]').val('');
+                        }
+                    }
+                });
+            }
+        });
+
+        $('form').submit(function(event) {
+            event.preventDefault();
+
+            const actualAssy = $('input[name="assy_code"]').val().trim();
+            const verifyAssy = $('#verify_assy_code').val().trim();
+
+            if (actualAssy !== verifyAssy) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ASSY Code Mismatch',
+                    text: 'Verified ASSY Code does not match the actual ASSY Code.',
+                    toast: true,
+                    position: 'top-right',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                return;
+            }
+
+            $.ajax({
+                url: 'spaprocess_form.php',
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Form submitted successfully!',
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+
+                        $('#qr_code').val('').focus();
+                        $('#verify_assy_code').val('');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-right',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.',
+                        toast: true,
+                        position: 'top-right',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
+            });
+        });
+
+        $('#qr_code').focus();
+    });
+</script>
+
+</html>

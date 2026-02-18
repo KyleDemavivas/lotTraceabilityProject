@@ -1,0 +1,103 @@
+.output-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filter-form label {
+    font-weight: bold;
+}
+
+.filter-form select,
+.filter-form input[type="date"],
+.filter-form button {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.styled-table th,
+.styled-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.styled-table th {
+    background-color: #f2f2f2;
+}
+
+.table-wrapper {
+    margin-bottom: 40px;
+}
+
+.total-row {
+    font-weight: bold;
+    background-color: #e0e0e0;
+}
+
+.no-production {
+    color: #a00;
+    font-style: italic;
+}
+button {
+    padding: 15px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+@media (max-width: 875px) {
+    h2{ 
+        font-size:20px;
+    }
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-form label {
+        margin-top: 10px;
+    }
+
+    .filter-form select,
+    .filter-form input[type="date"],
+    .filter-form button {
+        flex: 1 1 1;
+        font-size:14px;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .output-container {
+        padding: 10px;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
