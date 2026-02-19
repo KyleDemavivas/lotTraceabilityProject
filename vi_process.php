@@ -171,6 +171,7 @@ try {
         let serialValidationToken = 0;
         let serialDebounceTimer = null;
         let qrDebounceTimer = null;
+        let qrBuffer = ''
 
         //is called to check if fields are inputted, used by the form qr check and main submit form
         function checkAndAutoSubmit() {
@@ -226,7 +227,6 @@ try {
             //runs when qr code field is inputted
             $('#qr_code').on('input', function() {
                 var qr_code = $(this).val();
-
                 //if input reaches more than 3 characters, the timer will count to 300ms before making the ajax call
                 clearTimeout(qrDebounceTimer);
 
@@ -264,6 +264,7 @@ try {
                                         text: response.message
                                     });
                                     $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="line"], input[name="shift"], input[name="operator_name"], input[name="qty_input"], input[name="final_qtyinput"]').val('');
+                                    $('#qr_code').focus().select();
                                 }
                             }
                         });
