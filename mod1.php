@@ -340,7 +340,7 @@ try {
 
                                             $('input[name="qr_count"]').val(boardCount);
 
-                                            $('#liveBoardCount').text(`SHEET COUNT: ${boardCount} / 10`);
+                                            $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
 
                                             if (boardCount >= 10) {
                                                 hideCounter();
