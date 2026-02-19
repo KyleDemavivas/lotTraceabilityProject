@@ -373,9 +373,10 @@ try {
                                         title: response.title,
                                         text: response.message,
                                         confirmButtonText: 'OK',
-                                        allowOutsideClick: false
-                                    }).then(() => {
-                                        $('#qr_code').val('').focus();
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            $('#qr_code').focus().select();
+                                        }
                                     });
                                 }
                             },
@@ -443,7 +444,10 @@ try {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message
+                                text: response.message,
+                                didOpen: () => {
+                                    $('#qr_code').focus().select();
+                                }
                             });
                         }
                     },
@@ -453,7 +457,10 @@ try {
                         Swal.fire({
                             icon: 'error',
                             title: 'AJAX Error',
-                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`
+                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`,
+                            didOpen: () => {
+                                $('#qr_code').focus().select();
+                            }
                         });
                     }
                 });
@@ -606,6 +613,7 @@ try {
                                 } else {
                                     $('#modal_serial_code').css('border', '2px solid red');
                                     $('#serial_error').text(response.message).show();
+                                    $('#modal_serial_code').focus().select();
                                 }
                             },
                             error: function() {

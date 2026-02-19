@@ -312,7 +312,10 @@ try {
                                         icon: 'warning',
                                         title: response.data,
                                         text: response.message,
-                                        confirmButtonText: 'OK'
+                                        confirmButtonText: 'OK',
+                                        didOpen: () => {
+                                            $('#qr_code').focus().select();
+                                        }
                                     });
                                 }
                             }
@@ -400,7 +403,10 @@ try {
                                 toast: true,
                                 position: 'top-right',
                                 timer: 3000,
-                                showConfirmButton: false
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    $('#qr_code').focus().select();
+                                }
                             });
                         }
                     },
@@ -530,6 +536,7 @@ try {
                                 if (!response.valid) {
                                     $('#serial_code').css('border', '2px solid red');
                                     $('#serial_error').text(response.message).show();
+                                    $('#serial_code').focus().select();
                                     isSerialValid = false;
                                 } else {
                                     $('#serial_code').css('border', '2px solid green');

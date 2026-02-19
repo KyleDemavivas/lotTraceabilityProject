@@ -261,7 +261,10 @@ try {
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error',
-                                        text: response.message
+                                        text: response.message,
+                                        didOpen: () => {
+                                            $('#qr_code').focus().select();
+                                        }
                                     });
                                     $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="line"], input[name="shift"], input[name="operator_name"], input[name="qty_input"], input[name="final_qtyinput"]').val('');
                                     $('#qr_code').focus().select();
@@ -325,7 +328,10 @@ try {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message
+                                text: response.message,
+                                didOpen: () => {
+                                    $('#qr_code').focus().select();
+                                }
                             });
                         }
                     },
@@ -334,7 +340,10 @@ try {
                         Swal.fire({
                             icon: 'error',
                             title: 'AJAX Error',
-                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`
+                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`,
+                            didOpen: () => {
+                                $('#qr_code').focus().select();
+                            }
                         });
                     }
                 });
@@ -478,6 +487,7 @@ try {
                                     $('#modal_qr_code').val(response.qr_code || '');
                                     $('#serial_code').css('border', '2px solid red');
                                     $('#serial_error').text(response.message).show();
+                                    $('#serial_code').focus().select();
                                     isSerialValid = false;
                                 }
                             },

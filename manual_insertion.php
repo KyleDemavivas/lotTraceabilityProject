@@ -222,9 +222,10 @@ $operator_name = $_SESSION['user_namefl'];
                                     title: 'QR Code Not Found',
                                     text: response.message || 'This QR Code does not exist in the system.',
                                     confirmButtonText: 'OK',
-                                    allowOutsideClick: false
-                                }).then(() => {
-                                    $('#qr_code').val('').focus();
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        $('#qr_code').focus().select();
+                                    }
                                 });
                             }
                         },
@@ -313,7 +314,10 @@ $operator_name = $_SESSION['user_namefl'];
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: response.message
+                        text: response.message,
+                        didOpen: () => {
+                            $('#qr_code').focus().select();
+                        }
                     });
                 }
                 isSubmitting = false;

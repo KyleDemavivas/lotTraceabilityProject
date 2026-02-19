@@ -366,8 +366,11 @@ try {
                                     Swal.fire({
                                         icon: 'warning',
                                         title: response.title,
-                                        text: response.message||'This QR Code is not Found in the System.',
-                                        confirmButtonText: 'OK'
+                                        text: response.message || 'This QR Code is not Found in the System.',
+                                        confirmButtonText: 'OK',
+                                        didOpen: () => {
+                                            $('#qr_code').focus().select();
+                                        }
                                     });
                                 }
                             },
@@ -379,7 +382,10 @@ try {
                                     icon: 'error',
                                     title: 'Server Error',
                                     text: 'An error occurred while fetching QR data. Please try again.',
-                                    confirmButtonText: 'OK'
+                                    confirmButtonText: 'OK',
+                                    didOpen: () => {
+                                        $('#qr_code').focus().select();
+                                    }
                                 });
                             }
                         });
@@ -436,7 +442,10 @@ try {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message
+                                text: response.message,
+                                didOpen: () => {
+                                    $('#qr_code').focus().select();
+                                }
                             });
                         }
                     },
@@ -600,6 +609,7 @@ try {
                                 } else {
                                     $('#modal_serial_code').css('border', '2px solid red');
                                     $('#serial_error').text(response.message).show();
+                                    $("#modal_serial_code").focus().select();
                                 }
                             },
                             error: function() {

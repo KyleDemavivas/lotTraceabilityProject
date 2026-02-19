@@ -260,95 +260,98 @@ try {
                 clearTimeout(qrDebounceTimer);
                 if (qr_code.length > 20) {
                     qrDebounceTimer = setTimeout(() => {
-                    $.ajax({
-                        url: 'fetch_fvissqr.php',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {
-                            code: qr_code
-                        },
-                        success: function(response) {
+                        $.ajax({
+                            url: 'fetch_fvissqr.php',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                code: qr_code
+                            },
+                            success: function(response) {
 
-                            if (response.success) {
-                                $('input[name="assy_code"]').val(response.assy_code);
-                                $('input[name="model_name"]').val(response.model_name);
-                                $('input[name="kepi_lot"]').val(response.kepi_lot);
-                                $('input[name="asmline"]').val(response.asmline);
-                                $('input[name="line"]').val(response.line);
-                                $('input[name="shift"]').val(response.shift);
-                                $('input[name="operator_name"]').val(response.operator_name);
-                                $('input[name="qty_input"]').val(response.qty_input);
-                                $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                                if (response.success) {
+                                    $('input[name="assy_code"]').val(response.assy_code);
+                                    $('input[name="model_name"]').val(response.model_name);
+                                    $('input[name="kepi_lot"]').val(response.kepi_lot);
+                                    $('input[name="asmline"]').val(response.asmline);
+                                    $('input[name="line"]').val(response.line);
+                                    $('input[name="shift"]').val(response.shift);
+                                    $('input[name="operator_name"]').val(response.operator_name);
+                                    $('input[name="qty_input"]').val(response.qty_input);
+                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
 
-                                let kepi_lot = response.kepi_lot;
+                                    let kepi_lot = response.kepi_lot;
 
-                                $.ajax({
-                                    url: 'get_boardcountFVISS.php',
-                                    type: 'POST',
-                                    dataType: 'json',
-                                    data: {
-                                        kepi_lot: kepi_lot,
-                                        line: response.line
-                                    },
-                                    success: function(countData) {
+                                    $.ajax({
+                                        url: 'get_boardcountFVISS.php',
+                                        type: 'POST',
+                                        dataType: 'json',
+                                        data: {
+                                            kepi_lot: kepi_lot,
+                                            line: response.line
+                                        },
+                                        success: function(countData) {
 
-                                        let boardCount = Number(countData.count);
+                                            let boardCount = Number(countData.count);
 
-                                        if (!boardCount || boardCount < 1) {
-                                            boardCount = 1;
-                                        } else {
-                                            boardCount = boardCount + 1;
+                                            if (!boardCount || boardCount < 1) {
+                                                boardCount = 1;
+                                            } else {
+                                                boardCount = boardCount + 1;
+                                            }
+
+                                            if (boardCount > 10) {
+                                                boardCount = 10;
+                                            }
+
+                                            $('input[name="qr_count"]').val(boardCount);
+
+                                            $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
+
+                                            checkAndAutoSubmit();
                                         }
+                                    });
 
-                                        if (boardCount > 10) {
-                                            boardCount = 10;
+                                    checkAndAutoSubmit();
+                                } else {
+
+                                    $('input[name="assy_code"]').val('');
+                                    $('input[name="model_name"]').val('');
+                                    $('input[name="kepi_lot"]').val('');
+                                    $('input[name="asmline"]').val('');
+                                    $('input[name="line"]').val('');
+                                    $('input[name="shift"]').val('');
+                                    $('input[name="operator_name"]').val('');
+                                    $('input[name="qty_input"]').val('');
+                                    $('input[name="final_qtyinput"]').val('');
+                                    $('input[name="qr_count"]').val('0');
+
+                                    $('#liveBoardCount').text("BOARD COUNT: 0 / 10");
+
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: response.title,
+                                        text: response.message || 'This QR Code does not exist in the system.',
+                                        confirmButtonText: 'OK',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            $('#qr_code').focus().select();
                                         }
-
-                                        $('input[name="qr_count"]').val(boardCount);
-
-                                        $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
-
-                                        checkAndAutoSubmit();
-                                    }
-                                });
-
-                                checkAndAutoSubmit();
-                            } else {
-
-                                $('input[name="assy_code"]').val('');
-                                $('input[name="model_name"]').val('');
-                                $('input[name="kepi_lot"]').val('');
-                                $('input[name="asmline"]').val('');
-                                $('input[name="line"]').val('');
-                                $('input[name="shift"]').val('');
-                                $('input[name="operator_name"]').val('');
-                                $('input[name="qty_input"]').val('');
-                                $('input[name="final_qtyinput"]').val('');
-                                $('input[name="qr_count"]').val('0');
-
-                                $('#liveBoardCount').text("BOARD COUNT: 0 / 10");
-
+                                    }).then(() => {
+                                        $('#qr_code').val('').focus();
+                                    });
+                                }
+                            },
+                            error: function() {
                                 Swal.fire({
-                                    icon: 'warning',
-                                    title: response.title,
-                                    text: response.message || 'This QR Code does not exist in the system.',
-                                    confirmButtonText: 'OK',
-                                    allowOutsideClick: false
-                                }).then(() => {
-                                    $('#qr_code').val('').focus();
+                                    icon: 'error',
+                                    title: 'Server Error',
+                                    text: 'An error occurred while fetching QR data. Please try again.',
+                                    confirmButtonText: 'OK'
                                 });
                             }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Server Error',
-                                text: 'An error occurred while fetching QR data. Please try again.',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    });
-        }, 500);
+                        });
+                    }, 500);
                 }
             });
 
@@ -403,7 +406,10 @@ try {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message
+                                text: response.message,
+                                didOpen: () => {
+                                    $('#qr_code').focus().select();
+                                }
                             });
                         }
                     },
@@ -570,6 +576,7 @@ try {
                                 } else {
                                     $('#serial_code').css('border', '2px solid green');
                                     $('#serial_error').text('').hide();
+                                    $('#serial_code').select().focus();
                                     isSerialValid = true;
                                 }
                             },

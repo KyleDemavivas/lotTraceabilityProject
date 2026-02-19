@@ -358,9 +358,10 @@ try {
                                         title: 'Serial Code Error',
                                         text: response.message || 'This Serial Code does not exist in the system.',
                                         confirmButtonText: 'OK',
-                                        allowOutsideClick: false
-                                    }).then(() => {
-                                        $('#serial_code').val('').focus();
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            $('#serial_code').focus().select();
+                                        }
                                     });
                                 }
                             },
@@ -428,7 +429,10 @@ try {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message
+                                text: response.message,
+                                didOpen: () => {
+                                    $('#serial_code').focus().select();
+                                }
                             });
                         }
                     },
@@ -437,7 +441,10 @@ try {
                         Swal.fire({
                             icon: 'error',
                             title: 'AJAX Error',
-                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`
+                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`,
+                            didOpen: () => {
+                                $('#serial_code').focus().select();
+                            }
                         });
                     }
                 });
@@ -588,6 +595,7 @@ try {
                                     $('#modal_serial_code').css('border', '2px solid green');
                                 } else {
                                     $('#modal_serial_code').css('border', '2px solid red');
+                                    $('#modal_serial_code').focus().select();
                                     $('#serial_error').text(response.message).show();
                                 }
                             },
