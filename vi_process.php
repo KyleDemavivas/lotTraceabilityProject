@@ -170,7 +170,7 @@ try {
         let isSerialValid = false;
         let serialValidationToken = 0;
         let serialDebounceTimer = null;
-        let qrDebouceTimer = null;
+        let qrDebounceTimer = null;
 
         //is called to check if fields are inputted, used by the form qr check and main submit form
         function checkAndAutoSubmit() {
@@ -228,7 +228,8 @@ try {
                 var qr_code = $(this).val();
 
                 //if input reaches more than 3 characters, the timer will count to 300ms before making the ajax call
-                clearTimeout(qrDebouceTimer);
+                clearTimeout(qrDebounceTimer);
+
                 if (qr_code.length > 3) {
 
                     qrDebounceTimer = setTimeout(() => {
@@ -309,8 +310,8 @@ try {
                                         timer: 3000,
                                         showConfirmButton: false
                                     });
-                                $('#qr_code').val('').focus().select();
-                                    
+                                    $('#qr_code').val('').focus().select();
+
                                 } else {
                                     $('#modal_qr_code').val($('input[name="qr_code"]').val());
                                     $('#modal_operator_name').val('<?php echo $_SESSION['user_namefl']; ?>');
