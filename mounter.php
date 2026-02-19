@@ -71,6 +71,7 @@ if (!isset($_SESSION['user_namefl'])) {
         let qrCounts = {};
         let isSubmitting = false;
         let lastSubmittedQR = "";
+        let qrDebounceTimer = null;
 
         function refreshHourlyOutput(line) {
             $.ajax({
@@ -90,8 +91,10 @@ if (!isset($_SESSION['user_namefl'])) {
 
         $('#qr_code').on('input', function() {
             let qr_code = $(this).val().trim();
+            clearTimeout(qrDebounceTimer);
 
             if (qr_code.length > 20) {
+                qrDebounceTimer = setTimeout(function() {
                 $.ajax({
                     url: 'fetch_qrmounter.php',
                     type: 'POST',
@@ -163,6 +166,7 @@ if (!isset($_SESSION['user_namefl'])) {
                         $('#qr_code').val('').focus().select();
                     }
                 });
+            }, 500);
             }
         });
 
