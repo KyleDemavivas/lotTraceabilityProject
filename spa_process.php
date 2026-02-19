@@ -221,6 +221,7 @@ if (!isset($_SESSION['user_namefl'])) {
         let qrCounts = {};
         let modelNameFromQR = '';
         let isSubmitting = false;
+        let qrDebounceTimer = null;
 
         function resetFormWithAlert(title, text) {
             Swal.fire({
@@ -249,115 +250,120 @@ if (!isset($_SESSION['user_namefl'])) {
 
         $('#qr_code').on('input', function() {
             var qr_code = $(this).val();
+            clearTimeout(qrDebounceTimer);
+
             if (qr_code.length > 20) {
-                $.ajax({
-                    url: 'fetch_qrdata.php',
-                    type: 'POST',
-                    data: {
-                        qr_code: qr_code
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            let new_kepi_lot = response.kepi_lot;
-                            let current_kepi_lot = $('input[name="kepi_lot"]').val();
+                qrDebounceTimer = setTimeout(() => {
+                    $.ajax({
+                        url: 'fetch_qrdata.php',
+                        type: 'POST',
+                        data: {
+                            qr_code: qr_code
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                let new_kepi_lot = response.kepi_lot;
+                                let current_kepi_lot = $('input[name="kepi_lot"]').val();
 
-                            if (current_kepi_lot && new_kepi_lot !== current_kepi_lot) {
-                                const prevModelName = $('input[name="model_name"]').val().trim();
-                                const newModelName = response.model_name.trim();
+                                if (current_kepi_lot && new_kepi_lot !== current_kepi_lot) {
+                                    const prevModelName = $('input[name="model_name"]').val().trim();
+                                    const newModelName = response.model_name.trim();
 
-                                if (prevModelName !== newModelName) {
-                                    $('#modelForm')[0].reset();
-                                    $('input[type="text"], input[type="hidden"]').val('');
-                                    $('select').val('');
-                                    $('input[name="operator_name"]').val('<?php echo $_SESSION['user_namefl']; ?>');
-                                    $('#verify_model').prop('readonly', false).val('');
-                                    $('#errorMsg').text('');
-                                    $('#solderPasteSection, #bondingSection').hide();
-                                } else {
-                                    const adhesiveVal = $('input[name="adhesive"]:checked').val();
-                                    const sectionData = {};
+                                    if (prevModelName !== newModelName) {
+                                        $('#modelForm')[0].reset();
+                                        $('input[type="text"], input[type="hidden"]').val('');
+                                        $('select').val('');
+                                        $('input[name="operator_name"]').val('<?php echo $_SESSION['user_namefl']; ?>');
+                                        $('#verify_model').prop('readonly', false).val('');
+                                        $('#errorMsg').text('');
+                                        $('#solderPasteSection, #bondingSection').hide();
+                                    } else {
+                                        const adhesiveVal = $('input[name="adhesive"]:checked').val();
+                                        const sectionData = {};
 
-                                    if (adhesiveVal === 'SOLDER PASTE') {
-                                        sectionData.serial = $('#serial_paste').val();
-                                        sectionData.solder_paste = $('#solder_paste').val();
-                                        sectionData.part_lot = $('#part_lot').val();
-                                        sectionData.time_pulledout = $('#time_pulledout').val();
-                                        sectionData.time_use = $('#time_use').val();
-                                    } else if (adhesiveVal === 'BONDING') {
-                                        sectionData.serial = $('#serial_bonding').val();
-                                        sectionData.bonding = $('#bonding').val();
-                                        sectionData.part_lot = $('#part_lot').val();
-                                        sectionData.time_pulledout = $('#time_pulledout').val();
-                                        sectionData.time_use = $('#time_use').val();
+                                        if (adhesiveVal === 'SOLDER PASTE') {
+                                            sectionData.serial = $('#serial_paste').val();
+                                            sectionData.solder_paste = $('#solder_paste').val();
+                                            sectionData.part_lot = $('#part_lot').val();
+                                            sectionData.time_pulledout = $('#time_pulledout').val();
+                                            sectionData.time_use = $('#time_use').val();
+                                        } else if (adhesiveVal === 'BONDING') {
+                                            sectionData.serial = $('#serial_bonding').val();
+                                            sectionData.bonding = $('#bonding').val();
+                                            sectionData.part_lot = $('#part_lot').val();
+                                            sectionData.time_pulledout = $('#time_pulledout').val();
+                                            sectionData.time_use = $('#time_use').val();
+                                        }
+                                        const stencilNo = $('#stencil_no').val();
+                                        const stencilTotal = $('input[name="total_stroke"]').val();
+                                        const stencilCurrent = $('input[name="current_stroke"]').val();
+                                        const squeegeeNo = $('#squeegee_no').val();
+                                        const squeegeeTotal = $('input[name="squeegeetotal_stroke"]').val();
+                                        const squeegeeCurrent = $('input[name="squeegeecurrent_stroke"]').val();
+                                        const shiftVal = $('select[name="shift"]').val();
+                                        const lineVal = $('select[name="line"]').val();
+
+                                        $('#modelForm')[0].reset();
+                                        $('input[type="text"], input[type="hidden"]').val('');
+                                        $('select').val('');
+
+                                        $('input[name="operator_name"]').val('<?php echo $_SESSION['user_namefl']; ?>');
+                                        $('select[name="shift"]').val(shiftVal);
+                                        $('select[name="line"]').val(lineVal);
+                                        $('#verify_model').prop('readonly', false).val('');
+                                        $('#errorMsg').text('');
+
+                                        if (adhesiveVal) {
+                                            $(`input[name="adhesive"][value="${adhesiveVal}"]`).prop('checked', true);
+                                            showSection(adhesiveVal === 'SOLDER PASTE' ? 'solderPaste' : 'bonding');
+                                        }
+                                        if (adhesiveVal === 'SOLDER PASTE') {
+                                            $('#serial_paste').val(sectionData.serial);
+                                            $('#solder_paste').val(sectionData.solder_paste);
+                                            $('#part_lot').val(sectionData.part_lot);
+                                            $('#time_pulledout').val(sectionData.time_pulledout);
+                                            $('#time_use').val(sectionData.time_use);
+                                        } else if (adhesiveVal === 'BONDING') {
+                                            $('#serial_bonding').val(sectionData.serial);
+                                            $('#bonding').val(sectionData.bonding);
+                                            $('#bonding_part_lot').val(sectionData.part_lot);
+                                            $('#bonding_time_pulledout').val(sectionData.time_pulledout);
+                                            $('#bonding_time_use').val(sectionData.time_use);
+                                        }
+                                        $('#stencil_no').val(stencilNo);
+                                        $('input[name="total_stroke"]').val(stencilTotal);
+                                        $('input[name="current_stroke"]').val(stencilCurrent);
+                                        $('#squeegee_no').val(squeegeeNo);
+                                        $('input[name="squeegeetotal_stroke"]').val(squeegeeTotal);
+                                        $('input[name="squeegeecurrent_stroke"]').val(squeegeeCurrent);
                                     }
-                                    const stencilNo = $('#stencil_no').val();
-                                    const stencilTotal = $('input[name="total_stroke"]').val();
-                                    const stencilCurrent = $('input[name="current_stroke"]').val();
-                                    const squeegeeNo = $('#squeegee_no').val();
-                                    const squeegeeTotal = $('input[name="squeegeetotal_stroke"]').val();
-                                    const squeegeeCurrent = $('input[name="squeegeecurrent_stroke"]').val();
-                                    const shiftVal = $('select[name="shift"]').val();
-                                    const lineVal = $('select[name="line"]').val();
 
-                                    $('#modelForm')[0].reset();
-                                    $('input[type="text"], input[type="hidden"]').val('');
-                                    $('select').val('');
-
-                                    $('input[name="operator_name"]').val('<?php echo $_SESSION['user_namefl']; ?>');
-                                    $('select[name="shift"]').val(shiftVal);
-                                    $('select[name="line"]').val(lineVal);
-                                    $('#verify_model').prop('readonly', false).val('');
-                                    $('#errorMsg').text('');
-
-                                    if (adhesiveVal) {
-                                        $(`input[name="adhesive"][value="${adhesiveVal}"]`).prop('checked', true);
-                                        showSection(adhesiveVal === 'SOLDER PASTE' ? 'solderPaste' : 'bonding');
-                                    }
-                                    if (adhesiveVal === 'SOLDER PASTE') {
-                                        $('#serial_paste').val(sectionData.serial);
-                                        $('#solder_paste').val(sectionData.solder_paste);
-                                        $('#part_lot').val(sectionData.part_lot);
-                                        $('#time_pulledout').val(sectionData.time_pulledout);
-                                        $('#time_use').val(sectionData.time_use);
-                                    } else if (adhesiveVal === 'BONDING') {
-                                        $('#serial_bonding').val(sectionData.serial);
-                                        $('#bonding').val(sectionData.bonding);
-                                        $('#bonding_part_lot').val(sectionData.part_lot);
-                                        $('#bonding_time_pulledout').val(sectionData.time_pulledout);
-                                        $('#bonding_time_use').val(sectionData.time_use);
-                                    }
-                                    $('#stencil_no').val(stencilNo);
-                                    $('input[name="total_stroke"]').val(stencilTotal);
-                                    $('input[name="current_stroke"]').val(stencilCurrent);
-                                    $('#squeegee_no').val(squeegeeNo);
-                                    $('input[name="squeegeetotal_stroke"]').val(squeegeeTotal);
-                                    $('input[name="squeegeecurrent_stroke"]').val(squeegeeCurrent);
+                                    $('#qr_code').focus();
                                 }
 
-                                $('#qr_code').focus();
+                                $('input[name="assy_code"]').val(response.assy_code);
+                                $('input[name="model_name"]').val(response.model_name);
+                                $('input[name="kepi_lot"]').val(response.kepi_lot);
+                                $('input[name="serial_qty"]').val(response.serial_qty);
+                                $('input[name="qty_input"]').val(response.serial_qty);
+
+                                let kepi_lot = response.kepi_lot;
+                                qrCounts[kepi_lot] = (qrCounts[kepi_lot] || 0) + 1;
+                                $('input[name="qr_count"]').val(qrCounts[kepi_lot]);
+
+                                let serial_qty = parseInt(response.serial_qty) || 0;
+                                $('input[name="qty_input"]').val(serial_qty);
+                                $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+
+                                tryAutoSubmit();
+                            } else {
+                                resetFormWithAlert('QR Code Error', 'No data found for the scanned QR code.');
                             }
-
-                            $('input[name="assy_code"]').val(response.assy_code);
-                            $('input[name="model_name"]').val(response.model_name);
-                            $('input[name="kepi_lot"]').val(response.kepi_lot);
-                            $('input[name="serial_qty"]').val(response.serial_qty);
-                            $('input[name="qty_input"]').val(response.serial_qty);
-
-                            let kepi_lot = response.kepi_lot;
-                            qrCounts[kepi_lot] = (qrCounts[kepi_lot] || 0) + 1;
-                            $('input[name="qr_count"]').val(qrCounts[kepi_lot]);
-
-                            let serial_qty = parseInt(response.serial_qty) || 0;
-                            $('input[name="qty_input"]').val(serial_qty);
-                            $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
-
-                            tryAutoSubmit();
-                        } else {
-                            resetFormWithAlert('QR Code Error', 'No data found for the scanned QR code.');
                         }
-                    }
-                });
+                    });
+
+                }, 500);
             }
         });
 
@@ -476,7 +482,10 @@ if (!isset($_SESSION['user_namefl'])) {
 
         $('#stencil_no').on('input', function() {
             var stencil_no = $(this).val();
+            clearTimeout(qrDebounceTimer);
+
             if (stencil_no.length > 8) {
+                qrDebounceTimer = setTimeout(() => {
                 $.ajax({
                     url: 'fetch_rightdata.php',
                     type: 'POST',
@@ -494,12 +503,15 @@ if (!isset($_SESSION['user_namefl'])) {
                         }
                     }
                 });
+            }, 500);
             }
         });
 
         $('#squeegee_no').on('input', function() {
             var squeegee_no = $(this).val();
+            clearTimeout(qrDebounceTimer);
             if (squeegee_no.length > 11) {
+                qrDebounceTimer = setTimeout(() => {
                 $.ajax({
                     url: 'fetch_rightdata.php',
                     type: 'POST',
@@ -517,12 +529,15 @@ if (!isset($_SESSION['user_namefl'])) {
                         }
                     }
                 });
+            }, 500);
             }
         });
 
         $('#serial_paste').on('input', function() {
             var serial_paste = $(this).val();
+            clearTimeout(qrDebounceTimer);
             if (serial_paste.length > 8) {
+                qrDebounceTimer = setTimeout(() => {
                 $.ajax({
                     url: 'fetch_rightdata.php',
                     type: 'POST',
@@ -542,13 +557,16 @@ if (!isset($_SESSION['user_namefl'])) {
                         }
                     }
                 });
+            }, 500);
             }
         });
 
         $('#serial_bonding').on('input', function() {
             const serial_bonding = $(this).val().trim();
-
+            clearTimeout(qrDebounceTimer);
+            
             if (serial_bonding.length >= 12) {
+                qrDebounceTimer = setTimeout(() => {
                 $.ajax({
                     url: 'fetch_rightdata.php',
                     type: 'POST',
@@ -568,6 +586,7 @@ if (!isset($_SESSION['user_namefl'])) {
                         }
                     }
                 });
+            }, 500);
             }
         });
 
