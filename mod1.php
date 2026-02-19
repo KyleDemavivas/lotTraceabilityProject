@@ -388,7 +388,7 @@ try {
                                 });
                             }
                         });
-                    }, 300);
+                    }, 500);
                 }
             });
 
@@ -612,7 +612,7 @@ try {
                                 $('#serial_error').text('Validation server error').show();
                             }
                         });
-                    }, 300);
+                    }, 500);
                 }
             });
 

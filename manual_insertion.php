@@ -237,7 +237,7 @@ $operator_name = $_SESSION['user_namefl'];
                             });
                         }
                     });
-                }, 300);
+                }, 500);
             }
         });
 

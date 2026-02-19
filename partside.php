@@ -256,7 +256,7 @@ try {
                 let serial_code = $(this).val().trim();
                 clearTimeout(serialDebounceTimer);
 
-                if (serial_code.length > 12) {
+                if (serial_code.length > 3) {
                     serialDebounceTimer = setTimeout(() => {
                         $.ajax({
                             url: 'fetch_partside.php',
@@ -348,7 +348,7 @@ try {
                                 });
                             }
                         });
-                    }, 300);
+                    }, 500);
                 }
             });
 
@@ -570,7 +570,7 @@ try {
                                 $('#serial_error').text('Validation server error').show();
                             }
                         });
-                    }, 300);
+                    }, 500);
                 }
             });
 

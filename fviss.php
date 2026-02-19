@@ -348,7 +348,7 @@ try {
                             });
                         }
                     });
-        }, 300);
+        }, 500);
                 }
             });
 
@@ -579,7 +579,7 @@ try {
                                 $('#serial_code').css('border', '2px solid red');
                             }
                         });
-                    }, 300);
+                    }, 500);
                 } else {
                     isSerialValid = false;
                 }

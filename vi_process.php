@@ -230,7 +230,7 @@ try {
                 //if input reaches more than 3 characters, the timer will count to 300ms before making the ajax call
                 clearTimeout(qrDebounceTimer);
 
-                if (qr_code.length > 3) {
+                if (qr_code.length > 20) {
 
                     qrDebounceTimer = setTimeout(() => {
                         $.ajax({
@@ -269,7 +269,7 @@ try {
                             }
                         });
                         //change this for the time the timer counts in ms
-                    }, 300);
+                    }, 500);
                 }
             });
 
@@ -487,7 +487,7 @@ try {
                                 isSerialValid = false;
                             }
                         });
-                    }, 100);
+                    }, 500);
                 } else {
                     $('#modal_qr_code').val('');
                     $('#serial_code').css('border', '');

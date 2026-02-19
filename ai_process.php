@@ -288,7 +288,7 @@ try {
             $('#qr_code').on('input', function() {
                 const qr_code = $(this).val().trim();
                 clearTimeout(qrDebounceTimer);
-                if (qr_code.length >= 21) {
+                if (qr_code.length >= 20) {
                     qrDebounceTimer = setTimeout(() => {
                         $.ajax({
                             url: 'fetch_qrvi.php',
@@ -317,7 +317,7 @@ try {
                                 }
                             }
                         });
-                    }, 300);
+                    }, 500);
                 }
             });
 
@@ -543,7 +543,7 @@ try {
                                 $('#serial_code').css('border', '2px solid red');
                             }
                         });
-                    }, 300);
+                    }, 500);
                 } else {
                     isSerialValid = false;
                 }
