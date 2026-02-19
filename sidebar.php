@@ -83,15 +83,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <a href="/traceability/hwrepair_process.php"><i class="fas fa-wrench"></i> <span>HW Repair</span></a>
             </li> */ ?>
 
-                <li class="dropdown <?= in_array($current_page, ['/traceability/repair_table.php', '/traceability/verify_repairLL.php', '/traceability/batchlot_repair.php']) ? 'active open' : '' ?>">
+                <li class="dropdown <?= in_array($current_page, ['/traceability/repair_table.php', '/traceability/verify_repairLL.php', '/traceability/batchlot_repair.php', '/traceability/verify_processleader.php']) ? 'active open' : '' ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>Repair Process ▾</span></a>
                     <ul class="submenu">
                         <li class="<?= ($current_page == '/traceability/repair_table.php') ? 'active' : '' ?>"><a href="/traceability/repair_table.php">Repair Table</a></li>
                         <li class="<?= ($current_page == '/traceability/verify_repairLL.php') ? 'active' : '' ?>"><a href="/traceability/verify_repairLL.php">Verify Repair Table</a></li>
                         <li class="<?= ($current_page == '/traceability/batchlot_repair.php') ? 'active' : '' ?>"><a href="/traceability/batchlot_repair.php">Batch Lot Repair</a></li>
-                        <li class="<?= ($current_page == '/traceability/verify_processleader.php') ? 'active' : '' ?>"><a href="/traceability/verify_processleader.php">Process Leader Verification</a></li>
+                        <li class="<?= ($current_page == '/traceability/verify_processleader.php') ? 'active' : '' ?>"><a href="/traceability/verify_processleader.php">Process Verification</a></li>
                     </ul>
-            </ul>
             </li>
 
             <?php /*  <li class="<?= ($current_page == '/traceability/vi_repair.php') ? 'active' : '' ?>">
