@@ -7,6 +7,13 @@ if (
     isset($_POST['qr_code'], $_POST['serial_code'], $_POST['defect'], $_POST['location'], $_POST['board_number'], $_POST['scrap_micro'], $_POST['repairable'])
 ) {
     try {
+
+        $origin = $_POST['origin'] ?? '';
+        if(empty($origin)){
+            throw new Exception('Origin is NULL.');
+        }
+        $main_table = $origin === 'main' ? 'micro_process' : 'micro_batchlot';
+
         $qr_code = trim($_POST['qr_code']);
         $serial_code = trim($_POST['serial_code']);
         $defects = $_POST['defect'];
@@ -19,7 +26,7 @@ if (
         date_default_timezone_set('Asia/Manila');
         $created_at = date('Y-m-d H:i:s');
 
-        $checkSerial = $conn->prepare("SELECT COUNT(*) FROM micro_process WHERE serial_code = :serial_code");
+        $checkSerial = $conn->prepare("SELECT COUNT(*) FROM $main_table WHERE serial_code = :serial_code");
         $checkSerial->execute([':serial_code' => $serial_code]);
         $serialExists = $checkSerial->fetchColumn();
 
@@ -31,7 +38,7 @@ if (
         }
 
         if ($source === 'alert' || $source === 'modal') {
-            $verifySerialQR = $conn->prepare("SELECT COUNT(*) FROM micro_process WHERE serial_code = :serial_code AND qr_code = :qr_code");
+            $verifySerialQR = $conn->prepare("SELECT COUNT(*) FROM $main_table WHERE serial_code = :serial_code AND qr_code = :qr_code");
             $verifySerialQR->execute([':serial_code' => $serial_code, ':qr_code' => $qr_code]);
             $matchCount = $verifySerialQR->fetchColumn();
 
@@ -73,17 +80,17 @@ if (
         }
 
         if ($successfulInserts > 0) {
-            $updateSerialStatusSql = "UPDATE micro_process SET prev_serialstatus = serial_status, serial_status = 'NO GOOD' WHERE serial_code = :serial_code";
+            $updateSerialStatusSql = "UPDATE $main_table SET prev_serialstatus = serial_status, serial_status = 'NO GOOD' WHERE serial_code = :serial_code";
             $stmtUpdateStatus = $conn->prepare($updateSerialStatusSql);
             $stmtUpdateStatus->execute([':serial_code' => $serial_code]);
 
-            $checkSql = "SELECT COUNT(*) FROM micro_process WHERE qr_code = :qr_code AND serial_status = 'NO GOOD'";
+            $checkSql = "SELECT COUNT(*) FROM $main_table WHERE qr_code = :qr_code AND serial_status = 'NO GOOD'";
             $stmtCheck = $conn->prepare($checkSql);
             $stmtCheck->execute([':qr_code' => $qr_code]);
             $noGoodCount = $stmtCheck->fetchColumn();
 
             if ($noGoodCount > 0) {
-                $updateBoardStatusSql = "UPDATE micro_process SET prev_boardstatus = board_status, board_status = 'HOLD' WHERE qr_code = :qr_code AND prev_boardstatus = 'GOOD' AND board_status = 'GOOD'";
+                $updateBoardStatusSql = "UPDATE $main_table SET prev_boardstatus = board_status, board_status = 'HOLD' WHERE qr_code = :qr_code AND prev_boardstatus = 'GOOD' AND board_status = 'GOOD'";
                 $stmtBoard = $conn->prepare($updateBoardStatusSql);
                 $stmtBoard->execute([':qr_code' => $qr_code]);
             }

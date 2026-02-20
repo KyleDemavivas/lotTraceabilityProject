@@ -14,7 +14,6 @@ if (
             exit;
         }
         $main_table = $origin === 'main' ? 'partside2_process' : 'partside2_batchlot';
-        $main_table2 = $origin === 'main' ? 'partside_process' : 'partside_batchlot';
 
         $qr_code = trim($_POST['qr_code']);
         $serial_code = trim($_POST['serial_code']);
@@ -39,7 +38,7 @@ if (
             exit;
         }
 
-        $stmt = $conn->prepare("SELECT serial_status FROM $main_table2 WHERE serial_code = :serial_code");
+        $stmt = $conn->prepare("SELECT serial_status FROM $main_table WHERE serial_code = :serial_code");
         $stmt->execute([':serial_code' => $serial_code]);
         $currentStatus = $stmt->fetchColumn();
 
@@ -51,7 +50,7 @@ if (
         }
 
         if ($source === 'alert' || $source === 'modal') {
-            $verifySerialQR = $conn->prepare("SELECT COUNT(*) FROM $main_table2 WHERE serial_code = :serial_code AND qr_code = :qr_code");
+            $verifySerialQR = $conn->prepare("SELECT COUNT(*) FROM $main_table WHERE serial_code = :serial_code AND qr_code = :qr_code");
             $verifySerialQR->execute([':serial_code' => $serial_code, ':qr_code' => $qr_code]);
             $matchCount = $verifySerialQR->fetchColumn();
 
