@@ -5,6 +5,14 @@ header('Content-Type: application/json');
 $response = ['status' => 'error', 'message' => '', 'board_count' => 0];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $source = $_POST['source'] ?? '';
+    if (empty($source)) {
+        $response['message'] = 'Source is NULL.';
+        echo json_encode($response);
+        exit;
+    }
+    $main_table = $source === 'main' ? 'micro_process' : 'micro_batchlot';
+
     try {
 
         $qr_code       = strtoupper($_POST['qr_code'] ?? '');
@@ -29,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         date_default_timezone_set('Asia/Manila');
         $created_at = date('Y-m-d H:i:s');
 
-        $stmt = $conn->prepare("SELECT TOP 1 board_counter FROM micro_process WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC");
+        $stmt = $conn->prepare("SELECT TOP 1 board_counter FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC");
         $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $board_counter = ((int)$stmt->fetchColumn()) + 1 ?: 1;
 
@@ -46,11 +54,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        $stmt = $conn->prepare("SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) FROM micro_process WHERE kepi_lot = :kepi_lot AND line = :line");
+        $stmt = $conn->prepare("SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line");
         $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $final_qtyinput = (int)$stmt->fetchColumn() + $qty_input;
 
-        $stmt = $conn->prepare("INSERT INTO micro_process (qr_code, serial_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus) 
+        $stmt = $conn->prepare("INSERT INTO $main_table (qr_code, serial_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus) 
                 VALUES (:qr_code, :serial_code, :qty_input, :final_qtyinput, :operator_name, :shift, :asmline, :line, :assy_code, :model_name, :kepi_lot, :board_counter, :created_at,'GOOD','GOOD','GOOD','GOOD')");
 
         $stmt->execute([
@@ -69,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':created_at'     => $created_at
         ]);
 
-        $stmt = $conn->prepare("SELECT COUNT(*) FROM micro_process WHERE kepi_lot = :kepi_lot AND line = :line");
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line");
         $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
 
         $response['status'] = 'success';
