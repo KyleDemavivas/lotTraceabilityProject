@@ -500,6 +500,7 @@ try {
                 formData.append('scrap_wi', $('#modal_scrap_wi').val());
                 formData.append('repairable', $('#modal_repairable').val());
                 formData.append('source', $('#modal_source').val());
+                formData.append('origin', 'batchlot');
 
                 validDefects.forEach((defect, i) => {
                     formData.append('defect[]', defect);
@@ -570,7 +571,8 @@ try {
                             dataType: 'json',
                             data: {
                                 serial_code: serial,
-                                source: source
+                                source: source,
+                                origin: 'batchlot'
                             },
                             success: function(response) {
                                 if (response.valid) {
