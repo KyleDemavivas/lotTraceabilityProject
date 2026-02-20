@@ -360,6 +360,7 @@ try {
                 isSubmitting = true;
 
                 const formData = new FormData(this);
+                formData.append('source_page', 'main');
 
                 $.ajax({
                     url: 'partside_processform.php',

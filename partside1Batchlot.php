@@ -359,6 +359,7 @@ try {
                 isSubmitting = true;
 
                 const formData = new FormData(this);
+                formData.append('source_page', 'batchlot');
 
                 $.ajax({
                     url: 'partside_processform.php',
