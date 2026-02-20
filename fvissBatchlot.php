@@ -42,11 +42,11 @@ try {
                 <center>FVI Solderside BATCHLOT</center>
             </h1>
             <div class="form-section">
+                <input type="text" class="form-input" name="qr_code" id="qr_code" readonly>
                 <div class="form-group">
                     <label class="form-label">Serial Code:</label>
                     <input type="text" class="form-input" name="serial_code_main" id="serial_code_main" autofocus autocomplete="off" minlength="3" required>
                 </div>
-                <input type="text" class="form-input" name="qty_input" readonly hidden>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
                     <input type="text" class="form-input" name="qty_input" readonly>
@@ -206,6 +206,7 @@ try {
 
         function checkAndAutoSubmit() {
             const serial = $('#serial_code_main').val();
+            const qrCode = $('#qr_code').val();
             const assy = $('input[name="assy_code"]').val();
             const model = $('input[name="model_name"]').val();
             const lot = $('input[name="kepi_lot"]').val();
@@ -217,6 +218,7 @@ try {
 
             console.log({
                 serial,
+                qrCode,
                 assy,
                 model,
                 lot,
@@ -279,11 +281,12 @@ try {
                 if (serial_code.length > 12) {
                     serialDebounceTimer = setTimeout(() => {
                         $.ajax({
-                            url: 'fetch_batchlot.php',
+                            url: 'fetch_fvissqr.php',
                             type: 'POST',
                             dataType: 'json',
                             data: {
-                                code: serial_code
+                                code: serial_code,
+                                source: 'batchlot'
                             },
                             success: function(response) {
 
@@ -305,6 +308,7 @@ try {
 
                                 if (response.success) {
                                     $('input[name="assy_code"]').val(response.assy_code);
+                                    $('input[name="qr_code"]').val(response.qr_code);
                                     $('input[name="model_name"]').val(response.model_name);
                                     $('input[name="kepi_lot"]').val(response.kepi_lot);
                                     $('input[name="asmline"]').val(response.asmline);
@@ -341,8 +345,6 @@ try {
                                             $('input[name="qr_count"]').val(boardCount);
 
                                             $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
-
-                                            checkAndAutoSubmit();
                                         }
                                     });
 
@@ -395,6 +397,7 @@ try {
                 isSubmitting = true;
 
                 const formData = new FormData(this);
+                formData.append('source', 'batchlot');
 
                 $.ajax({
                     url: 'fvissbatchlot_processform.php',
@@ -417,7 +420,17 @@ try {
                                 allowOutsideClick: false
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    resetMainForm();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Saved successfully',
+                                        text: response.message,
+                                        toast: true,
+                                        position: 'top-right',
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.reload();
+                                    })
                                 } else {
                                     $('#modal_qr_code').val($('input[name="qr_code"]').val());
                                     $('#modal_operator_name').val('<?php echo $_SESSION['user_namefl']; ?>');

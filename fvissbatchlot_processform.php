@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         date_default_timezone_set('Asia/Manila');
         $created_at = date('Y-m-d H:i:s');
 
-        $stmtcheck = $conn->prepare("SELECT * FROM fviss_batchlot WHERE serial_code = :serial_code");
+        $stmtcheck = $conn->prepare("SELECT * FROM batchlot_process WHERE serial_code = :serial_code");
         $stmtcheck->execute([':serial_code' => $serial_code]);
         $checkResult = $stmtcheck->fetch(PDO::FETCH_ASSOC);
 
@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             throw new Exception('Serial code does not exist in Fviss Process.');
         }
 
-        $stmtNG = $conn->prepare("SELECT serial_status FROM fviss_process WHERE serial_code = :serial_code");
+        $stmtNG = $conn->prepare("SELECT serial_status FROM batchlot_process WHERE serial_code = :serial_code");
         $stmtNG->execute([':serial_code' => $serial_code]);
         $fvissStatus = $stmtNG->fetchColumn();
 
@@ -45,28 +45,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             throw new Exception('This serial is already tagged as NO GOOD and cannot be processed.');
         }
 
-        $stmt = $conn->prepare("SELECT TOP 1 board_counter FROM partside_process WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC");
+        $stmt = $conn->prepare("SELECT TOP 1 board_counter FROM fviss_batchlot WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC");
         $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $board_counter = ((int)$stmt->fetchColumn()) + 1 ?: 1;
 
-        $stmt = $conn->prepare("SELECT partside_process FROM trace_process WHERE serial_code = :serial_code");
+        $stmt = $conn->prepare("SELECT fviss_process FROM trace_process WHERE serial_code = :serial_code");
         $stmt->execute([':serial_code' => $serial_code]);
         $viProcess = $stmt->fetchColumn();
 
         if ($viProcess === 'GOOD') {
-            throw new Exception('Partside Process already has data.');
+            throw new Exception('FVISS Process already has data.');
         }
 
         if ($viProcess !== false) {
-            $stmt = $conn->prepare("UPDATE trace_process SET partside_process = 'GOOD' WHERE serial_code = :serial_code");
+            $stmt = $conn->prepare("UPDATE trace_process SET fviss_process = 'GOOD' WHERE serial_code = :serial_code");
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        $stmt = $conn->prepare("SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) FROM partside_process WHERE kepi_lot = :kepi_lot AND line = :line");
+        $stmt = $conn->prepare("SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) FROM fviss_batchlot WHERE kepi_lot = :kepi_lot AND line = :line");
         $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $final_qtyinput = (int)$stmt->fetchColumn() + $qty_input;
 
-        $stmt = $conn->prepare("INSERT INTO partside_process (qr_code, serial_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus) 
+        $stmt = $conn->prepare("INSERT INTO fviss_batchlot (qr_code, serial_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus) 
                 VALUES (:qr_code, :serial_code, :qty_input, :final_qtyinput, :operator_name, :shift, :asmline, :line, :assy_code, :model_name, :kepi_lot, :board_counter, :created_at,'GOOD','GOOD','GOOD','GOOD')");
 
         $stmt->execute([
@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':created_at'     => $created_at
         ]);
 
-        $stmt = $conn->prepare("SELECT COUNT(*) FROM partside_process WHERE kepi_lot = :kepi_lot AND line = :line");
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM fviss_batchlot WHERE kepi_lot = :kepi_lot AND line = :line");
         $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
 
         $response['status'] = 'success';

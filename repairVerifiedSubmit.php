@@ -207,7 +207,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     $insertSerial = "INSERT INTO batchlot_process 
             (qr_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, serial_code, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus)
-            SELECT qr_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, serial_code, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus FROM fviss_process
+            SELECT qr_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, serial_code, board_counter, created_at, 'GOOD', 'GOOD', 'HOLD', 'NO GOOD' FROM fviss_process
             WHERE serial_code = :serial_code
             ";
 

@@ -265,7 +265,8 @@ try {
                             type: 'POST',
                             dataType: 'json',
                             data: {
-                                code: qr_code
+                                code: qr_code,
+                                source: 'main'
                             },
                             success: function(response) {
 
@@ -362,6 +363,7 @@ try {
                 isSubmitting = true;
 
                 const formData = new FormData(this);
+                formData.append('source', 'main');
 
                 $.ajax({
                     url: 'fviss_processform.php',
