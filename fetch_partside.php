@@ -11,8 +11,8 @@ if (!isset($_POST['serial_code'])) {
 
 $serial_code = strtoupper(trim($_POST['serial_code']));
 $source = $_POST['source'] ?? '';
-
 $main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
+
 try {
     $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
     $stmt->execute([':serial_code' => $serial_code]);

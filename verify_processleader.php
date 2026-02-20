@@ -250,15 +250,16 @@ try {
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: data.message || 'Verify Repair successfully!',
+                            title: data.message || 'Verification submitted successfully!',
                             text: data.testMessage,
                             showConfirmButton: false,
                             timer: 3000,
-                            timerProgressBar: true
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                window.location.reload();
+                            }
                         });
-                        //form.reset();
-                        closeModal();
-                        //setTimeout(() => location.reload(), 1500);
+                        
                     } else {
                         Swal.fire({
                             toast: true,
