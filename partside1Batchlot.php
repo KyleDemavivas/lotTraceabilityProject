@@ -263,7 +263,8 @@ try {
                             type: 'POST',
                             dataType: 'json',
                             data: {
-                                serial_code: serial_code
+                                serial_code: serial_code,
+                                source: 'batchlot'
                             },
                             success: function(response) {
                                 if (response.success) {
