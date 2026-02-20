@@ -266,7 +266,8 @@ try {
                             type: 'POST',
                             dataType: 'json',
                             data: {
-                                serial_code: serial_code
+                                serial_code: serial_code,
+                                source: 'batchlot'
                             },
                             success: function(response) {
 
@@ -375,6 +376,7 @@ try {
                 isSubmitting = true;
 
                 const formData = new FormData(this);
+                formData.append('source_page', 'batchlot');
 
                 $.ajax({
                     url: 'partside2_processform.php',
