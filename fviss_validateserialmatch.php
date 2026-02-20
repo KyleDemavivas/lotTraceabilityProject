@@ -9,13 +9,20 @@ $response = [
 ];
 
 try {
+
+    $origin = $_POST['origin'] ?? '';
+    if(empty($origin)) {
+        throw new Exception('Origin is NULL.');
+    }
+    $main_table = $origin === 'main' ? 'fviss_process' : 'fviss_batchlot';
+
     if (isset($_POST['serial_code'])) {
         $serial = trim($_POST['serial_code']);
         $source = $_POST['source'] ?? '';
 
         if (in_array($source, ['alert', 'modal', 'manual'])) {
 
-            $stmt = $conn->prepare("SELECT qr_code FROM fviss_process WHERE serial_code = :serial");
+            $stmt = $conn->prepare("SELECT qr_code FROM $main_table WHERE serial_code = :serial");
             $stmt->execute([':serial' => $serial]);
             $qr = $stmt->fetchColumn();
 
@@ -33,7 +40,7 @@ try {
             $response['qr_code'] = '';
         }
     }
-} catch (PDOException $e) {
+} catch (Throwable $e) {
     $response['valid'] = false;
     $response['message'] = 'Database error: ' . $e->getMessage();
 }

@@ -600,7 +600,8 @@ try {
                             data: {
                                 serial_code: serialcode,
                                 qr_code: qrcode,
-                                source: source
+                                source: source,
+                                origin: 'batchlot'
                             },
                             datatype: 'json',
                             success: function(response) {
