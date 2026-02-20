@@ -9,6 +9,15 @@ $response = [
 ];
 
 try {
+
+    $origin = $_POST['origin'] ?? '';
+
+    if(empty($origin)) {
+       throw new Exception('Origin is NULL.');
+    }
+
+    $main_table = $origin === 'main' ? 'fviss_process' : 'fviss_batchlot';
+
     if (empty($_POST['serial_code'])) {
         $response['message'] = 'Serial code is required.';
         echo json_encode($response);
@@ -19,7 +28,7 @@ try {
     $source = $_POST['source'] ?? '';
     $qrFromClient = $_POST['qr_code'] ?? '';
 
-    $stmt = $conn->prepare("SELECT qr_code, serial_status FROM fviss_process WHERE serial_code = :serial");
+    $stmt = $conn->prepare("SELECT qr_code, serial_status FROM $main_table WHERE serial_code = :serial");
     $stmt->execute([':serial' => $serial]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -50,9 +59,11 @@ try {
         if ($qrFromClient && $qrFromClient !== $qrFromDb) {
             $response['valid'] = false;
             $response['message'] = 'Serial does not belong to this QR code.';
+            echo json_encode($response);
         } else {
             $response['valid'] = true;
             $response['qr_code'] = $qrFromDb;
+            echo json_encode($response);
         }
         echo json_encode($response);
         exit;
@@ -60,7 +71,7 @@ try {
 
     $response['valid'] = true;
     $response['qr_code'] = $qrFromDb;
-} catch (PDOException $e) {
+} catch (Throwable $e) {
     $response['valid'] = false;
     $response['message'] = 'Database error: ' . $e->getMessage();
 }
