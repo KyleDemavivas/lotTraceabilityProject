@@ -15,11 +15,18 @@ try {
         exit;
     }
 
+    $origin = $_POST['origin'] ?? '';
+    if(empty($origin)){
+        throw new Exception('Origin is NULL.');
+    }
+
+    $main_table = $origin === 'main' ? 'partside_process' : 'partside_batchlot';
+
     $serial = strtoupper(trim($_POST['serial_code']));
     $source = $_POST['source'] ?? '';
     $qrFromClient = $_POST['qr_code'] ?? '';
 
-    $stmt = $conn->prepare("SELECT qr_code, serial_status FROM partside_process WHERE serial_code = :serial");
+    $stmt = $conn->prepare("SELECT qr_code, serial_status FROM $main_table WHERE serial_code = :serial");
     $stmt->execute([':serial' => $serial]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
