@@ -320,8 +320,6 @@ try {
                                             $('input[name="qr_count"]').val(boardCount);
 
                                             $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
-
-                                            checkAndAutoSubmit();
                                         }
                                     });
 
@@ -404,7 +402,10 @@ try {
                                         toast: true,
                                         position: 'top-right',
                                         timer: 3000,
-                                        showConfirmButton: false
+                                        showConfirmButton: false,
+                                        didOpen: () => {
+                                            $('#serial_code').focus().select();
+                                        }
                                     });
                                 } else {
                                     $('#modal_qr_code').val($('input[name="qr_code"]').val());

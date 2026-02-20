@@ -326,8 +326,6 @@ try {
                                             checkAndAutoSubmit();
                                         }
                                     });
-
-                                    checkAndAutoSubmit();
                                 } else {
 
                                     $('input[name="serial_code"]').val('');

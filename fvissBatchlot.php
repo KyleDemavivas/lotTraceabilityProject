@@ -113,7 +113,7 @@ try {
                     <input type="hidden" id="modal_source" name="source" value="">
                     <div class="form-group" hidden>
                         <label for="qr_code" class="form-label" hidden>QR Code:</label>
-                        <input type="hidden" class="form-input" name="qr_code" id="modal_qr_code" required autocomplete="off" readonly>
+                        <input type="hidden" class="form-input" name="qr_code" id="modal_qr_code" required autocomplete="off" readonly hidden>
                     </div>
                     <div class="form-group">
                         <label for="operator_name" class="form-label">Operator Name:</label>
@@ -345,11 +345,10 @@ try {
                                             $('input[name="qr_count"]').val(boardCount);
 
                                             $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
+
+                                            checkAndAutoSubmit();
                                         }
                                     });
-
-                                    checkAndAutoSubmit();
-
                                     $('#serial_code').val('').focus().select();
                                 } else {
 
@@ -426,10 +425,11 @@ try {
                                         text: response.message,
                                         toast: true,
                                         position: 'top-right',
-                                        timer: 3000,
-                                        showConfirmButton: false
-                                    }).then(() => {
-                                        window.location.reload();
+                                        timer: 1500,
+                                        showConfirmButton: false,
+                                        didOpen: () => {
+                                            $('#serial_code').focus().select();
+                                        }
                                     })
                                 } else {
                                     $('#modal_qr_code').val($('input[name="qr_code"]').val());

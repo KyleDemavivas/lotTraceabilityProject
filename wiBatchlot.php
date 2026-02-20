@@ -319,8 +319,6 @@ try {
                                             $('input[name="qr_count"]').val(boardCount);
 
                                             $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
-
-                                            checkAndAutoSubmit();
                                         }
                                     });
 
@@ -393,7 +391,10 @@ try {
                                 confirmButtonText: 'GOOD',
                                 cancelButtonText: 'NO GOOD',
                                 reverseButtons: true,
-                                allowOutsideClick: false
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    $('#serial_code').focus().select();
+                                }
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     Swal.fire({

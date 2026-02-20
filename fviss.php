@@ -312,8 +312,6 @@ try {
                                             checkAndAutoSubmit();
                                         }
                                     });
-
-                                    checkAndAutoSubmit();
                                 } else {
 
                                     $('input[name="assy_code"]').val('');

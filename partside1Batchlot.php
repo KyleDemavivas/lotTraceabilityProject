@@ -310,8 +310,6 @@ try {
                                             checkAndAutoSubmit();
                                         }
                                     });
-
-                                    checkAndAutoSubmit();
                                 } else {
 
                                     $('input[name="serial_code"]').val('');
@@ -390,7 +388,10 @@ try {
                                         toast: true,
                                         position: 'top-right',
                                         timer: 3000,
-                                        showConfirmButton: false
+                                        showConfirmButton: false,
+                                        didOpen: () => {
+                                            $('#serial_code').focus().select();
+                                        }
                                     });
                                 } else {
                                     $('#modal_qr_code').val($('input[name="qr_code"]').val());
