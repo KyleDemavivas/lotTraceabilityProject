@@ -525,6 +525,7 @@ try {
                 formData.append('repairable', $('#repairable').val());
                 formData.append('action_fviss', $('#action_fviss').val());
                 formData.append('source', $('#modal_source').val());
+                formData.append('origin', 'batchlot');
 
                 validDefects.forEach((defect, i) => {
                     formData.append('defect[]', defect);
