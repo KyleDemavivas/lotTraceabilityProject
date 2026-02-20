@@ -10,15 +10,17 @@ if (!isset($_POST['serial_code'])) {
 }
 
 $serial_code = strtoupper(trim($_POST['serial_code']));
+$source = $_POST['source'] ?? '';
 
+$main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
 try {
-    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM fviss_process WHERE TRIM(UPPER(serial_code)) = :serial_code");
+    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
     $stmt->execute([':serial_code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
 
-        $stmtalt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM fviss_batchlot WHERE TRIM(UPPER(serial_code)) = :serial_code");
+        $stmtalt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
         $stmtalt->execute([':serial_code' => $serial_code]);
         $row = $stmtalt->fetch(PDO::FETCH_ASSOC);
 
@@ -30,7 +32,7 @@ try {
     } 
    
 
-    $stmt2 = $conn->prepare("SELECT serial_status FROM fviss_process WHERE serial_code = :serial_code
+    $stmt2 = $conn->prepare("SELECT serial_status FROM $main_table WHERE serial_code = :serial_code
                             UNION ALL
                             SELECT serial_status FROM partside_process WHERE serial_code = :serial_code2");
     $stmt2->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
@@ -43,7 +45,7 @@ try {
     }
 
 
-    $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM fviss_process WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
+    $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
 
