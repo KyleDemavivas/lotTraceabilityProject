@@ -12,7 +12,11 @@ if (!isset($_POST['serial_code'])) {
 $serial_code = strtoupper(trim($_POST['serial_code']));
 
 try {
-    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM micro_process WHERE TRIM(UPPER(serial_code)) = :serial_code");
+
+    $source = $_POST['source'] ?? '';
+    $main_table = $source === 'main' ? 'micro_process' : 'micro_batchlot';
+
+    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
     $stmt->execute([':serial_code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -21,7 +25,7 @@ try {
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM micro_process WHERE serial_code = :serial_code AND (serial_status = 'NO GOOD')");
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM $main_table WHERE serial_code = :serial_code AND (serial_status = 'NO GOOD')");
     $stmt->execute([':serial_code' => $serial_code]);
     $holdCount = $stmt->fetchColumn();
 
@@ -30,7 +34,7 @@ try {
         exit;
     }
 
-    $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM micro_process WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
+    $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
 

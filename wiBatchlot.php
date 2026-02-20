@@ -262,7 +262,8 @@ try {
                             type: 'POST',
                             dataType: 'json',
                             data: {
-                                serial_code: serial_code
+                                serial_code: serial_code,
+                                source: 'batchlot'
                             },
                             success: function(response) {
 
@@ -372,6 +373,7 @@ try {
                 isSubmitting = true;
 
                 const formData = new FormData(this);
+                formData.append('source', 'batchlot');
 
                 $.ajax({
                     url: 'wi_processform.php',
