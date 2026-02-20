@@ -214,7 +214,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $stmt4 = $conn->prepare($insertSerial);
                     $stmt4->execute([':serial_code' => $_POST['serial_code']]);
 
-                    $conn->prepare("DELETE FROM fviss_process WHERE qr_code = :qr_code");
+                    //UKNOWN IF WHOLE QR LOT GETS SENT TO BATCHLOT OR ONLY THE SERIAL BOARD
+                    $conn->prepare("DELETE FROM fviss_process WHERE serial_code = :serial_code")
+                         ->execute([':serial_code' => $_POST['serial_code']]);
 
                     $conn->prepare("DELETE FROM partside_process WHERE serial_code = :serial_code")
                         ->execute([':serial_code' => $_POST['serial_code']]);
@@ -228,6 +230,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $conn->prepare("DELETE FROM wi_process WHERE serial_code = :serial_code")
                         ->execute([':serial_code' => $_POST['serial_code']]);
 
+                    $stmt = $conn->prepare("DELETE FROM repair_process_verify WHERE qr_code = :qr_code OR serial_code = :serial_code");
+                    $stmt->execute([':qr_code' => $_POST['qr_code'], ':serial_code' => $_POST['serial_code']]);
+
+                    break;
+
+                case 'FVISS BATCH LOT':
+                case 'PARTSIDE 1 BATCH LOT':
+                case 'PARTSIDE 2 BATCH LOT':
+                case 'MICRO BATCH LOT':
+                case 'WI BATCH LOT':
+                    $stmt1 = $conn->prepare("UPDATE trace_process SET fviss_process = NULL, partside_process = NULL, partside2_process = NULL, micro_process = NULL, wi_process = NULL WHERE serial_code = :serial_code");
+                    $stmt1->execute([':serial_code' => $_POST['serial_code']]);
+
+                    $stmt3 = $conn->prepare("INSERT INTO repair_record (qr_code, serial_code, process_location, created_at, action_rp, repaired_by, shift, defect, board_number, lcr_reading, assy_code, verified_pl, verified_ll)
+                        VALUES (:qr_code, :serial_code, :process_location, :created_at, :action_rp, :repaired_by, :shift, :defect, :board_number, :lcr_reading, :assy_code, :verified_pl, :verified_ll)");
+                    $stmt3->execute([
+                        ':qr_code' => $_POST['qr_code'],
+                        ':serial_code' => $_POST['serial_code'],
+                        ':process_location' => $_POST['process_location'],
+                        ':created_at' => $created_at_ll, // Or $_POST['created_at'] if you want to use the posted value
+                        ':action_rp' => $_POST['action_rp'],
+                        ':repaired_by' => $_POST['repaired_by'],
+                        ':shift' => $_POST['shift'],
+                        ':defect' => $_POST['defect'],
+                        ':board_number' => $_POST['board_number'],
+                        ':lcr_reading' => $_POST['lcr_reading'],
+                        ':assy_code' => $_POST['assy_code'],
+                        ':verified_pl' => $_POST['verified_pl'],
+                        ':verified_ll' => $_POST['verified_ll']
+                    ]);
+
+                    $conn->prepare("DELETE FROM fviss_batchlot WHERE serial_code = :serial_code")
+                    ->execute([':serial_code' => $_POST['serial_code']]);
+
+                    $conn->prepare("DELETE FROM partside_batchlot WHERE serial_code = :serial_code")
+                        ->execute([':serial_code' => $_POST['serial_code']]);
+
+                    $conn->prepare("DELETE FROM partside2_batchlot WHERE serial_code = :serial_code")
+                        ->execute([':serial_code' => $_POST['serial_code']]);
+
+                    $conn->prepare("DELETE FROM micro_batchlot WHERE serial_code = :serial_code")
+                        ->execute([':serial_code' => $_POST['serial_code']]);
+
+                    $conn->prepare("DELETE FROM wi_batchlot WHERE serial_code = :serial_code")
+                        ->execute([':serial_code' => $_POST['serial_code']]);
 
                     $stmt = $conn->prepare("DELETE FROM repair_process_verify WHERE qr_code = :qr_code OR serial_code = :serial_code");
                     $stmt->execute([':qr_code' => $_POST['qr_code'], ':serial_code' => $_POST['serial_code']]);

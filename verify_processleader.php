@@ -254,10 +254,7 @@ try {
                             text: data.testMessage,
                             showConfirmButton: false,
                             timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: () => {
-                                window.location.reload();
-                            }
+                            timerProgressBar: true
                         });
                         
                     } else {
