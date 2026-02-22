@@ -274,15 +274,15 @@ if ($serial_code != '') {
             "time_end_process" => date("g:i a", strtotime($row['created_at']))
         ];
     }
-//START OF BATCHLOT PROCESSES
+    //START OF BATCHLOT PROCESSES
     //FVISS BATCHLOT
     $sql = "SELECT TOP 1 line, shift, board_status AS judgement, operator_name AS operator, created_at FROM fviss_batchlot WHERE serial_code = ? ORDER BY created_at DESC";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if($row){
-        $batchlot_data[]=[
+    if ($row) {
+        $batchlot_data[] = [
             "process" => "FVI SOLDER SIDE BATCHLOT",
             "line" => $row['line'],
             "shift" => $row['shift'],
@@ -391,33 +391,7 @@ if ($serial_code != '') {
                 <span><?= htmlspecialchars($batchlot) ?></span>
             </p>
         </div>
-
-        <table>
-            <tr>
-                <th>PROCESS</th>
-                <th>LINE</th>
-                <th>SHIFT</th>
-                <th>JUDGEMENT</th>
-                <th>OPERATOR</th>
-                <th>DATE PROCESS</th>
-                <th>TIME END PROCESS</th>
-            </tr>
-            <?php foreach ($process_data as $row): ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['process']) ?></td>
-                    <td><?= htmlspecialchars($row['line']) ?></td>
-                    <td><?= htmlspecialchars($row['shift']) ?></td>
-                    <td><?= htmlspecialchars($row['judgement']) ?></td>
-                    <td><?= htmlspecialchars($row['operator']) ?></td>
-                    <td><?= htmlspecialchars($row['date_process']) ?></td>
-                    <td><?= htmlspecialchars($row['time_end_process']) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-
-        <!--BATCHLOT HISTORY TABLE ONGOING DEVELOPEMENT-->
-        <div class="board-section">
-            <div class="header">BATCH LOT HISTORY</div>
+        <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
             <table>
                 <tr>
                     <th>PROCESS</th>
@@ -428,7 +402,7 @@ if ($serial_code != '') {
                     <th>DATE PROCESS</th>
                     <th>TIME END PROCESS</th>
                 </tr>
-                <?php foreach ($batchlot_data as $row): ?>
+                <?php foreach ($process_data as $row): ?>
                     <tr>
                         <td><?= htmlspecialchars($row['process']) ?></td>
                         <td><?= htmlspecialchars($row['line']) ?></td>
@@ -440,10 +414,36 @@ if ($serial_code != '') {
                     </tr>
                 <?php endforeach; ?>
             </table>
+                </div>
+            <!--BATCHLOT HISTORY TABLE ONGOING DEVELOPEMENT-->
+            <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
+                <div class="header">BATCH LOT HISTORY</div>
+                <table>
+                    <tr>
+                        <th>PROCESS</th>
+                        <th>LINE</th>
+                        <th>SHIFT</th>
+                        <th>JUDGEMENT</th>
+                        <th>OPERATOR</th>
+                        <th>DATE PROCESS</th>
+                        <th>TIME END PROCESS</th>
+                    </tr>
+                    <?php foreach ($batchlot_data as $row): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['process']) ?></td>
+                            <td><?= htmlspecialchars($row['line']) ?></td>
+                            <td><?= htmlspecialchars($row['shift']) ?></td>
+                            <td><?= htmlspecialchars($row['judgement']) ?></td>
+                            <td><?= htmlspecialchars($row['operator']) ?></td>
+                            <td><?= htmlspecialchars($row['date_process']) ?></td>
+                            <td><?= htmlspecialchars($row['time_end_process']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
             <!--BATCH LOT HISTORY-->
 
-
-            <div class="repair-section">
+            <div class="board-section">
                 <div class="header">REPAIR HISTORY</div>
                 <?php
                 // SMT Repair
@@ -508,7 +508,7 @@ if ($serial_code != '') {
                     </table>
 
                 <?php } ?>
-
+            </div>
 
 </body>
 

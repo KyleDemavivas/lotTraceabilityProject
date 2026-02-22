@@ -422,7 +422,7 @@ try {
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Saved successfully',
-                                        text: response.message,
+                                        text: 'FVISS saved successfully.',
                                         toast: true,
                                         position: 'top-right',
                                         timer: 1500,
