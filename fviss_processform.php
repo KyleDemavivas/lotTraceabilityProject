@@ -6,6 +6,10 @@ header('Content-Type: application/json');
 $response = ['status' => 'error', 'message' => '', 'board_count' => 0];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $source = $_POST['source'] ?? '';
+    $main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
+
     try {
         $qr_code = strtoupper($_POST['qr_code'] ?? '');
         $operator_name = $_POST['operator_name'] ?? '';
@@ -28,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         date_default_timezone_set('Asia/Manila');
         $created_at = date('Y-m-d H:i:s');
 
-        $counterQuery = "SELECT board_counter FROM fviss_process WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC";
+        $counterQuery = "SELECT board_counter FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC";
         $counterStmt = $conn->prepare($counterQuery);
         $counterStmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $lastCounter = $counterStmt->fetchColumn();
@@ -59,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $finalQtyQuery = "SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) AS final_qty 
-                          FROM fviss_process WHERE kepi_lot = :kepi_lot AND line = :line";
+                          FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line";
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
         $finalQtyStmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $previous_final_qty = $finalQtyStmt->fetchColumn();
@@ -76,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $serials = $serialStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($serials) {
-            $insertSerial = "INSERT INTO fviss_process 
+            $insertSerial = "INSERT INTO $main_table 
             (qr_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, serial_code, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus) 
             VALUES (:qr_code, :qty_input, :final_qtyinput, :operator_name, :shift, :asmline, :line, :assy_code, :model_name, :kepi_lot, :serial_code, :board_counter, :created_at, :board_status, :serial_status, :prev_boardstatus, :prev_serialstatus)";
 
@@ -107,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        $boardCountQuery = "SELECT COUNT(*) FROM fviss_process WHERE kepi_lot = :kepi_lot AND line = :line";
+        $boardCountQuery = "SELECT COUNT(*) FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line";
         $boardCountStmt = $conn->prepare($boardCountQuery);
         $boardCountStmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $realTimeBoardCount = (int)$boardCountStmt->fetchColumn();

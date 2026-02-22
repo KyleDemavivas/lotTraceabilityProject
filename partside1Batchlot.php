@@ -259,7 +259,7 @@ try {
                 if (serial_code.length > 12) {
                     serialDebounceTimer = setTimeout(() => {
                         $.ajax({
-                            url: 'fetch_partsidebatchlot.php',
+                            url: 'fetch_partside.php',
                             type: 'POST',
                             dataType: 'json',
                             data: {
