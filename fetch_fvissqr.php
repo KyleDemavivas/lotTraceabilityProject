@@ -11,16 +11,33 @@ if (!isset($_POST['code'])) {
 }
 
 $code = strtoupper(trim($_POST['code']?? ''));
-$source = $_POST['source']?? '';
+$source = $_POST['source'] ?? '';
 $main_table = $source === 'main' ? 'mod2_process' : 'batchlot_process';
 
 try {
 
     if(empty($source)){
-        throw new Exception('Source is NULL.');
+       $response['success'] = false;
+       $response['message'] = 'Source not provided';
+        $response['data'] = 'JSON ERROR';
+       echo json_encode($response);
+       exit;
     }    
 
     if($source === 'main'){
+        $qry = "SELECT COUNT(*) FROM batchlot_process WHERE qr_code = :qr_code";
+        $stmtBatchlotChk = $conn->prepare($qry);
+        $stmtBatchlotChk->execute([':qr_code' => $code]);
+        $batchlotCount = $stmtBatchlotChk->fetchColumn();
+        
+        if($batchlotCount > 0){
+            $response['success'] = false;
+            $response['message'] = 'This QR Code is currently on BATCH LOT.';
+            $response['data'] = 'QR ERROR';
+            echo json_encode($response);
+            exit;
+        }
+
         $query = "SELECT assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM mod2_process WHERE qr_code = :qr_code";
 
         $stmt = $conn->prepare($query);
@@ -103,7 +120,7 @@ try {
     echo json_encode([
         'success' => true,
         'assy_code' => $row['assy_code'],
-        'qr_code' => $row['qr_code'],
+        'qr_code' => $row['qr_code'] ?? '',
         'model_name' => $row['model_name'],
         'kepi_lot' => $row['kepi_lot'],
         'operator_name' => $row['operator_name'],
@@ -115,5 +132,5 @@ try {
         'serial_qty' => $serial_qty
     ]);
 } catch (Throwable $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+
 }

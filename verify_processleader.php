@@ -256,7 +256,10 @@ try {
                             timer: 3000,
                             timerProgressBar: true
                         });
-                        
+                        form.reset();
+                        closeModal();
+                        setTimeout(() => location.reload(), 1500);
+
                     } else {
                         Swal.fire({
                             toast: true,

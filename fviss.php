@@ -329,7 +329,7 @@ try {
 
                                     Swal.fire({
                                         icon: 'warning',
-                                        title: response.title,
+                                        title: response.data,
                                         text: response.message || 'This QR Code does not exist in the system.',
                                         confirmButtonText: 'OK',
                                         allowOutsideClick: false,
