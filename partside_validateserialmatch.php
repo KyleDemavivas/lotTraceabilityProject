@@ -59,11 +59,9 @@ try {
         if ($qrFromClient && $qrFromClient !== $qrFromDb) {
             $response['valid'] = false;
             $response['message'] = 'Serial does not belong to this QR code.';
-            echo json_encode($response);
         } else {
             $response['valid'] = true;
             $response['qr_code'] = $qrFromDb;
-            echo json_encode($response);
         }
         echo json_encode($response);
         exit;
