@@ -49,8 +49,6 @@ try {
     if (in_array($source, ['manual', 'modal'], true)) {
         $response['valid'] = true;
         $response['qr_code'] = $qrFromDb;
-        echo json_encode($response);
-        exit;
     }
 
     if ($source === 'alert') {
