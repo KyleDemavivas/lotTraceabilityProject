@@ -11,15 +11,14 @@ if (!isset($_POST['serial_code'])) {
 
 $serial_code = strtoupper(trim($_POST['serial_code'] ?? ''));
 $source = $_POST['source'] ?? '';
-$main_table = $source === 'main' ? 'partside_process' : 'partside_batchlot';
-$main_table2 = $source === 'main' ? 'partside2_process' : 'partside2_batchlot';
 
-$allowed = ['partside_process', 'partside_batchlot', 'partside2_process', 'partside2_batchlot'];
-
-if(!in_array($main_table, $allowed)){
-    echo json_encode(['success' => false, 'message' => 'Invalid source provided']);
+if(!in_array($source, ['main', 'batchlot'])){
+    echo json_encode(['success' => false, 'message' => 'Invalid source']);
     exit;
 }
+
+$main_table = $source === 'main' ? 'partside_process' : 'partside_batchlot';
+$main_table2 = $source === 'main' ? 'partside2_process' : 'partside2_batchlot';
 
 try {
 
@@ -38,7 +37,7 @@ try {
     $stmt->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
     $holdCount = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    if(in_array('NO GOOD', $holdCount, true)){
+    if(!empty($holdCount)){
         echo json_encode(['success' => false, 'errorCode' => 'serialhold', 'message' => 'This Serial Code is currently on HOLD and cannot be processed.']);
         exit;
     }

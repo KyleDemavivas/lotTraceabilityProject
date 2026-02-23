@@ -11,14 +11,12 @@ if (!isset($_POST['serial_code'])) {
 
 $serial_code = strtoupper(trim($_POST['serial_code']));
 $source = $_POST['source'] ?? '';
-$main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
-$main_table2 = $source === 'main' ? 'partside_process' : 'partside_batchlot';
-
-$allowed = ['fviss_process', 'fviss_batchlot', 'partside_process', 'partside_batchlot'];
-if (!in_array($main_table, $allowed)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid source provided']);
+if(!in_array($source, ['main', 'batchlot'])){
+    echo json_encode(['success' => false, 'message' => 'Invalid source']);
     exit;
 }
+$main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
+$main_table2 = $source === 'main' ? 'partside_process' : 'partside_batchlot';
 
 try {
     $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
@@ -38,7 +36,7 @@ try {
     $serialStatus = $stmt2->fetchAll(PDO::FETCH_COLUMN);
     
 
-    if (in_array('NO GOOD', $serialStatus, true)) {
+    if (!empty($serialStatus)) {
         echo json_encode(['success' => false, 'message' => 'This serial is already tagged as NO GOOD and cannot be processed.', 'title'=>'Serial Code No Good']);
         exit;
     }
