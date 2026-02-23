@@ -428,7 +428,10 @@ try {
                                         toast: true,
                                         position: 'top-right',
                                         timer: 3000,
-                                        showConfirmButton: false
+                                        showConfirmButton: false,
+                                        didOpen: () => {
+                                            $('#qr_code').focus().select();
+                                        }
                                     });
                                 } else {
                                     $('#modal_qr_code').val($('input[name="qr_code"]').val());

@@ -36,11 +36,10 @@ try {
     $serialStatus = $stmt2->fetchAll(PDO::FETCH_COLUMN);
     
 
-    if (!empty($serialStatus)) {
+    if (in_array('NO GOOD', $serialStatus, true)) {
         echo json_encode(['success' => false, 'message' => 'This serial is already tagged as NO GOOD and cannot be processed.', 'title'=>'Serial Code No Good']);
         exit;
     }
-
 
     $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);

@@ -38,7 +38,7 @@ try {
     $stmt->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
     $holdCount = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    if(!empty($holdCount)){
+    if(in_array('NO GOOD', $holdCount, true)){
         echo json_encode(['success' => false, 'errorcode' => 'onhold', 'message' => 'This Serial Code is currently on HOLD and cannot be processed.']);
         exit;
     }

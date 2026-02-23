@@ -429,7 +429,10 @@ try {
                                         toast: true,
                                         position: 'top-right',
                                         timer: 3000,
-                                        showConfirmButton: false
+                                        showConfirmButton: false,
+                                        didOpen: () => {
+                                            $('#qr_code').focus().select();
+                                        }
                                     });
                                     //resetMainForm();
                                 } else {

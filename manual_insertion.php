@@ -211,8 +211,7 @@ $operator_name = $_SESSION['user_namefl'];
                                 $('input[name="assy_code"]').val(response.assy_code);
                                 $('input[name="model_name"]').val(response.model_name);
                                 $('input[name="kepi_lot"]').val(response.kepi_lot);
-                                $('input[name="qty_input"]').val(response.qty_input);
-                                $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                                $('input[name="qty_input"]').val(response.final_qtyinput);
                                 validateAndSubmit();
                             } else {
                                 $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="qty_input"], input[name="final_qtyinput"]').val('');
@@ -303,10 +302,11 @@ $operator_name = $_SESSION['user_namefl'];
                         icon: 'success',
                         title: 'Saved Successfully!',
                         timer: 2000,
-                        showConfirmButton: false
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            $('#qr_code').focus().select();
+                        }
                     });
-
-                    $('#qr_code').val('').focus().select();
                     if (response.final_qtyinput !== undefined) {
                         $('input[name="final_qtyinput"]').val(response.final_qtyinput);
                     }
