@@ -12,34 +12,33 @@ if (!isset($_POST['serial_code'])) {
 $serial_code = strtoupper(trim($_POST['serial_code']));
 $source = $_POST['source'] ?? '';
 $main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
+$main_table2 = $source === 'main' ? 'partside_process' : 'partside_batchlot';
+
+$allowed = ['fviss_process', 'fviss_batchlot', 'partside_process', 'partside_batchlot'];
+if (!in_array($main_table, $allowed)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid source provided']);
+    exit;
+}
 
 try {
     $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
     $stmt->execute([':serial_code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$row) {
-
-        $stmtalt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
-        $stmtalt->execute([':serial_code' => $serial_code]);
-        $row = $stmtalt->fetch(PDO::FETCH_ASSOC);
-
+  
         if (!$row) {
             echo json_encode(['success' => false, 'message' => 'This Serial Code is not found in the system.', 'title'=>'Serial Not Found']);
             exit;
         }
-
-    } 
    
 
     $stmt2 = $conn->prepare("SELECT serial_status FROM $main_table WHERE serial_code = :serial_code
                             UNION ALL
-                            SELECT serial_status FROM partside_process WHERE serial_code = :serial_code2");
+                            SELECT serial_status FROM $main_table2 WHERE serial_code = :serial_code2");
     $stmt2->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
     $serialStatus = $stmt2->fetchAll(PDO::FETCH_COLUMN);
     
 
-    if ($serialStatus[0] === 'NO GOOD' || $serialStatus[1] === 'NO GOOD') {
+    if (in_array('NO GOOD', $serialStatus, true)) {
         echo json_encode(['success' => false, 'message' => 'This serial is already tagged as NO GOOD and cannot be processed.', 'title'=>'Serial Code No Good']);
         exit;
     }

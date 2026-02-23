@@ -54,3 +54,4 @@ switch ($_SESSION['user_process']) {
         header('Location: login.php');
         break;
 }
+
