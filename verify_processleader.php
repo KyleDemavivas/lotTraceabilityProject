@@ -25,8 +25,12 @@ try {
     <div class="container">
         <h2>Process Repair Verification</h2>
         <div class="table-container">
-            <div style="text-align: right; margin-bottom: 10px;">
-                <input type="text" id="searchSerialCode" placeholder="Search Serial Code..." style="padding: 5px; width: 250px;" minlength="13" maxlength="13">
+            <div style="float: left; margin-bottom: 30px;">
+                <span style="font-weight: bold;">SERIAL CODE:</span>
+                <input class="form-input" type="text" name="qr_code" id="searchSerialCode" required autocomplete="off" autofocus placeholder="SERIAL CODE" style="width: 200px; margin-left: 10px;">
+
+                <span style="font-weight: bold; margin-left: 30px;">QR CODE:</span>
+                <input class="form-input" type="text" name="qr_code" id="searchQRCode" required autocomplete="off" autofocus placeholder="QR CODE" style="width: 200px; margin-left: 10px;">
             </div>
             <table style="font-size: 12px;">
                 <thead>
@@ -286,7 +290,8 @@ try {
                 });
         });
 
-        document.getElementById('searchSerialCode').addEventListener('keyup', function() {
+        document.getElementById('searchSerialCode').addEventListener('input', function() {
+            document.getElementById('searchQRCode').value = '';
             const filter = this.value.toUpperCase();
             const rows = document.querySelectorAll('table tbody tr');
             let matchCount = 0;
@@ -303,8 +308,28 @@ try {
                 }
             });
 
-            const noResultsRow = document.getElementById('noResultsRow');
-            noResultsRow.style.display = matchCount === 0 ? '' : 'none';
+            document.getElementById('noResultsRow').style.display = matchCount === 0 ? '' : 'none';
+        });
+
+        document.getElementById('searchQRCode').addEventListener('input', function() {
+            document.getElementById('searchSerialCode').value = '';
+            const filter = this.value.toUpperCase();
+            const rows = document.querySelectorAll('table tbody tr');
+            let matchCount = 0;
+
+            rows.forEach(row => {
+                if (row.id === 'noResultsRow') return;
+
+                const qrCodeCell = row.cells[0];
+                if (qrCodeCell) {
+                    const text = qrCodeCell.textContent || qrCodeCell.innerText;
+                    const isMatch = text.toUpperCase().includes(filter);
+                    row.style.display = isMatch ? '' : 'none';
+                    if (isMatch) matchCount++;
+                }
+            });
+
+            document.getElementById('noResultsRow').style.display = matchCount === 0 ? '' : 'none';
         });
     </script>
 </body>

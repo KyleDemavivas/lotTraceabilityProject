@@ -307,7 +307,7 @@ try {
                 });
         });
 
-        document.getElementById('searchSerialCode').addEventListener('keyup', function() {
+        document.getElementById('searchSerialCode').addEventListener('input', function() {
             const filter = this.value.toUpperCase();
             const rows = document.querySelectorAll('table tbody tr');
             let matchCount = 0;
@@ -327,7 +327,7 @@ try {
             document.getElementById('noResultsRow').style.display = matchCount === 0 ? '' : 'none';
         });
 
-        document.getElementById('searchQRCode').addEventListener('keyup', function() {
+        document.getElementById('searchQRCode').addEventListener('input', function() {
             const filter = this.value.toUpperCase();
             const rows = document.querySelectorAll('table tbody tr');
             let matchCount = 0;

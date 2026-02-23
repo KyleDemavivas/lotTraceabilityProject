@@ -83,7 +83,7 @@ try {
                 </div>
                 <div class="form-group" id="multiselect">
                     <label class="form-label">Location:</label>
-                    <select class="form-input location-select" name="location[0][]" multiple="multiple" required>
+                    <select class="form-input location-select" id="locationSelect" name="location[0][]" multiple="multiple" required>
                         <?php foreach ($locations as $location): ?>
                             <option value="<?= htmlspecialchars($location) ?>"><?= htmlspecialchars($location) ?></option>
                         <?php endforeach; ?>
@@ -206,7 +206,8 @@ try {
             if (boardCount >= 5) {
                 $('#angleField').hide();
                 $('#angleInput').prop('disabled', true);
-                $('#locationSelect').prop('disabled', true).trigger('change');
+                $('#locationSelect').prop('disabled', true).hide().trigger('change');
+                $('#multiselect').hide();
                 $('#liveBoardCount').hide();
             } else {
                 $('#angleField').show();
