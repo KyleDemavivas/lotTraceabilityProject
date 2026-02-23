@@ -387,9 +387,7 @@ if ($serial_code != '') {
             </form>
             <p><b>MODEL:</b> <?= htmlspecialchars($model_name) ?></p>
             <p><b>ASSYCODE:</b> <?= htmlspecialchars($assy_code) ?></p>
-            <p><b>BATCHLOT:</b>
-                <span><?= htmlspecialchars($batchlot) ?></span>
-            </p>
+          
         </div>
         <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
             <table>
