@@ -11,8 +11,15 @@ if (!isset($_POST['serial_code'])) {
 
 $serial_code = strtoupper(trim($_POST['serial_code'] ?? ''));
 $source = $_POST['source'] ?? '';
-
 $main_table = $source === 'main' ? 'partside_process' : 'partside_batchlot';
+$main_table2 = $source === 'main' ? 'partside2_process' : 'partside2_batchlot';
+
+$allowed = ['partside_process', 'partside_batchlot', 'partside2_process', 'partside2_batchlot'];
+
+if(!in_array($main_table, $allowed)){
+    echo json_encode(['success' => false, 'message' => 'Invalid source provided']);
+    exit;
+}
 
 try {
 
@@ -25,11 +32,13 @@ try {
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code AND serial_status = 'NO GOOD'");
-    $stmt->execute([':serial_code' => $serial_code]);
-    $holdCount = $stmt->fetchColumn();
+    $stmt = $conn->prepare("SELECT serial_status FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code AND serial_status = 'NO GOOD'
+                            UNION ALL
+                            SELECT serial_status FROM $main_table2 WHERE TRIM(UPPER(serial_code)) = :serial_code2 AND serial_status = 'NO GOOD'");
+    $stmt->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
+    $holdCount = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    if($holdCount > 0){
+    if(in_array('NO GOOD', $holdCount, true)){
         echo json_encode(['success' => false, 'errorCode' => 'serialhold', 'message' => 'This Serial Code is currently on HOLD and cannot be processed.']);
         exit;
     }
