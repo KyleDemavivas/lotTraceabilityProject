@@ -239,7 +239,6 @@ try {
 
         document.getElementById('repairForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const form = e.target;
             const formData = new FormData(form);
 
@@ -275,18 +274,6 @@ try {
                             timerProgressBar: true
                         });
                     }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'Unexpected error occurred.',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                    console.error('Fetch error:', error);
                 });
         });
 

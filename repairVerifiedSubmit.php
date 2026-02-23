@@ -282,7 +282,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     break;
 
                 default:
-                    echo "No matching process location.";
+                    $response['message'] = "Invalid Process Location.";
+                    $response['success'] = false;
+                    echo json_encode($response);
+                    exit();
             }
         } else {
             $stmt = $conn->prepare("DELETE FROM repair_ll_verify WHERE serial_code = :serial_code");
