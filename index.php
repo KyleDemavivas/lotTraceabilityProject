@@ -20,9 +20,12 @@ switch ($_SESSION['user_process']) {
     case 'MANUAL INSERTION':
         header('Location: manual_insertion.php');
         break;
-    case 'MODIFICATOR':
+    case 'MODIFICATOR 1':
         header('Location: mod1.php');
         break;
+    case 'MODIFICATOR 2':
+        header('Location: mod2.php');
+        break;    
     case 'FVISS':
         header('Location: fviss.php');
         break;

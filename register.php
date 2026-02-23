@@ -122,15 +122,14 @@ include 'sidebar.php';
                 <option value="REPAIRER" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'REPAIRER') ? 'selected' : ''; ?>>REPAIRER</option>
                 <option value="LL VERIFICATION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'LL VERIFICATION') ? 'selected' : ''; ?>>LL VERIFICATION</option>
                 <option value="AUTOMATIC INSERTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'AUTOMATIC INSERTION') ? 'selected' : ''; ?>>AUTOMATIC INSERTION</option>
-                <option value="MANUAL INSERTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'AI PROCESS') ? 'selected' : ''; ?>>AI PROCESS</option>
                 <option value="MANUAL INSERTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MANUAL INSERTION') ? 'selected' : ''; ?>>MANUAL INSERTION</option>
                 <option value="MODIFICATOR 1" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MODIFICATOR 1') ? 'selected' : ''; ?>>MODIFICATOR 1</option>
                 <option value="MODIFICATOR 2" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MODIFICATOR 2') ? 'selected' : ''; ?>>MODIFICATOR 2</option>
                 <option value="FVI SOLDERSIDE" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'FVI SOLDERSIDE') ? 'selected' : ''; ?>>FVI SOLDERSIDE</option>
-                <option value="PART SIDE 1" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'PART SIDE 1') ? 'selected' : ''; ?>>PART SIDE 1</option>
-                <option value="PART SIDE 2" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'PART SIDE 2') ? 'selected' : ''; ?>>PART SIDE 2</option>
+                <option value="PARTSIDE 1" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'PARTSIDE 1') ? 'selected' : ''; ?>>PART SIDE 1</option>
+                <option value="PARTSIDE 2" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'PARTSIDE 2') ? 'selected' : ''; ?>>PART SIDE 2</option>
                 <option value="MICROSCOPE INSPECTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MICROSCOPE INSPECTION') ? 'selected' : ''; ?>>MICROSCOPE INSPECTION</option>
-                <option value="WITHSTAND INSULATION TEST" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'WITHSTAND INSULATON TEST') ? 'selected' : ''; ?>>WITHSTAND INSULATION TEST</option>
+                <option value="WITHSTAND INSULATION TEST" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'WITHSTAND INSULATION TEST') ? 'selected' : ''; ?>>WITHSTAND INSULATION TEST</option>
             </select>
 
             <label>Username:</label>
@@ -281,13 +280,13 @@ include 'sidebar.php';
                             position: 'top-right',
                             timer: 1500,
                             showConfirmButton: false
-                        }).then(() => {
+                        })/*.then(() => {
                             $("#mainForm")[0].reset();
                             $("#user_username").text("");
                             $("#password_message").text("");
                             $('#username_message').text("");
                             $("#user_password, #confirm_password").css("border", "");
-                        })
+                        })*/
                     } else {
                         Swal.fire({
                             icon: 'error',

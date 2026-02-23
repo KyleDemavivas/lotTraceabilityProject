@@ -219,17 +219,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                 <?php endif; ?>
 
-                <!--MODIFICATOR MENUS-->
-                <?php if ($_SESSION['user_process'] === 'MODIFICATOR'): ?>
-                    <li class="<?= ($current_page == '/traceability/mod1.php') ? 'active' : '' ?>">
-                        <a href="/traceability/mod1.php"><i class="fas fa-microchip"></i> <span>Modificator 1</span></a>
-                    </li>
-
-                    <li class="<?= ($current_page == '/traceability/mod2.php') ? 'active' : '' ?>">
-                        <a href="/traceability/mod2.php"><i class="fas fa-microchip"></i> <span>Modificator 2</span></a>
-                    </li>
-                <?php endif; ?>
-
                 <!--ENGINEERING MENUS-->
                 <?php if ($_SESSION['user_process'] === 'ENGINEERING'): ?>
                     <li class="<?= ($current_page == '/traceability/report_batchlot.php') ? 'active' : '' ?>">
