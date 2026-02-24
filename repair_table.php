@@ -21,104 +21,129 @@ try {
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/repair_process.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <style>
+        .form-input-date {
+            height: 28px;
+            padding: 2px 8px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #clearDate {
+            height: 28px;
+            padding: 2px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            width: 5em;
+            margin-left: 10px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <h2>REPAIR TABLE</h2>
-        <div class="table-container">
-            <div style="float: left; margin-bottom: 30px;">
+        <?php /* ?> <div class="table-container">
+             <div style="float: left; margin-bottom: 30px;">
                 <span style="font-weight: bold;">SERIAL CODE:</span>
                 <input class="form-input" type="text" name="qr_code" id="searchSerialCode" required autocomplete="off" autofocus placeholder="SERIAL CODE" style="width: 200px; margin-left: 10px;">
 
                 <span style="font-weight: bold; margin-left: 30px;">QR CODE:</span>
                 <input class="form-input" type="text" name="qr_code" id="searchQRCode" required autocomplete="off" autofocus placeholder="QR CODE" style="width: 200px; margin-left: 10px;">
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>QR Code</th>
-                        <th>Serial Code</th>
-                        <th>Defect</th>
-                        <th>Location</th>
-                        <th>Process Location</th>
-                        <th>Board Number</th>
-                        <th>Operator Name</th>
-                        <th>Serial Status</th>
-                        <th>Board Status</th>
-                        <th>Line</th>
-                        <th>Shift</th>
-                        <th>Model Name</th>
-                        <th>Assy Code</th>
-                        <th>KEPI Lot</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody style="font-size: 12px;">
-                    <?php if (count($nogood_data) > 0): ?>
-                        <?php foreach ($nogood_data as $row): ?>
-                            <tr>
-                                <td>
-                                    <?php
-                                    if ($row['qr_code']) {
-                                        echo htmlspecialchars($row['qr_code']);
-                                    } else {
-                                        $qryNull = htmlspecialchars($row['serial_code']);
-                                        $stmt = $conn->prepare("SELECT qr_code FROM trace_process WHERE serial_code = ?");
-                                        $stmt->execute([$qryNull]);
-                                        $nullQR = $stmt->fetchColumn();
-                                        echo htmlspecialchars($nullQR);
-                                    }
-                                    ?>
-                                </td>
-                                <td><?= htmlspecialchars($row['serial_code']) ?></td>
-                                <td><?= htmlspecialchars($row['defect']) ?></td>
-                                <td>
-                                    <?php
-                                    if ($row['location']) {
-                                        echo htmlspecialchars($row['location']);
-                                    } else {
-                                        echo htmlspecialchars('N/A');
-                                    }
-                                    ?>
-                                </td>
-                                <td><?= htmlspecialchars($row['process_location']) ?></td>
-                                <td>
-                                    <?php
-                                    if ($row['board_number']) {
-                                        echo htmlspecialchars($row['board_number']);
-                                    } else {
-                                        echo htmlspecialchars('N/A');
-                                    }
-                                    ?>
-                                </td>
-                                <td><?= htmlspecialchars($row['operator_name']) ?></td>
-                                <td><?= htmlspecialchars($row['serial_status']) ?></td>
-                                <td><?= htmlspecialchars($row['board_status']) ?></td>
-                                <td><?= htmlspecialchars($row['line']) ?></td>
-                                <td><?= htmlspecialchars($row['shift']) ?></td>
-                                <td><?= htmlspecialchars($row['model_name']) ?></td>
-                                <td><?= htmlspecialchars($row['assy_code']) ?></td>
-                                <td><?= htmlspecialchars($row['kepi_lot']) ?></td>
-                                <td><?= htmlspecialchars($row['status']) ?></td>
-                                <td><?= htmlspecialchars($row['created_at_dt']) ?></td>
-                                <td><button onclick='openModal(<?= json_encode($row) ?>)'>Repair</button></td>
-                            </tr>
-                            <tr id="noResultsRow" style="display: none; text-align: center;">
-                                <td colspan="14">No records found</td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="14">No records found.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+            </div> <php?*/ ?>
+        <div style="margin-bottom: 15px; font-size: 0.8em; width:50%; display: flex; align-items: left; justify-content: left;">
+            <span style="font-weight: bold;">Date From:</span>
+            <input type="date" id="dateFrom" class="form-input-date" style="margin-left: 5px;">
+            <span style="font-weight: bold; margin-left: 10px;">Date To:</span>
+            <input type="date" id="dateTo" class="form-input-date" style="margin-left: 5px;">
+            <button id="clearDate">Clear</button>
         </div>
+        <table id="repairTable" class="display">
+            <thead>
+                <tr>
+                    <th>QR Code</th>
+                    <th>Serial Code</th>
+                    <th>Defect</th>
+                    <th>Location</th>
+                    <th>Process Location</th>
+                    <th>Board Number</th>
+                    <th>Operator Name</th>
+                    <th>Serial Status</th>
+                    <th>Board Status</th>
+                    <th>Line</th>
+                    <th>Shift</th>
+                    <th>Model Name</th>
+                    <th>Assy Code</th>
+                    <th>KEPI Lot</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 12px;">
+                <?php if (count($nogood_data) > 0): ?>
+                    <?php foreach ($nogood_data as $row): ?>
+                        <tr>
+                            <td>
+                                <?php
+                                if ($row['qr_code']) {
+                                    echo htmlspecialchars($row['qr_code']);
+                                } else {
+                                    $qryNull = htmlspecialchars($row['serial_code']);
+                                    $stmt = $conn->prepare("SELECT qr_code FROM trace_process WHERE serial_code = ?");
+                                    $stmt->execute([$qryNull]);
+                                    $nullQR = $stmt->fetchColumn();
+                                    echo htmlspecialchars($nullQR);
+                                }
+                                ?>
+                            </td>
+                            <td><?= htmlspecialchars($row['serial_code']) ?></td>
+                            <td><?= htmlspecialchars($row['defect']) ?></td>
+                            <td>
+                                <?php
+                                if ($row['location']) {
+                                    echo htmlspecialchars($row['location']);
+                                } else {
+                                    echo htmlspecialchars('N/A');
+                                }
+                                ?>
+                            </td>
+                            <td><?= htmlspecialchars($row['process_location']) ?></td>
+                            <td>
+                                <?php
+                                if ($row['board_number']) {
+                                    echo htmlspecialchars($row['board_number']);
+                                } else {
+                                    echo htmlspecialchars('N/A');
+                                }
+                                ?>
+                            </td>
+                            <td><?= htmlspecialchars($row['operator_name']) ?></td>
+                            <td><?= htmlspecialchars($row['serial_status']) ?></td>
+                            <td><?= htmlspecialchars($row['board_status']) ?></td>
+                            <td><?= htmlspecialchars($row['line']) ?></td>
+                            <td><?= htmlspecialchars($row['shift']) ?></td>
+                            <td><?= htmlspecialchars($row['model_name']) ?></td>
+                            <td><?= htmlspecialchars($row['assy_code']) ?></td>
+                            <td><?= htmlspecialchars($row['kepi_lot']) ?></td>
+                            <td><?= htmlspecialchars($row['status']) ?></td>
+                            <td><?= htmlspecialchars($row['created_at_dt']) ?></td>
+                            <td><button onclick='openModal(<?= json_encode($row) ?>)'>Repair</button></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="14">No records found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
     </div>
 
     <!-- Modal -->
@@ -223,6 +248,56 @@ try {
     </div>
 
     <script>
+        
+        var table;
+
+        $(document).ready(function() {
+            table = $('#repairTable').DataTable({
+                pageLength: 10,
+                order: [
+                    [15, 'desc']
+                ], // Date column (index 15)
+                columnDefs: [{
+                        orderable: false,
+                        targets: 16
+                    } // Action column (index 16)
+                ]
+            });
+        });
+
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            console.log(data);
+            var dateFrom = $('#dateFrom').val();
+            var dateTo = $('#dateTo').val();
+            var rowDate = data[15].split('.')[0]; // removes .000 → "2026-02-23 20:33:56"
+            var date = new Date(rowDate);
+
+            if (!dateFrom && !dateTo) return true;
+
+            var date = new Date(rowDate);
+            var from = dateFrom ? new Date(dateFrom) : null;
+            var to = dateTo ? new Date(dateTo) : null;
+
+            if (from) from.setHours(0, 0, 0, 0);
+            if (to) to.setHours(23, 59, 59, 999);
+
+            if (from && to) return date >= from && date <= to;
+            if (from) return date >= from;
+            if (to) return date <= to;
+
+            return true;
+        });
+
+        $('#dateFrom, #dateTo').on('change', function() {
+            table.draw();
+        });
+
+        $('#clearDate').on('click', function() {
+            $('#dateFrom').val('');
+            $('#dateTo').val('');
+            table.draw();
+        });
+
         function resetTable() {
             document.getElementById('repairForm').reset();
         }
@@ -274,8 +349,8 @@ try {
                             icon: 'success',
                             title: data.message || 'Repair Process successfully!',
                             showConfirmButton: false,
-                             timer: 3000,
-                             timerProgressBar: true
+                            timer: 3000,
+                            timerProgressBar: true
                         });
                         form.reset();
                         closeModal();
@@ -288,8 +363,8 @@ try {
                             icon: 'error',
                             title: data.message || 'Submission failed!',
                             showConfirmButton: false,
-                             timer: 3000,
-                             timerProgressBar: true
+                            timer: 3000,
+                            timerProgressBar: true
                         });
                     }
                 })
@@ -300,14 +375,14 @@ try {
                         icon: 'error',
                         title: 'Unexpected error occurred.',
                         showConfirmButton: false,
-                         timer: 3000,
-                         timerProgressBar: true
+                        timer: 3000,
+                        timerProgressBar: true
                     });
                     console.error('Fetch error:', error);
                 });
         });
 
-        document.getElementById('searchSerialCode').addEventListener('input', function() {
+        /*document.getElementById('searchSerialCode').addEventListener('input', function() {
             const filter = this.value.toUpperCase();
             const rows = document.querySelectorAll('table tbody tr');
             let matchCount = 0;
@@ -345,7 +420,7 @@ try {
             });
 
             document.getElementById('noResultsRow').style.display = matchCount === 0 ? '' : 'none';
-        });
+        });*/
 
         document.querySelectorAll('input[type="text"]').forEach(input => {
             input.addEventListener('input', function() {

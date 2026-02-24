@@ -153,10 +153,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </ul>
             </li>
 
-            <li class="dropdown <?= in_array($current_page, ['/traceability/ad_solderpaste.php', '/traceability/ad_bonding.php']) ? 'active open' : '' ?>">
+            <li class="dropdown <?= in_array($current_page, ['/traceability/add_solderpaste.php', '/traceability/ad_bonding.php']) ? 'active open' : '' ?>">
                 <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-thermometer-0"></i> <span>Adhesive ▾</span></a>
                 <ul class="submenu">
-                    <li class="<?= ($current_page == '/traceability/ad_solderpaste.php') ? 'active' : '' ?>"><a href="/traceability/ad_solderpaste.php">Solder Paste</a></li>
+                    <li class="<?= ($current_page == '/traceability/add_solderpaste.php') ? 'active' : '' ?>"><a href="/traceability/ad_solderpaste.php">Solder Paste</a></li>
                     <li class="<?= ($current_page == '/traceability/ad_bonding.php') ? 'active' : '' ?>"><a href="/traceability/ad_bonding.php">Bonding</a></li>
                 </ul>
             </li>
