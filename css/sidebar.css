@@ -4,8 +4,12 @@ body {
     display: flex;
 }
 
+.hidden {
+    display: none;
+}
+
 .sidebar {
-    width: 190px;
+    width: 25vh;
     height: 100vh;
     background: #333;
     color: white;

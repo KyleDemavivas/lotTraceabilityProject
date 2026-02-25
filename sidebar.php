@@ -23,7 +23,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
     <div class="sidebar" id="sidebar">
         <span class="toggle-btn" onclick="toggleSidebar()">☰</span>
-        <br><br>
+        <br>
+        <br>
+        <h2 id="header">LOT TRACEABILITY SYSTEM</h2>
         <br>
         <?php if ($_SESSION['user_process'] === 'ADMIN'): ?>
             <ul class="menu">
