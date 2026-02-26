@@ -208,6 +208,7 @@ try {
                 $('#angleInput').prop('disabled', true);
                 $('#locationSelect').prop('disabled', true).hide().trigger('change');
                 $('#multiselect').hide();
+                
                 $('#liveBoardCount').hide();
             } else {
                 $('#angleField').show();

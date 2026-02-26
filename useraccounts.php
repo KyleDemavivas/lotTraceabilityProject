@@ -184,7 +184,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $('#userTable').DataTable({
             pageLength: 10,
             ordering: true,
-            searching: false
+            searching: false,
+            lengthChange: false,
+            info: false
         });
     });
 
