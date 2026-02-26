@@ -25,8 +25,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <span class="toggle-btn" onclick="toggleSidebar()">☰</span>
         <br>
         <br>
-        <h2 id="header">LOT TRACEABILITY SYSTEM</h2>
-        <br>
         <?php if ($_SESSION['user_process'] === 'ADMIN'): ?>
             <ul class="menu">
                 <li class="dropdown <?= in_array($current_page, ['/traceability/register.php', '/traceability/useraccounts.php']) ? 'active open' : '' ?>">

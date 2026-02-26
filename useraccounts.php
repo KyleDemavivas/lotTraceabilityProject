@@ -16,9 +16,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Document</title>
     <link rel="stylesheet" href="css/repair_process.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 </head>
 
@@ -26,7 +28,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <h2>USER ACCOUNTS</h2>
         <div class="table-container">
-            <table>
+            <table id="userTable" class="display">
                 <thead>
                     <th>Name</th>
                     <th>Process</th>
@@ -177,6 +179,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </html>
 
 <script>
+
+    $(document).ready(()=>{
+        $('#userTable').DataTable({
+            pageLength: 10,
+            ordering: true,
+            searching: false
+        });
+    });
+
     $('.select2').select2({
         width: '100%',
         placeholder: 'Select an option',
