@@ -3,16 +3,16 @@ include 'sidebar.php';
 include 'db_connect.php';
 
 try {
-    $sql = "SELECT DISTINCT * FROM main_repair_view ORDER BY created_at_dt DESC";
+    $sql = 'SELECT DISTINCT * FROM main_repair_view ORDER BY created_at_dt DESC';
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $nogood_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt2 = $conn->prepare("SELECT COUNT(*) FROM repair_ll_verify");
+    $stmt2 = $conn->prepare('SELECT COUNT(*) FROM repair_ll_verify');
     $stmt2->execute();
     $repairCheck = $stmt2->fetchColumn();
 } catch (PDOException $e) {
-    die("Error fetching No Good data: " . $e->getMessage());
+    exit('Error fetching No Good data: '.$e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ try {
     <link rel="stylesheet" href="css/repair_process.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>F
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
     <style>
@@ -87,8 +87,8 @@ try {
                 </tr>
             </thead>
             <tbody style="font-size: 12px;">
-                <?php if (count($nogood_data) > 0): ?>
-                    <?php foreach ($nogood_data as $row): ?>
+                <?php if (count($nogood_data) > 0) { ?>
+                    <?php foreach ($nogood_data as $row) { ?>
                         <tr>
                             <td>
                                 <?php
@@ -96,52 +96,52 @@ try {
                                     echo htmlspecialchars($row['qr_code']);
                                 } else {
                                     $qryNull = htmlspecialchars($row['serial_code']);
-                                    $stmt = $conn->prepare("SELECT qr_code FROM trace_process WHERE serial_code = ?");
+                                    $stmt = $conn->prepare('SELECT qr_code FROM trace_process WHERE serial_code = ?');
                                     $stmt->execute([$qryNull]);
                                     $nullQR = $stmt->fetchColumn();
                                     echo htmlspecialchars($nullQR);
                                 }
-                                ?>
+                        ?>
                             </td>
-                            <td><?= htmlspecialchars($row['serial_code']) ?></td>
-                            <td><?= htmlspecialchars($row['defect']) ?></td>
+                            <td><?php echo htmlspecialchars($row['serial_code']); ?></td>
+                            <td><?php echo htmlspecialchars($row['defect']); ?></td>
                             <td>
                                 <?php
-                                if ($row['location']) {
-                                    echo htmlspecialchars($row['location']);
-                                } else {
-                                    echo htmlspecialchars('N/A');
-                                }
-                                ?>
+                        if ($row['location']) {
+                            echo htmlspecialchars($row['location']);
+                        } else {
+                            echo htmlspecialchars('N/A');
+                        }
+                        ?>
                             </td>
-                            <td><?= htmlspecialchars($row['process_location']) ?></td>
+                            <td><?php echo htmlspecialchars($row['process_location']); ?></td>
                             <td>
                                 <?php
-                                if ($row['board_number']) {
-                                    echo htmlspecialchars($row['board_number']);
-                                } else {
-                                    echo htmlspecialchars('N/A');
-                                }
-                                ?>
+                        if ($row['board_number']) {
+                            echo htmlspecialchars($row['board_number']);
+                        } else {
+                            echo htmlspecialchars('N/A');
+                        }
+                        ?>
                             </td>
-                            <td><?= htmlspecialchars($row['operator_name']) ?></td>
-                            <td><?= htmlspecialchars($row['serial_status']) ?></td>
-                            <td><?= htmlspecialchars($row['board_status']) ?></td>
-                            <td><?= htmlspecialchars($row['line']) ?></td>
-                            <td><?= htmlspecialchars($row['shift']) ?></td>
-                            <td><?= htmlspecialchars($row['model_name']) ?></td>
-                            <td><?= htmlspecialchars($row['assy_code']) ?></td>
-                            <td><?= htmlspecialchars($row['kepi_lot']) ?></td>
-                            <td><?= htmlspecialchars($row['status']) ?></td>
-                            <td><?= htmlspecialchars($row['created_at_dt']) ?></td>
-                            <td><button onclick='openModal(<?= json_encode($row) ?>)'>Repair</button></td>
+                            <td><?php echo htmlspecialchars($row['operator_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['serial_status']); ?></td>
+                            <td><?php echo htmlspecialchars($row['board_status']); ?></td>
+                            <td><?php echo htmlspecialchars($row['line']); ?></td>
+                            <td><?php echo htmlspecialchars($row['shift']); ?></td>
+                            <td><?php echo htmlspecialchars($row['model_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['assy_code']); ?></td>
+                            <td><?php echo htmlspecialchars($row['kepi_lot']); ?></td>
+                            <td><?php echo htmlspecialchars($row['status']); ?></td>
+                            <td><?php echo htmlspecialchars($row['created_at_dt']); ?></td>
+                            <td><button onclick='openModal(<?php echo json_encode($row); ?>)'>Repair</button></td>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                    <?php } ?>
+                <?php } else { ?>
                     <tr>
                         <td colspan="14">No records found.</td>
                     </tr>
-                <?php endif; ?>
+                <?php } ?>
             </tbody>
         </table>
     </div>
@@ -261,7 +261,9 @@ try {
                         orderable: false,
                         targets: 16
                     } // Action column (index 16)
-                ]
+                ],
+                lengthChange: false,
+                info: false
             });
         });
 
