@@ -27,8 +27,10 @@ $lots = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Processed Lot</title>
     <link rel="stylesheet" href="css/viewlots.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.dataTables.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.7/js/dataTables.min.js"></script>
 </head>
 
 <body>
@@ -46,7 +48,7 @@ $lots = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="table-container">
-            <table style="min-width:900px;">
+            <table style="min-width:900px;" id="myTable" class="display">
                 <thead>
                     <tr>
                         <th>Line</th>
@@ -99,6 +101,13 @@ $lots = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div id="overlay"></div>
 
     <script>
+        $('#myTable').DataTable({
+            lengthChange: false,
+            info: false,
+            pageLength: 10,
+            searching: false
+        });
+
         let currentLotName = '';
 
         function openRemarksModal(lot, existingRemarks) {
