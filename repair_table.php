@@ -133,7 +133,7 @@ try {
                             <td><?php echo htmlspecialchars($row['assy_code']); ?></td>
                             <td><?php echo htmlspecialchars($row['kepi_lot']); ?></td>
                             <td><?php echo htmlspecialchars($row['status']); ?></td>
-                            <td><?php echo htmlspecialchars($row['created_at_dt']); ?></td>
+                            <td><?php echo date("F d, Y", strtotime($row['created_at_dt'])); ?></td>
                             <td><button onclick='openModal(<?php echo json_encode($row); ?>)'>Repair</button></td>
                         </tr>
                     <?php } ?>

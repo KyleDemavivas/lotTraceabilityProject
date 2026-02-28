@@ -84,7 +84,7 @@ try {
                                 <td><?= htmlspecialchars($row['process_location']) ?></td>
                                 <td><?= htmlspecialchars($row['verified_ll']) ?></td>
                                 <td><?= htmlspecialchars($row['board_number']) ?></td>
-                                <td><?= htmlspecialchars($row['created_at']) ?></td>
+                                <td><?= htmlspecialchars(date("F d, Y", strtotime($row['created_at']))) ?></td>
                                 <td><button onclick='openModal(<?= json_encode($row) ?>)'>Verify</button></td>
                             </tr>
                             <tr id="noResultsRow" style="display: none; text-align: center;">
