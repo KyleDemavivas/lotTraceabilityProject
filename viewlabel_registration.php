@@ -19,6 +19,9 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/viewlabel_registration.css">
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.dataTables.css" />
+    <script src="https://cdn.datatables.net/2.3.7/js/dataTables.js"></script>
 
 </head>
 
@@ -26,7 +29,7 @@ try {
     <div class="container">
         <h2>Label Registration Data</h2>
         <div class="table-container">
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Assy Code</th>
@@ -83,3 +86,15 @@ try {
 </body>
 
 </html>
+
+<script>
+    $(document).ready(function() {
+        $('.table').DataTable({
+            pageLength: 10,
+            ordering: true,
+            searching: true,
+            lengthChange: false,
+            info: false
+        });
+    });
+</script>
