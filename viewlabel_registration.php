@@ -63,7 +63,7 @@ try {
                                 </td>
                                 <td><?= htmlspecialchars($label['created_by']) ?></td>
                                 <td><?php if (isset($label['created_date'])) {
-                                        echo htmlspecialchars(date('M j, Y h:i:s A', strtotime($label['created_date'])));
+                                        echo htmlspecialchars(date('M d, Y h:i A', strtotime($label['created_date'])));
                                     } else {
                                         echo 'N/A';
                                     } ?>
