@@ -137,7 +137,7 @@ try {
                             <td><?php echo htmlspecialchars($squeegees['squeegee_status']); ?></td>
                             <td><?php echo htmlspecialchars($squeegees['last_modified_by'] ?? 'N/A'); ?></td>
                             <td><?php if (isset($squeegees['last_modified_at'])) {
-                                    echo htmlspecialchars(date('m-d-Y h:i:s A', strtotime($squeegees['last_modified_at'])));
+                                    echo htmlspecialchars(date('M-d-Y h:i A', strtotime($squeegees['last_modified_at'])));
                                 } else {
                                     echo 'N/A';
                                 } ?></td>
