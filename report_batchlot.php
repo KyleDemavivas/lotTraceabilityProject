@@ -486,6 +486,7 @@ if ($serial_code != '') {
                                 <th>Repaired By</th>
                                 <th>Verified By</th>
                                 <th>Date</th>
+                                <th>Time</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -499,7 +500,8 @@ if ($serial_code != '') {
                                     <td><?= htmlspecialchars($row['action_rp']) ?></td>
                                     <td><?= htmlspecialchars($row['repaired_by']) ?></td>
                                     <td><?= htmlspecialchars($row['verified_ll']) ?></td>
-                                    <td><?= htmlspecialchars($row['created_at']) ?></td>
+                                    <td><?= htmlspecialchars(date("F d, Y", strtotime($row['created_at']))) ?></td>
+                                    <td><?= htmlspecialchars(date("h: i A", strtotime($row['created_at']))) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
