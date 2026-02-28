@@ -2,7 +2,7 @@
 include 'db_connect.php';
 header('Content-Type: application/json');
 
-$response = ['status' => 'error', 'message' => 'Something went wrong.'];
+$response = ['success' => false, 'message' => 'Something went wrong.'];
 date_default_timezone_set('Asia/Manila');
 $created_at = date('Y-m-d H:i:s');
 
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $query = "UPDATE user_account 
 SET user_namefl = :user_namefl, user_process = :user_process, 
-user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, user_password = :user_password
+user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, user_password = :user_password, updated_at = GETDATE()
 WHERE user_id = :user_id";
 
             $stmt = $conn->prepare($query);
@@ -49,7 +49,7 @@ WHERE user_id = :user_id";
         } else {
             $query = "UPDATE user_account 
 SET user_namefl = :user_namefl, user_process = :user_process, 
-user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section 
+user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, updated_at = GETDATE()
 WHERE user_id = :user_id";
 
             $stmt = $conn->prepare($query);

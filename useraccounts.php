@@ -2,7 +2,7 @@
 include 'sidebar.php';
 include 'db_connect.php';
 
-$stmt = $conn->prepare("SELECT * FROM user_account");
+$stmt = $conn->prepare('SELECT * FROM user_account');
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -36,22 +36,29 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Type</th>
                     <th>Line</th>
                     <th>Section</th>
+                    <th>Date Created</th>
+                    <th>Updated Date</th>
                     <th>Action</th>
                 </thead>
 
                 <tbody>
                     <?php foreach ($users as $row) { ?>
                         <tr>
-                            <td id="user_namefl"><?= $row['user_namefl'] ?></td>
-                            <td id="user_process"><?= $row['user_process'] ?></td>
-                            <td id="user_username"><?= $row['user_username'] ?></td>
-                            <td id="user_type"><?= $row['user_type'] ?></td>
-                            <td id="user_line"><?= $row['user_line'] ?></td>
-                            <td id="user_section"><?= $row['user_section'] ?></td>
+                            <td id="user_namefl"><?php echo $row['user_namefl']; ?></td>
+                            <td id="user_process"><?php echo $row['user_process']; ?></td>
+                            <td id="user_username"><?php echo $row['user_username']; ?></td>
+                            <td id="user_type"><?php echo $row['user_type']; ?></td>
+                            <td id="user_line"><?php echo $row['user_line']; ?></td>
+                            <td id="user_section"><?php echo $row['user_section']; ?></td>
+                            <td id="date_created"><?php echo date('F d, Y h:i A', strtotime($row['updated_at'])); ?></td>
+                           <td id="updated_date">
+                            <?php echo $row['updated_at'] ? date('F d, Y h:i A', strtotime($row['updated_at'])) : 'Not yet edited'; ?>
+                        </td>
+                            
                             <td>
                                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                                    <button onclick='openEditModal(<?= json_encode($row); ?>)'>EDIT</button>
-                                    <button class="button-close" onclick="deleteUser(<?= $row['user_id'] ?>)">DELETE</button>
+                                    <button onclick='openEditModal(<?php echo json_encode($row); ?>)'>EDIT</button>
+                                    <button class="button-close" onclick="deleteUser(<?php echo $row['user_id']; ?>)">DELETE</button>
                                 </div>
                             </td>
 
@@ -274,8 +281,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         position: 'top-right',
                         timer: 1500,
                         showConfirmButton: false
-                    }).then(() => {
-                        window.location.reload();
                     });
                 } else {
                     Swal.fire({
