@@ -36,7 +36,7 @@ A web-based system designed to replace manual paper-based processes for monitori
 ## Tech Stack
 
 - PHP
-- MySQL
+- Microsoft SQL Server
 - jQuery
 - HTML / CSS
 
