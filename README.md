@@ -8,7 +8,6 @@ A web-based system designed to replace manual paper-based processes for monitori
 >Refactoring and improvements were made during development.
 
 ## Requirements
->[!IMPORTANT]
 
 - PHP 8.x
 - Microsoft SQL Server
@@ -77,7 +76,7 @@ The batchlot process is a separate process for boards which are labeled as NO GO
 
 ## Tech Stack
 
-- PHP
+[![Tech Stack]https://skillicons.dev/icons?i=php,jquery,mysql,bootstrap,html,css](https://skillicons.dev)
 - Microsoft SQL Server
 - jQuery
 - HTML / CSS
