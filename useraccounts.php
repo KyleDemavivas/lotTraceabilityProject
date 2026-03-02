@@ -1,4 +1,15 @@
 <?php
+// This file displays all registered users for the system
+
+// Features: Editing and Deleting of user info
+
+// Upon click on edit button edit modal is opened
+
+// Edit submit is handled via ajax that calls useredit.php
+
+// Delete requests are handled via function userDelete(id) that calls via ajax, useredit.php
+// userDelete(id) function will prompt a confirmation dialog before deleting the user
+
 include 'sidebar.php';
 include 'db_connect.php';
 
