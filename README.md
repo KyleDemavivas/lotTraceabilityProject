@@ -10,7 +10,7 @@ A web-based system designed to replace manual paper-based processes for monitori
 ## Requirements
 
 - PHP 8.x
-- Microsoft SQL Server
+- Microsoft SQL Server or MySQL
 - XAMPP or any local web server
 - Web browser
 
@@ -74,6 +74,7 @@ The batchlot process is a separate process for boards which are labeled as NO GO
 - User Accounts management for ADMIN users only
 - User Registration for new users found in ADMIN users dashboard
 
+##Tech Stack
 [![Tech Stack](https://skillicons.dev/icons?i=php,jquery,mysql,bootstrap,html,css)](https://skillicons.dev)
 - Microsoft SQL Server
 - jQuery
