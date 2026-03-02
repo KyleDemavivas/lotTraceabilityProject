@@ -1,6 +1,11 @@
 <?php
-session_start();
 
+// upon visit to the system's domain, the user is redirected to the login page if user_process session variable is not set yet, upon login
+// the switch case within this file will fire, and redirect the user to the appropriate page depending on their process
+
+// Every process files in this project will have sidebar.php included
+
+session_start();
 switch ($_SESSION['user_process']) {
     case 'LABELLER':
         header('Location: label_registration.php');
@@ -25,7 +30,7 @@ switch ($_SESSION['user_process']) {
         break;
     case 'MODIFICATOR 2':
         header('Location: mod2.php');
-        break;    
+        break;
     case 'FVISS':
         header('Location: fviss.php');
         break;
@@ -57,4 +62,3 @@ switch ($_SESSION['user_process']) {
         header('Location: login.php');
         break;
 }
-

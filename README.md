@@ -66,6 +66,8 @@ The batchlot process is a separate process for boards which are labeled as NO GO
 - Account settings management
 - DataTables integration for efficient data display and pagination
 - Centralized repair for all processes
+- User Accounts management for ADMIN users only
+- User Registration for new users found in ADMIN users dashboard
 
 ## Tech Stack
 

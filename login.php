@@ -1,39 +1,42 @@
 <?php
+
+// This file handles logins,logic for database lookup is on top of page.
+
 session_start();
 
-$dsn = "sqlsrv:Server=localhost;Database=prod_traceability";
-$username = "sa";
-$password = "Kepi-123";
+$dsn = 'sqlsrv:Server=localhost;Database=prod_traceability';
+$username = 'sa';
+$password = 'Kepi-123';
 
 try {
     $conn = new PDO($dsn, $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+    exit('Connection failed: '.$e->getMessage());
 }
 
-$error_message = "";
+$error_message = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_username = trim($_POST["user_username"]);
-    $user_password = $_POST["user_password"];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $user_username = trim($_POST['user_username']);
+    $user_password = $_POST['user_password'];
 
     // Fetch user data including user_namefl
-    $stmt = $conn->prepare("SELECT user_id, user_namefl, user_password, user_process FROM user_account WHERE user_username = :user_username");
+    $stmt = $conn->prepare('SELECT user_id, user_namefl, user_password, user_process FROM user_account WHERE user_username = :user_username');
     $stmt->bindParam(':user_username', $user_username, PDO::PARAM_STR);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user && password_verify($user_password, $user["user_password"])) {
-        $_SESSION["user_id"] = $user["user_id"];
-        $_SESSION["user_username"] = $user_username;
-        $_SESSION["user_namefl"] = $user["user_namefl"];
-        $_SESSION["user_process"] = $user["user_process"];
+    if ($user && password_verify($user_password, $user['user_password'])) {
+        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['user_username'] = $user_username;
+        $_SESSION['user_namefl'] = $user['user_namefl'];
+        $_SESSION['user_process'] = $user['user_process'];
 
-        header("Location: index.php");
-        exit();
+        header('Location: index.php');
+        exit;
     } else {
-        $error_message = "Invalid username or password!";
+        $error_message = 'Invalid username or password!';
     }
 }
 ?>
@@ -121,11 +124,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="container">
         <h2>Login</h2>
-        <?php if (!empty($error_message)) : ?>
+        <?php if (!empty($error_message)) { ?>
             <script>
-                Swal.fire("Error!", "<?= $error_message ?>", "error");
+                Swal.fire("Error!", "<?php echo $error_message; ?>", "error");
             </script>
-        <?php endif; ?>
+        <?php } ?>
         <form action="" method="POST">
             <label>Username:</label>
             <input type="text" name="user_username" required autocomplete="off">

@@ -1,5 +1,16 @@
 <?php
 include 'sidebar.php';
+
+// This file handles user registration
+
+// Features include: real time password checking (only comparison between password and confirm password)
+// username check handled by ajax that calls check_username.php
+
+// submmission is handled via ajax that calls register.php
+
+// all script files are found html tag on bottom of page
+
+// this file uses sweetalert2
 ?>
 
 <!DOCTYPE html>
@@ -94,46 +105,46 @@ include 'sidebar.php';
 </style>
 
 <body>
-    <?php if (isset($success) && $success): ?>
+    <?php if (isset($success) && $success) { ?>
         <div id="success"></div>
-    <?php endif; ?>
+    <?php } ?>
     <div class="container">
         <h2>Register</h2>
         <form action="" method="POST" name="registerForm" id="mainForm">
             <label>Name:</label>
-            <input type="text" id="user_namefl" name="user_namefl" required value="<?= isset($_POST['user_namefl']) ? htmlspecialchars($_POST['user_namefl']) : ''; ?>" autocomplete="off">
+            <input type="text" id="user_namefl" name="user_namefl" required value="<?php echo isset($_POST['user_namefl']) ? htmlspecialchars($_POST['user_namefl']) : ''; ?>" autocomplete="off">
 
             <label>Section:</label>
             <select name="user_section" id="user_section" required>
                 <option value="" disabled selected>Select Section</option>
-                <option value="IT" <?= (isset($_POST['user_section']) && $_POST['user_section'] == 'IT') ? 'selected' : ''; ?>>IT</option>
-                <option value="QA Engr" <?= (isset($_POST['user_section']) && $_POST['user_section'] == 'QA Engr') ? 'selected' : ''; ?>>QA</option>
-                <option value="SMT" <?= (isset($_POST['user_section']) && $_POST['user_section'] == 'SMT') ? 'selected' : ''; ?>>SMT</option>
-                <option value="HANDWORK" <?= (isset($_POST['user_section']) && $_POST['user_section'] == 'HANDWORK') ? 'selected' : ''; ?>>HANDWORK</option>
+                <option value="IT" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'IT') ? 'selected' : ''; ?>>IT</option>
+                <option value="QA Engr" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'QA Engr') ? 'selected' : ''; ?>>QA</option>
+                <option value="SMT" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'SMT') ? 'selected' : ''; ?>>SMT</option>
+                <option value="HANDWORK" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'HANDWORK') ? 'selected' : ''; ?>>HANDWORK</option>
             </select>
 
             <label>Process:</label>
             <select name="user_process" id="user_process" required>
                 <option value="" disabled selected>Select Process</option>
-                <option value="LABELLER" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'LABELLER') ? 'selected' : ''; ?>>LABELLER</option>
-                <option value="SPA" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'SPA') ? 'selected' : ''; ?>>SPA</option>
-                <option value="MOUNTER" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MOUNTER') ? 'selected' : ''; ?>>MOUNTER</option>
-                <option value="VISUAL INSPECTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'VISUAL INSPECTION') ? 'selected' : ''; ?>>VISUAL INSPECTION</option>
-                <option value="REPAIRER" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'REPAIRER') ? 'selected' : ''; ?>>REPAIRER</option>
-                <option value="LL VERIFICATION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'LL VERIFICATION') ? 'selected' : ''; ?>>LL VERIFICATION</option>
-                <option value="AUTOMATIC INSERTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'AUTOMATIC INSERTION') ? 'selected' : ''; ?>>AUTOMATIC INSERTION</option>
-                <option value="MANUAL INSERTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MANUAL INSERTION') ? 'selected' : ''; ?>>MANUAL INSERTION</option>
-                <option value="MODIFICATOR 1" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MODIFICATOR 1') ? 'selected' : ''; ?>>MODIFICATOR 1</option>
-                <option value="MODIFICATOR 2" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MODIFICATOR 2') ? 'selected' : ''; ?>>MODIFICATOR 2</option>
-                <option value="FVI SOLDERSIDE" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'FVI SOLDERSIDE') ? 'selected' : ''; ?>>FVI SOLDERSIDE</option>
-                <option value="PARTSIDE 1" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'PARTSIDE 1') ? 'selected' : ''; ?>>PART SIDE 1</option>
-                <option value="PARTSIDE 2" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'PARTSIDE 2') ? 'selected' : ''; ?>>PART SIDE 2</option>
-                <option value="MICROSCOPE INSPECTION" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'MICROSCOPE INSPECTION') ? 'selected' : ''; ?>>MICROSCOPE INSPECTION</option>
-                <option value="WITHSTAND INSULATION TEST" <?= (isset($_POST['user_process']) && $_POST['user_process'] == 'WITHSTAND INSULATION TEST') ? 'selected' : ''; ?>>WITHSTAND INSULATION TEST</option>
+                <option value="LABELLER" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'LABELLER') ? 'selected' : ''; ?>>LABELLER</option>
+                <option value="SPA" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'SPA') ? 'selected' : ''; ?>>SPA</option>
+                <option value="MOUNTER" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'MOUNTER') ? 'selected' : ''; ?>>MOUNTER</option>
+                <option value="VISUAL INSPECTION" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'VISUAL INSPECTION') ? 'selected' : ''; ?>>VISUAL INSPECTION</option>
+                <option value="REPAIRER" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'REPAIRER') ? 'selected' : ''; ?>>REPAIRER</option>
+                <option value="LL VERIFICATION" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'LL VERIFICATION') ? 'selected' : ''; ?>>LL VERIFICATION</option>
+                <option value="AUTOMATIC INSERTION" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'AUTOMATIC INSERTION') ? 'selected' : ''; ?>>AUTOMATIC INSERTION</option>
+                <option value="MANUAL INSERTION" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'MANUAL INSERTION') ? 'selected' : ''; ?>>MANUAL INSERTION</option>
+                <option value="MODIFICATOR 1" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'MODIFICATOR 1') ? 'selected' : ''; ?>>MODIFICATOR 1</option>
+                <option value="MODIFICATOR 2" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'MODIFICATOR 2') ? 'selected' : ''; ?>>MODIFICATOR 2</option>
+                <option value="FVI SOLDERSIDE" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'FVI SOLDERSIDE') ? 'selected' : ''; ?>>FVI SOLDERSIDE</option>
+                <option value="PARTSIDE 1" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'PARTSIDE 1') ? 'selected' : ''; ?>>PART SIDE 1</option>
+                <option value="PARTSIDE 2" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'PARTSIDE 2') ? 'selected' : ''; ?>>PART SIDE 2</option>
+                <option value="MICROSCOPE INSPECTION" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'MICROSCOPE INSPECTION') ? 'selected' : ''; ?>>MICROSCOPE INSPECTION</option>
+                <option value="WITHSTAND INSULATION TEST" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'WITHSTAND INSULATION TEST') ? 'selected' : ''; ?>>WITHSTAND INSULATION TEST</option>
             </select>
 
             <label>Username:</label>
-            <input type="text" id="user_username" name="user_username" required value="<?= isset($_POST['user_username']) ? htmlspecialchars($_POST['user_username']) : ''; ?>" autocomplete="off">
+            <input type="text" id="user_username" name="user_username" required value="<?php echo isset($_POST['user_username']) ? htmlspecialchars($_POST['user_username']) : ''; ?>" autocomplete="off">
             <small id="username_message" style="color: red;"></small>
 
             <span id="password_message" style="margin-top: 10px; margin-bottom:-5px"></span>
@@ -152,44 +163,44 @@ include 'sidebar.php';
             <label>User Type:</label>
             <select name="user_type" required>
                 <option value=""></option>
-                <option value="Admin" <?= (isset($_POST['user_type']) && $_POST['user_type'] == 'Admin') ? 'selected' : ''; ?>>Admin</option>
-                <option value="User" <?= (isset($_POST['user_type']) && $_POST['user_type'] == 'User') ? 'selected' : ''; ?>>User</option>
+                <option value="Admin" <?php echo (isset($_POST['user_type']) && $_POST['user_type'] == 'Admin') ? 'selected' : ''; ?>>Admin</option>
+                <option value="User" <?php echo (isset($_POST['user_type']) && $_POST['user_type'] == 'User') ? 'selected' : ''; ?>>User</option>
             </select>
 
             <label>Line:</label>
             <select name="user_line" required>
                 <option value="" disabled selected>Select Line</option>
-                <option value="1" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '1') ? 'selected' : ''; ?>>LINE 1</option>
-                <option value="2" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '2') ? 'selected' : ''; ?>>LINE 2</option>
-                <option value="3" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '3') ? 'selected' : ''; ?>>LINE 3</option>
-                <option value="4" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '4') ? 'selected' : ''; ?>>LINE 4</option>
-                <option value="5" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '5') ? 'selected' : ''; ?>>LINE 5</option>
-                <option value="6" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '6') ? 'selected' : ''; ?>>LINE 6</option>
-                <option value="7" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '7') ? 'selected' : ''; ?>>LINE 7</option>
-                <option value="8" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '8') ? 'selected' : ''; ?>>LINE 8</option>
-                <option value="9" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '9') ? 'selected' : ''; ?>>LINE 9</option>
-                <option value="10" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '10') ? 'selected' : ''; ?>>LINE 10</option>
-                <option value="11" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '11') ? 'selected' : ''; ?>>LINE 11</option>
-                <option value="12" <?= (isset($_POST['user_line']) && $_POST['user_line'] == '12') ? 'selected' : ''; ?>>LINE 12</option>
-                <option value="AV1" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'AV1') ? 'selected' : ''; ?>>AV1</option>
-                <option value="AV2" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'AV2') ? 'selected' : ''; ?>>AV2</option>
-                <option value="RG2" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'RG2') ? 'selected' : ''; ?>>RG2</option>
-                <option value="RG131" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'RG131') ? 'selected' : ''; ?>>RG131</option>
-                <option value="A" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'A') ? 'selected' : ''; ?>>LINE A</option>
-                <option value="I" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'I') ? 'selected' : ''; ?>>LINE I</option>
-                <option value="O" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'O') ? 'selected' : ''; ?>>LINE O</option>
-                <option value="B" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'B') ? 'selected' : ''; ?>>LINE B</option>
-                <option value="P" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'P') ? 'selected' : ''; ?>>LINE P</option>
-                <option value="J" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'J') ? 'selected' : ''; ?>>LINE J</option>
-                <option value="M" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'M') ? 'selected' : ''; ?>>LINE M</option>
-                <option value="N" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'N') ? 'selected' : ''; ?>>LINE N</option>
-                <option value="R" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'R') ? 'selected' : ''; ?>>LINE R</option>
-                <option value="C" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'C') ? 'selected' : ''; ?>>LINE C</option>
-                <option value="D" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'D') ? 'selected' : ''; ?>>LINE D</option>
-                <option value="F" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'F') ? 'selected' : ''; ?>>LINE F</option>
-                <option value="L" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'L') ? 'selected' : ''; ?>>LINE L</option>
-                <option value="K" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'K') ? 'selected' : ''; ?>>LINE K</option>
-                <option value="Q" <?= (isset($_POST['user_line']) && $_POST['user_line'] == 'Q') ? 'selected' : ''; ?>>LINE Q</option>
+                <option value="1" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '1') ? 'selected' : ''; ?>>LINE 1</option>
+                <option value="2" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '2') ? 'selected' : ''; ?>>LINE 2</option>
+                <option value="3" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '3') ? 'selected' : ''; ?>>LINE 3</option>
+                <option value="4" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '4') ? 'selected' : ''; ?>>LINE 4</option>
+                <option value="5" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '5') ? 'selected' : ''; ?>>LINE 5</option>
+                <option value="6" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '6') ? 'selected' : ''; ?>>LINE 6</option>
+                <option value="7" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '7') ? 'selected' : ''; ?>>LINE 7</option>
+                <option value="8" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '8') ? 'selected' : ''; ?>>LINE 8</option>
+                <option value="9" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '9') ? 'selected' : ''; ?>>LINE 9</option>
+                <option value="10" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '10') ? 'selected' : ''; ?>>LINE 10</option>
+                <option value="11" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '11') ? 'selected' : ''; ?>>LINE 11</option>
+                <option value="12" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == '12') ? 'selected' : ''; ?>>LINE 12</option>
+                <option value="AV1" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'AV1') ? 'selected' : ''; ?>>AV1</option>
+                <option value="AV2" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'AV2') ? 'selected' : ''; ?>>AV2</option>
+                <option value="RG2" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'RG2') ? 'selected' : ''; ?>>RG2</option>
+                <option value="RG131" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'RG131') ? 'selected' : ''; ?>>RG131</option>
+                <option value="A" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'A') ? 'selected' : ''; ?>>LINE A</option>
+                <option value="I" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'I') ? 'selected' : ''; ?>>LINE I</option>
+                <option value="O" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'O') ? 'selected' : ''; ?>>LINE O</option>
+                <option value="B" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'B') ? 'selected' : ''; ?>>LINE B</option>
+                <option value="P" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'P') ? 'selected' : ''; ?>>LINE P</option>
+                <option value="J" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'J') ? 'selected' : ''; ?>>LINE J</option>
+                <option value="M" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'M') ? 'selected' : ''; ?>>LINE M</option>
+                <option value="N" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'N') ? 'selected' : ''; ?>>LINE N</option>
+                <option value="R" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'R') ? 'selected' : ''; ?>>LINE R</option>
+                <option value="C" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'C') ? 'selected' : ''; ?>>LINE C</option>
+                <option value="D" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'D') ? 'selected' : ''; ?>>LINE D</option>
+                <option value="F" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'F') ? 'selected' : ''; ?>>LINE F</option>
+                <option value="L" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'L') ? 'selected' : ''; ?>>LINE L</option>
+                <option value="K" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'K') ? 'selected' : ''; ?>>LINE K</option>
+                <option value="Q" <?php echo (isset($_POST['user_line']) && $_POST['user_line'] == 'Q') ? 'selected' : ''; ?>>LINE Q</option>
 
             </select>
 
@@ -199,7 +210,9 @@ include 'sidebar.php';
     </div>
 
     <script>
-        <?php if (!empty($notification)) echo $notification; ?>
+        <?php if (!empty($notification)) {
+            echo $notification;
+        } ?>
     </script>
 </body>
 
