@@ -2,14 +2,13 @@
 
 A web-based system designed to replace manual paper-based processes for monitoring and tracking lots through production. Significantly reduces lookup times and improves production monitoring efficiency.
 
-[!NOTE]
-  
-- This system was inherited and extended as part of a solo developer role.
-- Some features may not be fully implemented and is currently in testing.
-- Refactoring and improvements were made during development.
+>[!NOTE] 
+>This system was inherited and extended as part of a solo developer role.
+>Some features may not be fully implemented and is currently in testing.
+>Refactoring and improvements were made during development.
 
 ## Requirements
-[!IMPORTANT]
+>[!IMPORTANT]
 
 - PHP 8.x
 - Microsoft SQL Server
