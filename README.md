@@ -23,6 +23,40 @@ A web-based system designed to replace manual paper-based processes for monitori
 5. Start Apache and MySQL via XAMPP
 6. Access the system at `http://localhost/traceability`
 
+## Process Flow
+
+1. User registration and login
+2. Register new model if necessary
+3. Register board details
+4. SPA Process
+5. Mounter Process
+6. Visual Inspection
+7. Automatic Insertion
+8. Manual Insertion
+9. MOD 1
+10. MOD 2
+11. FVISS
+12. Partside 1
+13. Partside 2
+14. Micro
+15. WI
+
+## Repair Process Flow
+
+Repair Process flow starts with the board being labeled as NO GOOD in any of the process other than SPA, Mounter, and Manual Insertion
+
+1. Repair Table - Record the repair details, Input necessary information about the repair, submit to either normal verifify repair or Batchlot repair verify
+2. Verify Repair - Verify the repair details, submit to process verification if GOOD or return to repair table if NO GOOD
+3. Batchlot Repair Verify - Verify repair details, submit to process verification of GOOD or return to repair table if NO GOOD
+4. Process Verification - Verify the repair details, Return to origin process if GOOD, return to repair table if NO GOOD
+
+## Batchlot Process
+
+The batchlot process is a separate process for boards which are labeled as NO GOOD between the normal FVISS and WI, once boards are labeled here as NO GOOD, they are considered as Batchlot Process Boards and will follow a new ruleset for repairs.
+
+1. All batchlot boards are to return to FVISS Batchlot irregardless of what process they have a NO GOOD status
+2. Process flow for batchlot boards are the same for the normal processes except the repair flow
+
 ## Features
 
 - Lot tracking and monitoring through production
