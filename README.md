@@ -74,7 +74,7 @@ The batchlot process is a separate process for boards which are labeled as NO GO
 - User Accounts management for ADMIN users only
 - User Registration for new users found in ADMIN users dashboard
 
-[![Tech Stack]https://skillicons.dev/icons?i=php,jquery,mysql,bootstrap,html,css](https://skillicons.dev)
+[![Tech Stack](https://skillicons.dev/icons?i=php,jquery,mysql,bootstrap,html,css)](https://skillicons.dev)
 - Microsoft SQL Server
 - jQuery
 - HTML / CSS
