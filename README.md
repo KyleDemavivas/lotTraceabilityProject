@@ -95,6 +95,20 @@ The batchlot process is a separate process for boards which are labeled as NO GO
 
 This system digitized a manual paper-based lot tracking process used in production. Before this system, looking up lot information required searching through physical records. This system centralizes all lot data and dramatically reduces lookup times across all production processes.
 
+## Screenshots
+
+![Login](screenshots/login.png)
+
+![Registration Page](screenshots/register.png)
+
+![User Accounts Dashboard](screenshots/useraccounts.png)
+
+![SPA Dashboard](screenshots/sample.png)
+
+![Registered Labels](screenshots/labeltable.png)
+
+![Repair Dashboard](screenshots/repairtable.png)
+
 ## Author
 
 Kyle C. Demavivas || `demavivas.kyle.c@gmail.com` || `09959537531` || `www.linkedin.com/in/kyle-demavivas-968044331`
