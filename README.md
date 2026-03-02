@@ -5,7 +5,7 @@ A web-based system designed to replace manual paper-based processes for monitori
 ## Requirements
 
 - PHP 8.x
-- MySQL
+- Microsoft SQL Server
 - XAMPP or any local web server
 - Web browser
 
@@ -31,14 +31,21 @@ A web-based system designed to replace manual paper-based processes for monitori
 - Reporting and batch lot reports
 - Account settings management
 - DataTables integration for efficient data display and pagination
+- Centralized repair for all processes
 
 ## Tech Stack
 
 - PHP
 - MySQL
 - jQuery
-- DataTables
 - HTML / CSS
+
+## Libraries
+
+- DataTables
+- Select2
+- FontAwesome
+- SweetAlert2
 
 ## Problem Solved
 
