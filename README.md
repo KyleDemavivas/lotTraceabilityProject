@@ -46,4 +46,4 @@ This system digitized a manual paper-based lot tracking process used in producti
 
 ## Author
 
-Kyle Demavivas
+Jerico Villanueva, Kyle Demavivas
