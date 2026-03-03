@@ -1,8 +1,8 @@
 <?php include 'sidebar.php'; ?>
 <?php
 if (!isset($_SESSION['user_namefl'])) {
-    header("Location: login.php");
-    exit();
+    header('Location: login.php');
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -237,7 +237,7 @@ if (!isset($_SESSION['user_namefl'])) {
                 $('#verify_model').prop('readonly', false).val('');
                 $('#errorMsg').text('');
                 $('#solderPasteSection, #bondingSection').hide();
-                $('#qr_code').focus();
+                $('#qr_code').focus().select();
             });
         }
 
@@ -339,7 +339,7 @@ if (!isset($_SESSION['user_namefl'])) {
                                         $('input[name="squeegeecurrent_stroke"]').val(squeegeeCurrent);
                                     }
 
-                                    $('#qr_code').focus();
+                                    $('#qr_code').focus().select();
                                 }
 
                                 $('input[name="assy_code"]').val(response.assy_code);
@@ -451,7 +451,7 @@ if (!isset($_SESSION['user_namefl'])) {
                             $('input[name="final_qtyinput"]').val(response.final_qtyinput);
                         }
 
-                        $('#qr_code').val('').focus();
+                        $('#qr_code').val('').focus().select();
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -629,7 +629,7 @@ if (!isset($_SESSION['user_namefl'])) {
             return false;
         }
 
-        $('#qr_code').focus();
+        $('#qr_code').focus().select();
     });
 </script>
 
