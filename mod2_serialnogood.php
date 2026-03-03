@@ -1,4 +1,5 @@
 <?php
+
 include 'db_connect.php';
 
 $response = [];
@@ -20,7 +21,7 @@ if (
         date_default_timezone_set('Asia/Manila');
         $created_at = date('Y-m-d H:i:s');
 
-        $checkSerial = $conn->prepare("SELECT COUNT(*) FROM mod2_process WHERE serial_code = :serial_code");
+        $checkSerial = $conn->prepare('SELECT COUNT(*) FROM mod2_process WHERE serial_code = :serial_code');
         $checkSerial->execute([':serial_code' => $serial_code]);
         $serialExists = $checkSerial->fetchColumn();
 
@@ -32,7 +33,7 @@ if (
         }
 
         if ($source === 'alert' || $source === 'modal') {
-            $verifySerialQR = $conn->prepare("SELECT COUNT(*) FROM mod2_process WHERE serial_code = :serial_code AND qr_code = :qr_code");
+            $verifySerialQR = $conn->prepare('SELECT COUNT(*) FROM mod2_process WHERE serial_code = :serial_code AND qr_code = :qr_code');
             $verifySerialQR->execute([':serial_code' => $serial_code, ':qr_code' => $qr_code]);
             $matchCount = $verifySerialQR->fetchColumn();
 
@@ -45,8 +46,8 @@ if (
             }
         }
 
-        $insertSQL = "INSERT INTO mod2_nogood (qr_code, serial_code, defect, location, board_number, scrap_mod2, repairable, action_mod2, created_at)
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_mod2, :repairable, :action_mod2, :created_at)";
+        $insertSQL = 'INSERT INTO mod2_nogood (qr_code, serial_code, defect, location, board_number, scrap_mod2, repairable, action_mod2, created_at, status)
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_mod2, :repairable, :action_mod2, :created_at, "PENDING")';
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;
@@ -66,10 +67,10 @@ if (
                     ':scrap_mod2' => $scrap_mod2,
                     ':repairable' => $repairable,
                     ':action_mod2' => $action_mod2,
-                    ':created_at' => $created_at
+                    ':created_at' => $created_at,
                 ]);
                 if ($stmtInsert->rowCount() > 0) {
-                    $successfulInserts++;
+                    ++$successfulInserts;
                 }
             }
         }
@@ -98,7 +99,7 @@ if (
         }
     } catch (PDOException $e) {
         $response['status'] = 'error';
-        $response['message'] = 'Database error: ' . $e->getMessage();
+        $response['message'] = 'Database error: '.$e->getMessage();
     }
 } else {
     $response['status'] = 'error';

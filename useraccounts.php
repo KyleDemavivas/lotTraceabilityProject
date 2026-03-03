@@ -292,7 +292,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         position: 'top-right',
                         timer: 1500,
                         showConfirmButton: false
-                    });
+                    }).then(() => {
+                        window.location.reload();
+                    })
                 } else {
                     Swal.fire({
                         icon: 'error',

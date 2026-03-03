@@ -1,4 +1,5 @@
 <?php
+
 include 'db_connect.php';
 
 $response = [];
@@ -7,9 +8,8 @@ if (
     isset($_POST['qr_code'], $_POST['serial_code'], $_POST['defect'], $_POST['location'], $_POST['board_number'], $_POST['scrap_wi'], $_POST['repairable'])
 ) {
     try {
-
         $origin = $_POST['origin'] ?? '';
-        if(empty($origin)) {
+        if (empty($origin)) {
             throw new Exception('Origin is NULL.');
         }
         $main_table = $origin === 'main' ? 'wi_process' : 'wi_batchlot';
@@ -51,8 +51,8 @@ if (
             }
         }
 
-        $insertSQL = "INSERT INTO wi_nogood (qr_code, serial_code, defect, location, board_number, scrap_wi, repairable, created_at)
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_wi, :repairable, :created_at)";
+        $insertSQL = "INSERT INTO wi_nogood (qr_code, serial_code, defect, location, board_number, scrap_wi, repairable, created_at, status)
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_wi, :repairable, :created_at, 'PENDING')";
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;
@@ -71,10 +71,10 @@ if (
                     ':board_number' => $board_number,
                     ':scrap_wi' => $scrap_wi,
                     ':repairable' => $repairable,
-                    ':created_at' => $created_at
+                    ':created_at' => $created_at,
                 ]);
                 if ($stmtInsert->rowCount() > 0) {
-                    $successfulInserts++;
+                    ++$successfulInserts;
                 }
             }
         }
@@ -103,7 +103,7 @@ if (
         }
     } catch (PDOException $e) {
         $response['status'] = 'error';
-        $response['message'] = 'Database error: ' . $e->getMessage();
+        $response['message'] = 'Database error: '.$e->getMessage();
     }
 } else {
     $response['status'] = 'error';

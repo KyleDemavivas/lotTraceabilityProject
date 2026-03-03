@@ -1,4 +1,5 @@
 <?php
+
 include 'db_connect.php';
 
 $response = [];
@@ -47,8 +48,8 @@ if (
             }
         }
 
-        $insertSQL = "INSERT INTO fviss_nogood (qr_code, serial_code, defect, location, board_number, scrap_fviss, repairable, action_fviss, created_at)
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_fviss, :repairable, :action_fviss, :created_at)";
+        $insertSQL = 'INSERT INTO fviss_nogood (qr_code, serial_code, defect, location, board_number, scrap_fviss, repairable, action_fviss, created_at, status)
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_fviss, :repairable, :action_fviss, :created_at, "PENDING")';
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;
@@ -68,10 +69,10 @@ if (
                     ':scrap_fviss' => $scrap_fviss,
                     ':repairable' => $repairable,
                     ':action_fviss' => $action_fviss,
-                    ':created_at' => $created_at
+                    ':created_at' => $created_at,
                 ]);
                 if ($stmtInsert->rowCount() > 0) {
-                    $successfulInserts++;
+                    ++$successfulInserts;
                 }
             }
         }
@@ -100,7 +101,7 @@ if (
         }
     } catch (PDOException $e) {
         $response['status'] = 'error';
-        $response['message'] = 'Database error: ' . $e->getMessage();
+        $response['message'] = 'Database error: '.$e->getMessage();
     }
 } else {
     $response['status'] = 'error';

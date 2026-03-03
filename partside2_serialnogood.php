@@ -1,4 +1,5 @@
 <?php
+
 include 'db_connect.php';
 
 $response['success'] = false;
@@ -7,9 +8,8 @@ if (
     isset($_POST['qr_code'], $_POST['serial_code'], $_POST['defect'], $_POST['location'], $_POST['board_number'], $_POST['scrap_partside'], $_POST['repairable'])
 ) {
     try {
-
         $origin = $_POST['origin'] ?? '';
-        if(empty($origin)) {
+        if (empty($origin)) {
             throw new Exception('Origin is NULL.');
             exit;
         }
@@ -63,8 +63,8 @@ if (
             }
         }
 
-        $insertSQL = "INSERT INTO partside2_nogood (qr_code, serial_code, defect, location, board_number, scrap_partside, repairable, created_at)
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_partside, :repairable, :created_at)";
+        $insertSQL = "INSERT INTO partside2_nogood (qr_code, serial_code, defect, location, board_number, scrap_partside, repairable, created_at, status)
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_partside, :repairable, :created_at, 'PENDING')";
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;
@@ -83,10 +83,10 @@ if (
                     ':board_number' => $board_number,
                     ':scrap_partside' => $scrap_partside,
                     ':repairable' => $repairable,
-                    ':created_at' => $created_at
+                    ':created_at' => $created_at,
                 ]);
                 if ($stmtInsert->rowCount() > 0) {
-                    $successfulInserts++;
+                    ++$successfulInserts;
                 }
             }
         }
@@ -115,7 +115,7 @@ if (
         }
     } catch (Throwable $e) {
         $response['status'] = 'error';
-        $response['message'] = 'Database error: ' . $e->getMessage();
+        $response['message'] = 'Database error: '.$e->getMessage();
     }
 } else {
     $response['status'] = 'error';

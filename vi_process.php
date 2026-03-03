@@ -1,29 +1,29 @@
 <?php include 'sidebar.php'; ?>
 <?php
 if (!isset($_SESSION['user_namefl'])) {
-    header("Location: login.php");
-    exit();
+    header('Location: login.php');
+    exit;
 }
 include 'db_connect.php';
 
 $defects = [];
 try {
-    $stmt = $conn->query("SELECT defect FROM defect_master ORDER BY defect ASC");
+    $stmt = $conn->query('SELECT defect FROM defect_master ORDER BY defect ASC');
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $defects[] = $row['defect'];
     }
 } catch (PDOException $e) {
-    die("Error fetching defects: " . $e->getMessage());
+    exit('Error fetching defects: '.$e->getMessage());
 }
 
 $locations = [];
 try {
-    $stmt = $conn->query("SELECT location FROM location_master ORDER BY location ASC");
+    $stmt = $conn->query('SELECT location FROM location_master ORDER BY location ASC');
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $locations[] = $row['location'];
     }
 } catch (PDOException $e) {
-    die("Error fetching locations: " . $e->getMessage());
+    exit('Error fetching locations: '.$e->getMessage());
 }
 
 ?>
@@ -105,6 +105,11 @@ try {
                     <div class="form-group" hidden>
                         <label for="qr_code" class="form-label" hidden>QR Code:</label>
                         <input type="text" class="form-input" name="qr_code" id="modal_qr_code" required autocomplete="off" readonly hidden>
+                        <input type="text" class="form-input" name="model_name" id="modal_model_name" required autocomplete="off" readonly hidden>
+                        <input type="text" class="form-input" name="kepi_lot" id="modal_kepi_lot" required autocomplete="off" readonly hidden>
+                        <input type="text" class="form-input" name="assy_code" id="modal_assy_code" required autocomplete="off" readonly hidden>
+                        <input type="text" class="form-input" name="shift" id="modal_shift" required autocomplete="off" readonly hidden>
+                        <input type="text" class="form-input" name="line" id="modal_line" required autocomplete="off" readonly hidden>
                     </div>
                     <div class="form-group">
                         <label for="operator_name" class="form-label">Operator Name:</label>
@@ -123,17 +128,17 @@ try {
                                 <label class="form-label">Defect:</label>
                                 <select class="form-input defect-select" name="defect[]" required>
                                     <option value="" disabled selected>Select defect</option>
-                                    <?php foreach ($defects as $defect): ?>
-                                        <option value="<?= htmlspecialchars($defect) ?>"><?= htmlspecialchars($defect) ?></option>
-                                    <?php endforeach; ?>
+                                    <?php foreach ($defects as $defect) { ?>
+                                        <option value="<?php echo htmlspecialchars($defect); ?>"><?php echo htmlspecialchars($defect); ?></option>
+                                    <?php } ?>
                                 </select>
                             </div>
                             <div class="half-group">
                                 <label class="form-label">Location:</label>
                                 <select class="form-input location-select" name="location[0][]" multiple="multiple" required>
-                                    <?php foreach ($locations as $location): ?>
-                                        <option value="<?= htmlspecialchars($location) ?>"><?= htmlspecialchars($location) ?></option>
-                                    <?php endforeach; ?>
+                                    <?php foreach ($locations as $location) { ?>
+                                        <option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option>
+                                    <?php } ?>
                                 </select>
                             </div>
                         </div>
@@ -154,7 +159,7 @@ try {
         </div>
     </div>
     <script>
-        const loggedInUser = "<?= $_SESSION['user_namefl'] ?? '' ?>";
+        const loggedInUser = "<?php echo $_SESSION['user_namefl'] ?? ''; ?>";
         console.log(loggedInUser);
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -162,8 +167,8 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const defectOptions = `<?php foreach ($defects as $defect): ?><option value="<?= htmlspecialchars($defect) ?>"><?= htmlspecialchars($defect) ?></option><?php endforeach; ?>`;
-        const locationOptions = `<?php foreach ($locations as $location): ?><option value="<?= htmlspecialchars($location) ?>"><?= htmlspecialchars($location) ?></option><?php endforeach; ?>`;
+        const defectOptions = `<?php foreach ($defects as $defect) { ?><option value="<?php echo htmlspecialchars($defect); ?>"><?php echo htmlspecialchars($defect); ?></option><?php } ?>`;
+        const locationOptions = `<?php foreach ($locations as $location) { ?><option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option><?php } ?>`;
 
         let isSubmitting = false;
         let qrCounts = {};

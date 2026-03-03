@@ -1,4 +1,5 @@
 <?php
+
 include 'db_connect.php';
 header('Content-Type: application/json');
 
@@ -6,7 +7,7 @@ $response = ['status' => 'error', 'message' => 'Something went wrong.'];
 date_default_timezone_set('Asia/Manila');
 $created_at = date('Y-m-d H:i:s');
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Capture form data
         $qr_code = $_POST['qr_code'];
@@ -29,16 +30,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $unitmeasurement = $_POST['unitmeasurement'];
         $batchlot = $_POST['batchlot'];
         $repairable = $_POST['repairable'];
+        $user_name = $_POST['operator_name'];
+
+        date_default_timezone_set('Asia/Manila'); // set PHP timezone
+        $created_at = date('Y-m-d H:i:s');
 
         // SQL query to insert data
-        $query = "INSERT INTO repair_ll_verify
+        $query = "INSERT INTO repair_master
         (qr_code, model_name, assy_code, kepi_lot, shift, line, board_number, 
         serial_code, defect, operator_name, location, process_location, 
         repaired_by, action_rp, lcr_reading, parts_code, parts_lot, 
-        unitmeasurement, batchlot, repairable, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'FOR VERIFICATION')";
-
-        
+        unitmeasurement, batchlot, repairable, status, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)";
 
         // Prepare the statement
         $stmt = $conn->prepare($query);
@@ -64,16 +67,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $parts_lot,
             $unitmeasurement,
             $batchlot,
-            $repairable
+            $repairable,
+            $created_at,
         ]);
 
         // Return success response
         $response['status'] = 'success';
         $response['message'] = 'Repair record submitted successfully.';
     } catch (PDOException $e) {
-        $response['message'] = 'Database error: ' . $e->getMessage();
+        $response['message'] = 'Database error: '.$e->getMessage();
     }
 }
 
 echo json_encode($response);
-exit();
+exit;
