@@ -499,7 +499,10 @@ if (!isset($_SESSION['user_namefl'])) {
                             $('input[name="current_stroke"]').val(response.last_stencil_stroke_spa ?? response.current_stroke);
                             tryAutoSubmit();
                         } else {
-                            Swal.fire('No Stencil Data', 'No data found for the entered Stencil No.', 'warning');
+                            Swal.fire('No Stencil Data', 'No data found for the entered Stencil No.', 'warning').then(() => {
+                                $('#stencil_no').focus().select();
+                            });
+
                         }
                     }
                 });
@@ -525,7 +528,9 @@ if (!isset($_SESSION['user_namefl'])) {
                             $('input[name="squeegeecurrent_stroke"]').val(response.last_squeegee_stroke_spa ?? response.squeegeecurrent_stroke);
                             tryAutoSubmit();
                         } else {
-                            Swal.fire('No Squeegee Data', 'No data found for the entered Squeegee Blade No.', 'warning');
+                            Swal.fire('No Squeegee Data', 'No data found for the entered Squeegee Blade No.', 'warning').then(() => {
+                                $('#squeegee_no').focus().select();
+                            });;
                         }
                     }
                 });
