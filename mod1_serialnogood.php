@@ -47,8 +47,8 @@ if (
             }
         }
 
-        $insertSQL = 'INSERT INTO mod1_nogood (qr_code, serial_code, defect, location, board_number, scrap_mod1, repairable, action_mod1, tenboard, created_at, status)
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_mod1, :repairable, :action_mod1, :tenboard, :created_at, "PENDING")';
+        $insertSQL = 'INSERT INTO mod1_nogood (qr_code, serial_code, defect, location, board_number, scrap_mod1, repairable, action_mod1, tenboard, created_at)
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_mod1, :repairable, :action_mod1, :tenboard, :created_at)';
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;

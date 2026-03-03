@@ -51,8 +51,8 @@ if (
             }
         }
 
-        $insertSQL = "INSERT INTO micro_nogood (qr_code, serial_code, defect, location, board_number, scrap_micro, repairable, created_at, status)
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_micro, :repairable, :created_at, 'PENDING')";
+        $insertSQL = 'INSERT INTO micro_nogood (qr_code, serial_code, defect, location, board_number, scrap_micro, repairable, created_at)
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_micro, :repairable, :created_at)';
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;

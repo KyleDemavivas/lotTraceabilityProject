@@ -48,8 +48,8 @@ if (
             }
         }
 
-        $insertSQL = 'INSERT INTO fviss_nogood (qr_code, serial_code, defect, location, board_number, scrap_fviss, repairable, action_fviss, created_at, status)
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_fviss, :repairable, :action_fviss, :created_at, "PENDING")';
+        $insertSQL = 'INSERT INTO fviss_nogood (qr_code, serial_code, defect, location, board_number, scrap_fviss, repairable, action_fviss, created_at)
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :scrap_fviss, :repairable, :action_fviss, :created_at)';
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;
