@@ -243,7 +243,6 @@ try {
 
             const form = this;
             const formData = new FormData(form);
-            formData.append('verifier', '<?php echo htmlspecialchars($_SESSION['user_namefl']); ?>');
 
             fetch('verify_repairLLsubmit.php', {
                     method: 'POST',

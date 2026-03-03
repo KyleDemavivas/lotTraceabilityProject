@@ -41,8 +41,8 @@ if (
             }
         }
 
-        $insertSQL = "INSERT INTO ai_nogood (qr_code, serial_code, defect, location, board_number, created_at, status, )
-                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, :created_at, 'PENDING')";
+        $insertSQL = 'INSERT INTO ai_nogood (qr_code, serial_code, defect, location, board_number, created_at )
+                      VALUES (:qr_code, :serial_code, :defect, :location, :board_number, GETDATE())';
         $stmtInsert = $conn->prepare($insertSQL);
 
         $successfulInserts = 0;
@@ -59,7 +59,6 @@ if (
                     ':defect' => $defect,
                     ':location' => $location_string,
                     ':board_number' => $board_number,
-                    ':created_at' => $created_at,
                 ]);
                 if ($stmtInsert->rowCount() > 0) {
                     ++$successfulInserts;

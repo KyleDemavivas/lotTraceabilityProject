@@ -10,7 +10,7 @@ $created_at_ll = date('Y-m-d H:i:s');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $serial_code = isset($_POST['serial_code']) ? $_POST['serial_code'] : '';
     $status = 'VERIFIED';
-    $verifier = isset($_POST['verifier']) ? $_POST['verifier'] : '';
+    $verifier = isset($_POST['verified_ll']) ? $_POST['verified_ll'] : '';
     if (!$serial_code) {
         $response = ['success' => false, 'message' => 'Serial code is required.'];
     } else {
