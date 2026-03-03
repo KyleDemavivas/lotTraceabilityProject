@@ -3,13 +3,13 @@ include 'sidebar.php';
 include 'db_connect.php';
 
 try {
-    $sql = "SELECT * FROM repair_ll_verify ORDER BY created_at DESC";
+    $sql = 'SELECT * FROM verify_ll ORDER BY created_at DESC';
 
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $nogood_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("Error fetching No Good data: " . $e->getMessage());
+    exit('Error fetching No Good data: '.$e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -59,42 +59,44 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($nogood_data) > 0): ?>
-                        <?php foreach ($nogood_data as $row): ?>
-                            <?php if ($row['batchlot'] === 'NO') continue; ?>
+                    <?php if (count($nogood_data) > 0) { ?>
+                        <?php foreach ($nogood_data as $row) { ?>
+                            <?php if ($row['batchlot'] === 'NO') {
+                                continue;
+                            } ?>
                             <?php $currentDateTime = $row['created_at']; ?>
                             <tr>
-                                <td><?= htmlspecialchars($row['qr_code']) ?></td>
-                                <td><?= htmlspecialchars($row['serial_code']) ?></td>
-                                <td><?= htmlspecialchars($row['assy_code']) ?></td>
-                                <td><?= htmlspecialchars($row['kepi_lot']) ?></td>
-                                <td><?= htmlspecialchars($row['repaired_by']) ?></td>
-                                <td><?= htmlspecialchars($row['operator_name']) ?></td>
-                                <td><?= htmlspecialchars($row['action_rp']) ?></td>
-                                <td><?= htmlspecialchars($row['lcr_reading']) ?></td>
-                                <td><?= htmlspecialchars($row['parts_code']) ?></td>
-                                <td><?= htmlspecialchars($row['parts_lot']) ?></td>
-                                <td><?= htmlspecialchars($row['unitmeasurement']) ?></td>
-                                <td><?= htmlspecialchars($row['batchlot']) ?></td>
-                                <td><?= htmlspecialchars($row['repairable']) ?></td>
-                                <td><?= htmlspecialchars($row['shift']) ?></td>
-                                <td><?= htmlspecialchars($row['defect']) ?></td>
-                                <td><?= htmlspecialchars($row['location']) ?></td>
-                                <td><?= htmlspecialchars($row['line']) ?></td>
-                                <td><?= htmlspecialchars($row['process_location']) ?></td>
-                                <td><?= htmlspecialchars($row['board_number']) ?></td>
-                                <td><?= htmlspecialchars(date("F d, Y", strtotime($row['created_at']))) ?></td>
-                                <td><button onclick='openModal(<?= json_encode($row) ?>)'>Verify</button></td>
+                                <td><?php echo htmlspecialchars($row['qr_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['serial_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['assy_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['kepi_lot']); ?></td>
+                                <td><?php echo htmlspecialchars($row['repaired_by']); ?></td>
+                                <td><?php echo htmlspecialchars($row['operator_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['action_rp']); ?></td>
+                                <td><?php echo htmlspecialchars($row['lcr_reading']); ?></td>
+                                <td><?php echo htmlspecialchars($row['parts_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['parts_lot']); ?></td>
+                                <td><?php echo htmlspecialchars($row['unitmeasurement']); ?></td>
+                                <td><?php echo htmlspecialchars($row['batchlot']); ?></td>
+                                <td><?php echo htmlspecialchars($row['repairable']); ?></td>
+                                <td><?php echo htmlspecialchars($row['shift']); ?></td>
+                                <td><?php echo htmlspecialchars($row['defect']); ?></td>
+                                <td><?php echo htmlspecialchars($row['location']); ?></td>
+                                <td><?php echo htmlspecialchars($row['line']); ?></td>
+                                <td><?php echo htmlspecialchars($row['process_location']); ?></td>
+                                <td><?php echo htmlspecialchars($row['board_number']); ?></td>
+                                <td><?php echo htmlspecialchars(date('F d, Y', strtotime($row['created_at']))); ?></td>
+                                <td><button onclick='openModal(<?php echo json_encode($row); ?>)'>Verify</button></td>
                             </tr>
                             <tr id="noResultsRow" style="display: none; text-align: center;">
                                 <td colspan="14">No records found</td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                        <?php } ?>
+                    <?php } else { ?>
                         <tr>
                             <td colspan="14">No records found.</td>
                         </tr>
-                    <?php endif; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>
@@ -180,7 +182,7 @@ try {
 
                 <div class="form-group">
                     <label class="form-label">Verified by</label>
-                    <input class="form-input" type="text" name="verified_ll" id="verified_ll" value="<?= htmlspecialchars($_SESSION['user_namefl']) ?>" required autocomplete="off" readonly>
+                    <input class="form-input" type="text" name="verified_ll" id="verified_ll" value="<?php echo htmlspecialchars($_SESSION['user_namefl']); ?>" required autocomplete="off" readonly>
                 </div>
 
                 <div class="modal-footer">
@@ -241,6 +243,7 @@ try {
 
             const form = e.target;
             const formData = new FormData(form);
+             formData.append('verifier', '<?php echo htmlspecialchars($_SESSION['user_namefl']); ?>');
 
             fetch('verify_repairLLsubmit.php', {
                     method: 'POST',
@@ -248,7 +251,7 @@ try {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'success') {
+                    if (data.success === true) {
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
