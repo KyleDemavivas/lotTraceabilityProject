@@ -61,7 +61,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td id="user_type"><?php echo $row['user_type']; ?></td>
                             <td id="user_line"><?php echo $row['user_line']; ?></td>
                             <td id="user_section"><?php echo $row['user_section']; ?></td>
-                            <td id="date_created"><?php echo date('F d, Y h:i A', strtotime($row['updated_at'])); ?></td>
+                            <td id="date_created"><?php echo date('F d, Y h:i A', strtotime($row['created_at'])); ?></td>
                            <td id="updated_date">
                             <?php echo $row['updated_at'] ? date('F d, Y h:i A', strtotime($row['updated_at'])) : 'Not yet edited'; ?>
                         </td>
