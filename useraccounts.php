@@ -32,6 +32,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.13.6/sorting/datetime-moment.js"></script>
 
 </head>
 
@@ -199,12 +201,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script>
 
     $(document).ready(()=>{
+
+        $.fn.dataTable.moment('MMMM DD, YYYY hh:mm A');
+
         $('#userTable').DataTable({
             pageLength: 10,
             ordering: true,
             searching: false,
             lengthChange: false,
-            info: false
+            info: false,
+            columnDefs: [{
+                orderable: false,
+                targets: 8
+            }],
+            order: [6,'desc']
         });
     });
 
