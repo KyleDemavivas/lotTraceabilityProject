@@ -1,4 +1,5 @@
 <?php
+
 include 'db_connect.php';
 include 'sidebar.php';
 
@@ -423,17 +424,21 @@ if ($serial_code != '') {
                         <th>DATE PROCESS</th>
                         <th>TIME END PROCESS</th>
                     </tr>
-                    <?php foreach ($batchlot_data as $row) { ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($row['process']); ?></td>
-                            <td><?php echo htmlspecialchars($row['line']); ?></td>
-                            <td><?php echo htmlspecialchars($row['shift']); ?></td>
-                            <td><?php echo htmlspecialchars($row['judgement']); ?></td>
-                            <td><?php echo htmlspecialchars($row['operator']); ?></td>
-                            <td><?php echo htmlspecialchars($row['date_process']); ?></td>
-                            <td><?php echo htmlspecialchars($row['time_end_process']); ?></td>
-                        </tr>
-                    <?php } ?>
+                  <?php if (empty($batchlot_data)) { ?>
+    <tr><td colspan='7' style='text-align: center;'>No batch lot history available.</td></tr>
+<?php } else { ?>
+    <?php foreach ($batchlot_data as $row) { ?>
+        <tr>
+            <td><?php echo htmlspecialchars($row['process']); ?></td>
+            <td><?php echo htmlspecialchars($row['line']); ?></td>
+            <td><?php echo htmlspecialchars($row['shift']); ?></td>
+            <td><?php echo htmlspecialchars($row['judgement']); ?></td>
+            <td><?php echo htmlspecialchars($row['operator']); ?></td>
+            <td><?php echo htmlspecialchars(date('F d, Y', strtotime(substr($row['date_process'], 0, 19)))); ?></td>
+            <td><?php echo htmlspecialchars(date('h:i A', strtotime(substr($row['time_end_process'], 0, 19)))); ?></td>
+        </tr>
+    <?php } ?>
+<?php } ?>
                 </table>
             </div>
             <!--BATCH LOT HISTORY-->
@@ -496,10 +501,10 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($row['defect']); ?></td>
                                     <td><?php echo htmlspecialchars($row['action_rp']); ?></td>
                                     <td><?php echo htmlspecialchars($row['repaired_by']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['ll_verified']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['process_lead']); ?></td>
+                                    <td><?php echo $row['ll_verified'] ? htmlspecialchars($row['ll_verified']) : 'N/A'; ?> </td>
+                                    <td><?php echo $row['process_lead'] ? htmlspecialchars($row['process_lead']) : 'N/A'; ?></td>
                                     <td><?php echo htmlspecialchars(date('F d, Y', strtotime($row['created_at']))); ?></td>
-                                    <td><?php echo htmlspecialchars(date('h: i A', strtotime($row['created_at']))); ?></td>
+                                    <td><?php echo htmlspecialchars(date('h:i A', strtotime($row['created_at']))); ?></td>
                                 </tr>
                             <?php } ?>
                         </tbody>
