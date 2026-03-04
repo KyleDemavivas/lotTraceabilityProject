@@ -1,9 +1,10 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 $response = ['status' => 'error', 'message' => ''];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
         $qr_code = strtoupper($_POST['qr_code']);
         $operator_name = $_POST['operator_name'];
@@ -19,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         date_default_timezone_set('Asia/Manila');
         $created_at = date('Y-m-d H:i:s');
 
-        $checkQuery = "SELECT spa_process, mounter_process FROM trace_process WHERE qr_code = :qr_code";
+        $checkQuery = 'SELECT spa_process, mounter_process FROM trace_process WHERE qr_code = :qr_code';
         $checkStmt = $conn->prepare($checkQuery);
         $checkStmt->execute([':qr_code' => $qr_code]);
         $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
@@ -46,18 +47,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $updateStmt = $conn->prepare($updateMounter);
         $updateStmt->execute([':qr_code' => $qr_code]);
 
-        $finalQtyQuery = "SELECT COALESCE(SUM(TRY_CAST(qty_input AS INT)), 0) AS final_qty 
-                          FROM mounter_process WHERE kepi_lot = :kepi_lot AND line = :line";
+        $finalQtyQuery = 'SELECT COALESCE(SUM(TRY_CAST(qty_input AS INT)), 0) AS final_qty 
+                          FROM mounter_process WHERE kepi_lot = :kepi_lot AND line = :line';
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
         $finalQtyStmt->execute([
             ':kepi_lot' => $kepi_lot,
-            ':line' => $line
+            ':line' => $line,
         ]);
         $previous_final_qty = $finalQtyStmt->fetchColumn();
         $final_qtyinput = $previous_final_qty + $qty_input;
 
-        $query = "INSERT INTO mounter_process (qr_code, qty_input, final_qtyinput, operator_name, shift, line, assy_code, model_name, kepi_lot, created_at, mounter_status) 
-                  VALUES (:qr_code, :qty_input, :final_qtyinput, :operator_name, :shift, :line, :assy_code, :model_name, :kepi_lot, :created_at, :mounter_status)";
+        $query = 'INSERT INTO mounter_process (qr_code, qty_input, final_qtyinput, operator_name, shift, line, assy_code, model_name, kepi_lot, created_at, mounter_status) 
+                  VALUES (:qr_code, :qty_input, :final_qtyinput, :operator_name, :shift, :line, :assy_code, :model_name, :kepi_lot, :created_at, :mounter_status)';
         $stmt = $conn->prepare($query);
         $stmt->execute([
             ':qr_code' => $qr_code,
@@ -70,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':model_name' => $model_name,
             ':kepi_lot' => $kepi_lot,
             ':created_at' => $created_at,
-            ':mounter_status' => 'GOOD'
+            ':mounter_status' => 'GOOD',
         ]);
 
         $response['status'] = 'success';
@@ -78,8 +79,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // $response['final_qtyinput'] = $final_qtyinput;
     } catch (PDOException $e) {
         $response['status'] = false;
-        $response['data'] = "Database Error";
-        $response['message'] = "A database error has occured.";
+        $response['data'] = 'Database Error';
+        $response['message'] = 'A database error has occured.';
     }
 }
 

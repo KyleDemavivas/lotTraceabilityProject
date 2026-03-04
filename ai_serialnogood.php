@@ -1,6 +1,6 @@
 <?php
 
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 $response = [];
 

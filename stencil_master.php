@@ -1,17 +1,17 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 if (!isset($_SESSION['user_namefl'])) {
     echo "<script>alert('Please login first!'); window.location.href='login.php';</script>";
-    exit();
+    exit;
 }
 if (isset($_POST['delete_id'])) {
     $id = $_POST['delete_id'];
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE stencil_master SET deleted_by = :deleted_by, deleted_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP) WHERE id = :id";
+        $sql = 'UPDATE stencil_master SET deleted_by = :deleted_by, deleted_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP) WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -24,7 +24,7 @@ if (isset($_POST['delete_id'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error deleting stencil: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error deleting stencil: ".$e->getMessage()."');</script>";
     }
 }
 if (isset($_POST['add_stencil'])) {
@@ -34,8 +34,8 @@ if (isset($_POST['add_stencil'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "INSERT INTO stencil_master (stencil_no, total_stroke, stencil_status, created_by, created_at) 
-                VALUES (:stencil_no, :total_stroke, :stencil_status, :created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))";
+        $sql = 'INSERT INTO stencil_master (stencil_no, total_stroke, stencil_status, created_by, created_at) 
+                VALUES (:stencil_no, :total_stroke, :stencil_status, :created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':stencil_no', $stencil_no, PDO::PARAM_STR);
@@ -50,7 +50,7 @@ if (isset($_POST['add_stencil'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error adding stencil: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error adding stencil: ".$e->getMessage()."');</script>";
     }
 }
 
@@ -62,7 +62,7 @@ if (isset($_POST['update_stencil'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE stencil_master SET stencil_no = :stencil_no, total_stroke = :total_stroke, stencil_status = :stencil_status, last_modified_by = :last_modified_by,last_modified_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)WHERE id = :id";
+        $sql = 'UPDATE stencil_master SET stencil_no = :stencil_no, total_stroke = :total_stroke, stencil_status = :stencil_status, last_modified_by = :last_modified_by,last_modified_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -78,17 +78,17 @@ if (isset($_POST['update_stencil'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error updating stencil: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error updating stencil: ".$e->getMessage()."');</script>";
     }
 }
 
 try {
     $sql =
-        "SELECT * FROM stencil_master WHERE deleted_at IS NULL";
+        'SELECT * FROM stencil_master WHERE deleted_at IS NULL';
     $stmt = $conn->query($sql);
     $stencils = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "<script>alert('Error fetching stencils: " . $e->getMessage() . "');</script>";
+    echo "<script>alert('Error fetching stencils: ".$e->getMessage()."');</script>";
     $stencils = [];
 }
 ?>
@@ -121,24 +121,24 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($stencils as $stencils): ?>
+                    <?php foreach ($stencils as $stencils) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($stencils['stencil_no']); ?></td>
                             <td><?php echo htmlspecialchars($stencils['total_stroke']); ?></td>
                             <td><?php echo htmlspecialchars($stencils['stencil_status']); ?></td>
                             <td><?php echo htmlspecialchars($stencils['last_modified_by'] ?? 'N/A'); ?></td>
                             <td><?php if (isset($stencils['last_modified_at'])) {
-                                    echo htmlspecialchars(date('M-d-Y h:i A', strtotime($stencils['last_modified_at'])));
-                                } else {
-                                    echo 'N/A';
-                                } ?></td>
+                                echo htmlspecialchars(date('M-d-Y h:i A', strtotime($stencils['last_modified_at'])));
+                            } else {
+                                echo 'N/A';
+                            } ?></td>
 
                             <td>
                                 <button class="btn btn-edit" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($stencils)); ?>)">EDIT</button>
                                 <button class="btn btn-delete" onclick="confirmDelete(<?php echo htmlspecialchars($stencils['id']); ?>)">DELETE</button>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

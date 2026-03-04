@@ -1,20 +1,20 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 if (!isset($_SESSION['user_namefl'])) {
     echo "<script>alert('Please login first!'); window.location.href='login.php';</script>";
-    exit();
+    exit;
 }
 if (isset($_POST['delete_id'])) {
     $id = $_POST['delete_id'];
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE location_master SET 
+        $sql = 'UPDATE location_master SET 
                 deleted_by = :deleted_by,
                 deleted_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)
-                WHERE id = :id";
+                WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -27,7 +27,7 @@ if (isset($_POST['delete_id'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error deleting location: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error deleting location: ".$e->getMessage()."');</script>";
     }
 }
 if (isset($_POST['add_location'])) {
@@ -35,8 +35,8 @@ if (isset($_POST['add_location'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "INSERT INTO location_master (location, created_by, created_at) 
-                VALUES (:location, :created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))";
+        $sql = 'INSERT INTO location_master (location, created_by, created_at) 
+                VALUES (:location, :created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':location', $location, PDO::PARAM_STR);
@@ -49,7 +49,7 @@ if (isset($_POST['add_location'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error adding location: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error adding location: ".$e->getMessage()."');</script>";
     }
 }
 
@@ -59,11 +59,11 @@ if (isset($_POST['update_location'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE location_master SET 
+        $sql = 'UPDATE location_master SET 
                 location = :location,
                 last_modified_by = :last_modified_by,
                 last_modified_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)
-                WHERE id = :id";
+                WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -77,17 +77,17 @@ if (isset($_POST['update_location'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error updating location: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error updating location: ".$e->getMessage()."');</script>";
     }
 }
 
 try {
     $sql =
-        "SELECT * FROM location_master WHERE deleted_at IS NULL";
+        'SELECT * FROM location_master WHERE deleted_at IS NULL';
     $stmt = $conn->query($sql);
     $locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "<script>alert('Error fetching location: " . $e->getMessage() . "');</script>";
+    echo "<script>alert('Error fetching location: ".$e->getMessage()."');</script>";
     $locations = [];
 }
 ?>
@@ -118,22 +118,22 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($locations as $locations): ?>
+                    <?php foreach ($locations as $locations) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($locations['location']); ?></td>
                             <td><?php echo htmlspecialchars($locations['last_modified_by'] ?? 'N/A'); ?></td>
                             <td><?php if (isset($locations['last_modified_at'])) {
-                                    echo htmlspecialchars(date('m-d-Y h:i:s A', strtotime($locations['last_modified_at'])));
-                                } else {
-                                    echo 'N/A';
-                                } ?></td>
+                                echo htmlspecialchars(date('m-d-Y h:i:s A', strtotime($locations['last_modified_at'])));
+                            } else {
+                                echo 'N/A';
+                            } ?></td>
 
                             <td>
                                 <button class="btn btn-edit" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($locations)); ?>)">EDIT</button>
                                 <button class="btn btn-delete" onclick="confirmDelete(<?php echo htmlspecialchars($locations['id']); ?>)">DELETE</button>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

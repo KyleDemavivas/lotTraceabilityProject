@@ -1,5 +1,5 @@
 <?php include 'sidebar.php'; ?>
-<?php include 'db_connect.php'; ?>
+<?php include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini'; ?>
 
 <!DOCTYPE html>
 <html lang="en">

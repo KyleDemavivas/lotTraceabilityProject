@@ -1,11 +1,12 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
 $response = [
     'valid' => false,
     'message' => 'Invalid request',
-    'qr_code' => ''
+    'qr_code' => '',
 ];
 
 try {
@@ -14,8 +15,7 @@ try {
         $source = $_POST['source'] ?? '';
 
         if (in_array($source, ['alert', 'modal', 'manual'])) {
-
-            $stmt = $conn->prepare("SELECT qr_code FROM fviss_batchlot WHERE serial_code = :serial");
+            $stmt = $conn->prepare('SELECT qr_code FROM fviss_batchlot WHERE serial_code = :serial');
             $stmt->execute([':serial' => $serial]);
             $qr = $stmt->fetchColumn();
 
@@ -35,7 +35,7 @@ try {
     }
 } catch (PDOException $e) {
     $response['valid'] = false;
-    $response['message'] = 'Database error: ' . $e->getMessage();
+    $response['message'] = 'Database error: '.$e->getMessage();
 }
 
 echo json_encode($response);

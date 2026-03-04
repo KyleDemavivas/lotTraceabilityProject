@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 header('Content-Type: application/json');
 error_reporting(E_ALL);
@@ -13,7 +14,7 @@ if (!isset($_POST['code'])) {
 $serial_code = strtoupper(trim($_POST['code']));
 
 try {
-    $query = "SELECT * FROM fviss_batchlot WHERE serial_code = :serial_code";
+    $query = 'SELECT * FROM fviss_batchlot WHERE serial_code = :serial_code';
 
     $stmt = $conn->prepare($query);
     $stmt->execute([':serial_code' => $serial_code]);
@@ -43,7 +44,7 @@ try {
         'shift' => $row['shift'],
         'asmline' => $row['asmline'],
         'line' => $row['line'],
-        'qty_input' => $row['qty_input']
+        'qty_input' => $row['qty_input'],
     ]);
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);

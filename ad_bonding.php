@@ -1,17 +1,17 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 if (!isset($_SESSION['user_namefl'])) {
     echo "<script>alert('Please login first!'); window.location.href='login.php';</script>";
-    exit();
+    exit;
 }
 if (isset($_POST['delete_id'])) {
     $id = $_POST['delete_id'];
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE bonding_master SET deleted_by = :deleted_by, deleted_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP) WHERE id = :id";
+        $sql = 'UPDATE bonding_master SET deleted_by = :deleted_by, deleted_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP) WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -24,7 +24,7 @@ if (isset($_POST['delete_id'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error deleting bonding: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error deleting bonding: ".$e->getMessage()."');</script>";
     }
 }
 if (isset($_POST['add_stencil'])) {
@@ -36,8 +36,8 @@ if (isset($_POST['add_stencil'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "INSERT INTO bonding_master (bonding, serial_bonding, part_lot, time_pulledout, time_use, created_by, created_at) 
-                VALUES (:bonding, :serial_bonding, :part_lot, :time_pulledout, :time_use,:created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))";
+        $sql = 'INSERT INTO bonding_master (bonding, serial_bonding, part_lot, time_pulledout, time_use, created_by, created_at) 
+                VALUES (:bonding, :serial_bonding, :part_lot, :time_pulledout, :time_use,:created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':bonding', $bonding, PDO::PARAM_STR);
@@ -54,7 +54,7 @@ if (isset($_POST['add_stencil'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error adding bonding: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error adding bonding: ".$e->getMessage()."');</script>";
     }
 }
 
@@ -68,7 +68,7 @@ if (isset($_POST['update_bonding'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE bonding_master SET bonding = :bonding, serial_bonding = :serial_bonding, part_lot = :part_lot, time_pulledout = :time_pulledout, time_use = :time_use, last_modified_by = :last_modified_by, last_modified_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP) WHERE id = :id";
+        $sql = 'UPDATE bonding_master SET bonding = :bonding, serial_bonding = :serial_bonding, part_lot = :part_lot, time_pulledout = :time_pulledout, time_use = :time_use, last_modified_by = :last_modified_by, last_modified_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP) WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -86,17 +86,17 @@ if (isset($_POST['update_bonding'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error updating Bonding: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error updating Bonding: ".$e->getMessage()."');</script>";
     }
 }
 
 try {
     $sql =
-        "SELECT * FROM bonding_master WHERE deleted_at IS NULL";
+        'SELECT * FROM bonding_master WHERE deleted_at IS NULL';
     $stmt = $conn->query($sql);
     $bonding = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "<script>alert('Error fetching Bonding: " . $e->getMessage() . "');</script>";
+    echo "<script>alert('Error fetching Bonding: ".$e->getMessage()."');</script>";
     $bonding = [];
 }
 ?>
@@ -130,7 +130,7 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($bonding as $bonding): ?>
+                    <?php foreach ($bonding as $bonding) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($bonding['bonding']); ?></td>
                             <td><?php echo htmlspecialchars($bonding['serial_bonding']); ?></td>
@@ -143,7 +143,7 @@ try {
                                 <button class="btn btn-delete" onclick="confirmDelete(<?php echo htmlspecialchars($bonding['id']); ?>)">DELETE</button>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

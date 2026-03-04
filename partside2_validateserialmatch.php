@@ -1,11 +1,12 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
 $response = [
-    'valid'   => false,
+    'valid' => false,
     'message' => '',
-    'qr_code' => ''
+    'qr_code' => '',
 ];
 
 try {
@@ -16,7 +17,7 @@ try {
     }
 
     $origin = $_POST['origin'] ?? '';
-    if(empty($origin)){
+    if (empty($origin)) {
         throw new Exception('Origin is NULL.');
     }
 
@@ -67,7 +68,7 @@ try {
     $response['qr_code'] = $qrFromDb;
 } catch (PDOException $e) {
     $response['valid'] = false;
-    $response['message'] = 'Database error: ' . $e->getMessage();
+    $response['message'] = 'Database error: '.$e->getMessage();
 }
 
 echo json_encode($response);

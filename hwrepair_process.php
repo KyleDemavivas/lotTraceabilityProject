@@ -1,6 +1,6 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 try {
     $sql = "SELECT ng.qr_code, ng.serial_code, ng.defect, ng.location, ng.board_number, ai.operator_name, ai.serial_status, ai.board_status, ai.line, ai.shift, ai.model_name, ai.assy_code, ai.kepi_lot
@@ -10,7 +10,7 @@ try {
     $stmt->execute();
     $nogood_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("Error fetching No Good data: " . $e->getMessage());
+    exit('Error fetching No Good data: '.$e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -49,33 +49,33 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($nogood_data) > 0): ?>
-                        <?php foreach ($nogood_data as $row): ?>
+                    <?php if (count($nogood_data) > 0) { ?>
+                        <?php foreach ($nogood_data as $row) { ?>
                             <tr>
-                                <td><?= htmlspecialchars($row['qr_code']) ?></td>
-                                <td><?= htmlspecialchars($row['serial_code']) ?></td>
-                                <td><?= htmlspecialchars($row['defect']) ?></td>
-                                <td><?= htmlspecialchars($row['location']) ?></td>
-                                <td><?= htmlspecialchars($row['board_number']) ?></td>
-                                <td><?= htmlspecialchars($row['operator_name']) ?></td>
-                                <td><?= htmlspecialchars($row['serial_status']) ?></td>
-                                <td><?= htmlspecialchars($row['board_status']) ?></td>
-                                <td><?= htmlspecialchars($row['line']) ?></td>
-                                <td><?= htmlspecialchars($row['shift']) ?></td>
-                                <td><?= htmlspecialchars($row['model_name']) ?></td>
-                                <td><?= htmlspecialchars($row['assy_code']) ?></td>
-                                <td><?= htmlspecialchars($row['kepi_lot']) ?></td>
-                                <td><button onclick='openModal(<?= json_encode($row) ?>)'>Repair</button></td>
+                                <td><?php echo htmlspecialchars($row['qr_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['serial_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['defect']); ?></td>
+                                <td><?php echo htmlspecialchars($row['location']); ?></td>
+                                <td><?php echo htmlspecialchars($row['board_number']); ?></td>
+                                <td><?php echo htmlspecialchars($row['operator_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['serial_status']); ?></td>
+                                <td><?php echo htmlspecialchars($row['board_status']); ?></td>
+                                <td><?php echo htmlspecialchars($row['line']); ?></td>
+                                <td><?php echo htmlspecialchars($row['shift']); ?></td>
+                                <td><?php echo htmlspecialchars($row['model_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['assy_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['kepi_lot']); ?></td>
+                                <td><button onclick='openModal(<?php echo json_encode($row); ?>)'>Repair</button></td>
                             </tr>
                             <tr id="noResultsRow" style="display: none; text-align: center;">
                                 <td colspan="14">No records found</td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                        <?php } ?>
+                    <?php } else { ?>
                         <tr>
                             <td colspan="14">No records found.</td>
                         </tr>
-                    <?php endif; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

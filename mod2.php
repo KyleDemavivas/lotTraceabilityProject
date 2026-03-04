@@ -1,29 +1,29 @@
 <?php include 'sidebar.php'; ?>
 <?php
 if (!isset($_SESSION['user_namefl'])) {
-    header("Location: login.php");
-    exit();
+    header('Location: login.php');
+    exit;
 }
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 $defects = [];
 try {
-    $stmt = $conn->query("SELECT defect FROM defect_master ORDER BY defect ASC");
+    $stmt = $conn->query('SELECT defect FROM defect_master ORDER BY defect ASC');
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $defects[] = $row['defect'];
     }
 } catch (PDOException $e) {
-    die("Error fetching defects: " . $e->getMessage());
+    exit('Error fetching defects: '.$e->getMessage());
 }
 
 $locations = [];
 try {
-    $stmt = $conn->query("SELECT location FROM location_master ORDER BY location ASC");
+    $stmt = $conn->query('SELECT location FROM location_master ORDER BY location ASC');
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $locations[] = $row['location'];
     }
 } catch (PDOException $e) {
-    die("Error fetching locations: " . $e->getMessage());
+    exit('Error fetching locations: '.$e->getMessage());
 }
 
 ?>
@@ -132,17 +132,17 @@ try {
                                 <label class="form-label">Defect:</label>
                                 <select class="form-input defect-select" name="defect[]" required>
                                     <option value="" disabled selected>Select defect</option>
-                                    <?php foreach ($defects as $defect): ?>
-                                        <option value="<?= htmlspecialchars($defect) ?>"><?= htmlspecialchars($defect) ?></option>
-                                    <?php endforeach; ?>
+                                    <?php foreach ($defects as $defect) { ?>
+                                        <option value="<?php echo htmlspecialchars($defect); ?>"><?php echo htmlspecialchars($defect); ?></option>
+                                    <?php } ?>
                                 </select>
                             </div>
                             <div class="half-group">
                                 <label class="form-label">Location:</label>
                                 <select class="form-input location-select" name="location[0][]" multiple="multiple" required>
-                                    <?php foreach ($locations as $location): ?>
-                                        <option value="<?= htmlspecialchars($location) ?>"><?= htmlspecialchars($location) ?></option>
-                                    <?php endforeach; ?>
+                                    <?php foreach ($locations as $location) { ?>
+                                        <option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option>
+                                    <?php } ?>
                                 </select>
                             </div>
                         </div>
@@ -197,15 +197,15 @@ try {
     </div>
     <script>
         //for operator name fixed
-        const loggedInUser = "<?= $_SESSION['user_namefl'] ?? '' ?>";
+        const loggedInUser = "<?php echo $_SESSION['user_namefl'] ?? ''; ?>";
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const defectOptions = `<?php foreach ($defects as $defect): ?><option value="<?= htmlspecialchars($defect) ?>"><?= htmlspecialchars($defect) ?></option><?php endforeach; ?>`;
-        const locationOptions = `<?php foreach ($locations as $location): ?><option value="<?= htmlspecialchars($location) ?>"><?= htmlspecialchars($location) ?></option><?php endforeach; ?>`;
+        const defectOptions = `<?php foreach ($defects as $defect) { ?><option value="<?php echo htmlspecialchars($defect); ?>"><?php echo htmlspecialchars($defect); ?></option><?php } ?>`;
+        const locationOptions = `<?php foreach ($locations as $location) { ?><option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option><?php } ?>`;
 
         let isSubmitting = false;
         let qrCounts = {};

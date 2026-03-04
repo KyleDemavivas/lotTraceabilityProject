@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
 $response = ['success' => false, 'message' => 'Something went wrong.'];
@@ -8,10 +9,9 @@ $created_at = date('Y-m-d H:i:s');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-
         if (isset($_POST['action']) && $_POST['action'] === 'delete') {
             $user_id = $_POST['user_id'];
-            $query = "DELETE FROM user_account WHERE user_id = :user_id";
+            $query = 'DELETE FROM user_account WHERE user_id = :user_id';
             $stmt = $conn->prepare($query);
             $stmt->execute([':user_id' => $user_id]);
             $response = ['success' => true, 'message' => 'User account successfully deleted.'];
@@ -30,10 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['new_password']) && !empty($_POST['new_password'])) {
             $user_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
 
-            $query = "UPDATE user_account 
+            $query = 'UPDATE user_account 
 SET user_namefl = :user_namefl, user_process = :user_process, 
 user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, user_password = :user_password, updated_at = GETDATE()
-WHERE user_id = :user_id";
+WHERE user_id = :user_id';
 
             $stmt = $conn->prepare($query);
             $stmt->execute([
@@ -44,13 +44,13 @@ WHERE user_id = :user_id";
                 ':user_line' => $user_line,
                 ':user_section' => $user_section,
                 ':user_password' => $user_password,
-                ':user_id' => $user_id
+                ':user_id' => $user_id,
             ]);
         } else {
-            $query = "UPDATE user_account 
+            $query = 'UPDATE user_account 
 SET user_namefl = :user_namefl, user_process = :user_process, 
 user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, updated_at = GETDATE()
-WHERE user_id = :user_id";
+WHERE user_id = :user_id';
 
             $stmt = $conn->prepare($query);
             $stmt->execute([
@@ -60,18 +60,17 @@ WHERE user_id = :user_id";
                 ':user_type' => $user_type,
                 ':user_line' => $user_line,
                 ':user_section' => $user_section,
-                ':user_id' => $user_id
+                ':user_id' => $user_id,
             ]);
         }
 
         $response['success'] = true;
         $response['message'] = 'User account successfully updated.';
         $response['data'] = 'Successfully Updated';
-        
     } catch (Exception $e) {
         $response['success'] = false;
-        $response['data']="Database Error";
-        $response['message'] = "An error has occured.";
+        $response['data'] = 'Database Error';
+        $response['message'] = 'An error has occured.';
     }
     echo json_encode($response);
 }

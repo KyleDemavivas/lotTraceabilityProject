@@ -1,17 +1,17 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 if ($search !== '') {
-    $query = "SELECT kepi_lot, line, operator_name, MIN(created_at) AS start_time, MAX(created_at) AS end_time, SUM(CAST(qty_input AS INT)) AS total_qty, MAX(process_remarks) AS process_remarks
-              FROM mounter_process WHERE kepi_lot LIKE :search GROUP BY kepi_lot, line, operator_name ORDER BY start_time";
+    $query = 'SELECT kepi_lot, line, operator_name, MIN(created_at) AS start_time, MAX(created_at) AS end_time, SUM(CAST(qty_input AS INT)) AS total_qty, MAX(process_remarks) AS process_remarks
+              FROM mounter_process WHERE kepi_lot LIKE :search GROUP BY kepi_lot, line, operator_name ORDER BY start_time';
     $stmt = $conn->prepare($query);
     $stmt->execute(['search' => "%$search%"]);
 } else {
-    $query = "SELECT kepi_lot, line, operator_name, MIN(created_at) AS start_time, MAX(created_at) AS end_time, SUM(CAST(qty_input AS INT)) AS total_qty, MAX(process_remarks) AS process_remarks
-              FROM mounter_process GROUP BY kepi_lot, line, operator_name ORDER BY start_time DESC";
+    $query = 'SELECT kepi_lot, line, operator_name, MIN(created_at) AS start_time, MAX(created_at) AS end_time, SUM(CAST(qty_input AS INT)) AS total_qty, MAX(process_remarks) AS process_remarks
+              FROM mounter_process GROUP BY kepi_lot, line, operator_name ORDER BY start_time DESC';
     $stmt = $conn->prepare($query);
     $stmt->execute();
 }
@@ -39,7 +39,7 @@ $lots = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="controls">
             <form method="GET" style="display: inline;">
                 <input type="text" name="search" placeholder="Search KEPI Lot"
-                    value="<?= htmlspecialchars($search) ?>" autocomplete="off">
+                    value="<?php echo htmlspecialchars($search); ?>" autocomplete="off">
                 <button type="submit">Search</button>
             </form>
             <input type="text" id="start_date" class="datepicker" placeholder="Start Date">
@@ -61,30 +61,30 @@ $lots = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($lots) > 0): ?>
-                        <?php foreach ($lots as $lot): ?>
+                    <?php if (count($lots) > 0) { ?>
+                        <?php foreach ($lots as $lot) { ?>
                             <tr>
-                                <td><?= htmlspecialchars($lot['line']) ?></td>
-                                <td><?= htmlspecialchars($lot['kepi_lot']) ?></td>
-                                <td><?= htmlspecialchars($lot['operator_name']) ?></td>
-                                <td><?= date("F d, Y h:i A", strtotime($lot['start_time'])) ?></td>
-                                <td><?= date("F d, Y h:i A", strtotime($lot['end_time'])) ?></td>
-                                <td><?= htmlspecialchars($lot['total_qty']) ?></td>
+                                <td><?php echo htmlspecialchars($lot['line']); ?></td>
+                                <td><?php echo htmlspecialchars($lot['kepi_lot']); ?></td>
+                                <td><?php echo htmlspecialchars($lot['operator_name']); ?></td>
+                                <td><?php echo date('F d, Y h:i A', strtotime($lot['start_time'])); ?></td>
+                                <td><?php echo date('F d, Y h:i A', strtotime($lot['end_time'])); ?></td>
+                                <td><?php echo htmlspecialchars($lot['total_qty']); ?></td>
                                 <td>
-                                    <span><?= htmlspecialchars($lot['process_remarks']) ?></span><br><br>
+                                    <span><?php echo htmlspecialchars($lot['process_remarks']); ?></span><br><br>
                                     <button class="remarks_btn"
-                                        onclick="openRemarksModal('<?= htmlspecialchars($lot['kepi_lot']) ?>',
-                                                                 '<?= htmlspecialchars($lot['process_remarks']) ?>')">
+                                        onclick="openRemarksModal('<?php echo htmlspecialchars($lot['kepi_lot']); ?>',
+                                                                 '<?php echo htmlspecialchars($lot['process_remarks']); ?>')">
                                         Add Remarks
                                     </button>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                        <?php } ?>
+                    <?php } else { ?>
                         <tr>
                             <td colspan="7">No records found.</td>
                         </tr>
-                    <?php endif; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

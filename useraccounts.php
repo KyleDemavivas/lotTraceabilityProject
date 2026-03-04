@@ -11,7 +11,7 @@
 // userDelete(id) function will prompt a confirmation dialog before deleting the user
 
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 $stmt = $conn->prepare('SELECT * FROM user_account');
 $stmt->execute();

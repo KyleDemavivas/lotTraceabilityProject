@@ -1,25 +1,26 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
 $response = ['status' => 'error', 'message' => 'Something went wrong.'];
 date_default_timezone_set('Asia/Manila');
 $created_at = date('Y-m-d H:i:s');
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $updateSql = "UPDATE ai_process SET judgement_ll = 'HOLD'WHERE qr_code = :qr_code AND serial_code = :serial_code AND judgement_ll = 'NO GOOD'";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->execute([
             ':qr_code' => $_POST['qr_code'],
-            ':serial_code' => $_POST['serial_code']
+            ':serial_code' => $_POST['serial_code'],
         ]);
 
         $repair_status = 'GOOD';
         $judgement_ll = 'PENDING';
 
-        $sql = "INSERT INTO ai_process (qr_code, model_name, assy_code, kepi_lot, serial_code, operator_name, repaired_by, action_rp, lcr_reading, unitmeasurement, batchlot, repairable, shift, line, defect, location, board_number, repair_status, judgement_ll, created_at) 
-                VALUES (:qr_code, :model_name, :assy_code, :kepi_lot, :serial_code, :operator_name, :repaired_by, :action_rp, :lcr_reading, :unitmeasurement, :batchlot, :repairable, :shift, :line, :defect, :location, :board_number, :repair_status, :judgement_ll, :created_at)";
+        $sql = 'INSERT INTO ai_process (qr_code, model_name, assy_code, kepi_lot, serial_code, operator_name, repaired_by, action_rp, lcr_reading, unitmeasurement, batchlot, repairable, shift, line, defect, location, board_number, repair_status, judgement_ll, created_at) 
+                VALUES (:qr_code, :model_name, :assy_code, :kepi_lot, :serial_code, :operator_name, :repaired_by, :action_rp, :lcr_reading, :unitmeasurement, :batchlot, :repairable, :shift, :line, :defect, :location, :board_number, :repair_status, :judgement_ll, :created_at)';
 
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -42,15 +43,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':board_number' => $_POST['board_number'],
             ':repair_status' => $repair_status,
             ':judgement_ll' => $judgement_ll,
-            ':created_at' => $created_at
+            ':created_at' => $created_at,
         ]);
 
         $response['status'] = 'success';
         $response['message'] = 'Previous NO GOOD set to HOLD, new repair inserted as PENDING.';
     } catch (PDOException $e) {
-        $response['message'] = 'Database error: ' . $e->getMessage();
+        $response['message'] = 'Database error: '.$e->getMessage();
     }
 }
 
 echo json_encode($response);
-exit();
+exit;

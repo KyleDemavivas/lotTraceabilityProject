@@ -1,10 +1,11 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 if (isset($_POST['serial_code'])) {
     $serial_code = $_POST['serial_code'];
 
-    $query = "SELECT qr_code FROM vi_process WHERE serial_code = :serial_code";
+    $query = 'SELECT qr_code FROM vi_process WHERE serial_code = :serial_code';
     $stmt = $conn->prepare($query);
     $stmt->execute([':serial_code' => $serial_code]);
 

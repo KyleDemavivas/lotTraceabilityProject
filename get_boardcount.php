@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
 $kepi_lot = $_POST['kepi_lot'] ?? '';
@@ -10,17 +11,17 @@ if (!$kepi_lot || !$line) {
     exit;
 }
 
-$sql = "SELECT TOP 1 board_counter FROM mod1_process WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC";
+$sql = 'SELECT TOP 1 board_counter FROM mod1_process WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC';
 
 $stmt = $conn->prepare($sql);
 $stmt->execute([
     ':kepi_lot' => $kepi_lot,
-    ':line' => $line
+    ':line' => $line,
 ]);
 
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
 echo json_encode([
     'success' => true,
-    'count' => $row ? intval($row['board_counter']) : 0
+    'count' => $row ? intval($row['board_counter']) : 0,
 ]);

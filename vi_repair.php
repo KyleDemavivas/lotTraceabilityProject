@@ -1,6 +1,6 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 try {
     $sql = "SELECT * FROM repair_process WHERE judgement_vi = 'PENDING' ORDER BY created_at DESC";
@@ -9,7 +9,7 @@ try {
     $stmt->execute();
     $nogood_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("Error fetching No Good data: " . $e->getMessage());
+    exit('Error fetching No Good data: '.$e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -49,35 +49,35 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($nogood_data) > 0): ?>
-                        <?php foreach ($nogood_data as $row): ?>
+                    <?php if (count($nogood_data) > 0) { ?>
+                        <?php foreach ($nogood_data as $row) { ?>
                             <tr>
-                                <td><?= htmlspecialchars($row['model_name']) ?></td>
-                                <td><?= htmlspecialchars($row['assy_code']) ?></td>
-                                <td><?= htmlspecialchars($row['kepi_lot']) ?></td>
-                                <td><?= htmlspecialchars($row['qr_code']) ?></td>
-                                <td><?= htmlspecialchars($row['serial_code']) ?></td>
-                                <td><?= htmlspecialchars($row['defect']) ?></td>
-                                <td><?= htmlspecialchars($row['location']) ?></td>
-                                <td><?= htmlspecialchars($row['board_number']) ?></td>
-                                <td><?= htmlspecialchars($row['operator_name']) ?></td>
-                                <td><?= htmlspecialchars($row['batchlot']) ?></td>
-                                <td><?= htmlspecialchars($row['repair_status']) ?></td>
-                                <td><?= htmlspecialchars($row['judgement_ll']) ?></td>
-                                <td><?= htmlspecialchars($row['line']) ?></td>
-                                <td><?= htmlspecialchars($row['shift']) ?></td>
+                                <td><?php echo htmlspecialchars($row['model_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['assy_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['kepi_lot']); ?></td>
+                                <td><?php echo htmlspecialchars($row['qr_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['serial_code']); ?></td>
+                                <td><?php echo htmlspecialchars($row['defect']); ?></td>
+                                <td><?php echo htmlspecialchars($row['location']); ?></td>
+                                <td><?php echo htmlspecialchars($row['board_number']); ?></td>
+                                <td><?php echo htmlspecialchars($row['operator_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['batchlot']); ?></td>
+                                <td><?php echo htmlspecialchars($row['repair_status']); ?></td>
+                                <td><?php echo htmlspecialchars($row['judgement_ll']); ?></td>
+                                <td><?php echo htmlspecialchars($row['line']); ?></td>
+                                <td><?php echo htmlspecialchars($row['shift']); ?></td>
                         <!--Calls opedmodal function in JQuery and assigns data to the 'data' array with the $row variable that pulls from the database-->
-                                <td><button onclick='openModal(<?= json_encode($row) ?>)'>Verify</button></td>
+                                <td><button onclick='openModal(<?php echo json_encode($row); ?>)'>Verify</button></td>
                             </tr>
                             <tr id="noResultsRow" style="display: none; text-align: center;">
                                 <td colspan="15">No records found</td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                        <?php } ?>
+                    <?php } else { ?>
                         <tr>
                             <td colspan="15">No records found.</td>
                         </tr>
-                    <?php endif; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

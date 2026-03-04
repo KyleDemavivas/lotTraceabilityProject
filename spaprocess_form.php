@@ -1,14 +1,15 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 $response = [
     'status' => 'error',
     'message' => '',
     'updated_stencil_stroke' => null,
-    'updated_squeegee_stroke' => null
+    'updated_squeegee_stroke' => null,
 ];
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         date_default_timezone_set('Asia/Manila');
         $created_at = date('Y-m-d H:i:s');
@@ -29,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $squeegee_no = $_POST['squeegee_no'];
         $adhesive = $_POST['adhesive'];
 
-        $checkStmt = $conn->prepare("SELECT COUNT(*) FROM trace_process WHERE qr_code = :qr_code");
+        $checkStmt = $conn->prepare('SELECT COUNT(*) FROM trace_process WHERE qr_code = :qr_code');
         $checkStmt->execute([':qr_code' => $qr_code]);
         if ($checkStmt->fetchColumn() > 0) {
             $response['message'] = 'QR Code already exists in Database.';
@@ -38,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         // Also check if QR already exists in spa_process
-        $checkSpaStmt = $conn->prepare("SELECT COUNT(*) FROM spa_process WHERE qr_code = :qr_code");
+        $checkSpaStmt = $conn->prepare('SELECT COUNT(*) FROM spa_process WHERE qr_code = :qr_code');
         $checkSpaStmt->execute([':qr_code' => $qr_code]);
         if ($checkSpaStmt->fetchColumn() > 0) {
             $response['message'] = 'QR Code already exists in SPA Process.';
@@ -46,17 +47,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
 
-        $stencilStrokeStmt = $conn->prepare("SELECT current_stroke FROM spa_process WHERE stencil_no = :stencil_no ORDER BY id DESC");
+        $stencilStrokeStmt = $conn->prepare('SELECT current_stroke FROM spa_process WHERE stencil_no = :stencil_no ORDER BY id DESC');
         $stencilStrokeStmt->execute([':stencil_no' => $stencil_no]);
         $current_stroke = $stencilStrokeStmt->fetchColumn();
         $current_stroke = $current_stroke ? $current_stroke + 1 : 1;
 
-        $squeegeeStrokeStmt = $conn->prepare("SELECT squeegeecurrent_stroke FROM spa_process WHERE squeegee_no = :squeegee_no ORDER BY id DESC");
+        $squeegeeStrokeStmt = $conn->prepare('SELECT squeegeecurrent_stroke FROM spa_process WHERE squeegee_no = :squeegee_no ORDER BY id DESC');
         $squeegeeStrokeStmt->execute([':squeegee_no' => $squeegee_no]);
         $squeegeecurrent_stroke = $squeegeeStrokeStmt->fetchColumn();
         $squeegeecurrent_stroke = $squeegeecurrent_stroke ? $squeegeecurrent_stroke + 1 : 1;
 
-        $stencil = $conn->prepare("SELECT total_stroke FROM stencil_master WHERE stencil_no = :stencil_no AND deleted_at IS NULL");
+        $stencil = $conn->prepare('SELECT total_stroke FROM stencil_master WHERE stencil_no = :stencil_no AND deleted_at IS NULL');
         $stencil->execute([':stencil_no' => $stencil_no]);
         $stencil_total = $stencil->fetchColumn();
         if ($stencil_total !== false && $current_stroke > $stencil_total) {
@@ -65,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
 
-        $squeegee = $conn->prepare("SELECT squeegeetotal_stroke FROM squeegee_master WHERE squeegee_no = :squeegee_no AND deleted_at IS NULL");
+        $squeegee = $conn->prepare('SELECT squeegeetotal_stroke FROM squeegee_master WHERE squeegee_no = :squeegee_no AND deleted_at IS NULL');
         $squeegee->execute([':squeegee_no' => $squeegee_no]);
         $squeegee_total = $squeegee->fetchColumn();
         if ($squeegee_total !== false && $squeegeecurrent_stroke > $squeegee_total) {
@@ -74,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
 
-        $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM spa_process WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
+        $finalQtyStmt = $conn->prepare('SELECT final_qtyinput FROM spa_process WHERE kepi_lot = :kepi_lot ORDER BY id DESC');
         $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
         $previous_final_qty = $finalQtyStmt->fetchColumn();
         $previous_final_qty = $previous_final_qty ? $previous_final_qty : 0;
@@ -108,13 +109,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':adhesive' => $adhesive,
             ':current_stroke' => $current_stroke,
             ':squeegeecurrent_stroke' => $squeegeecurrent_stroke,
-            ':created_at' => $created_at
+            ':created_at' => $created_at,
         ]);
 
-        $conn->prepare("UPDATE stencil_master SET current_stroke = current_stroke + 1 WHERE stencil_no = :stencil_no AND deleted_at IS NULL")
+        $conn->prepare('UPDATE stencil_master SET current_stroke = current_stroke + 1 WHERE stencil_no = :stencil_no AND deleted_at IS NULL')
             ->execute([':stencil_no' => $stencil_no]);
 
-        $conn->prepare("UPDATE squeegee_master SET squeegeecurrent_stroke = squeegeecurrent_stroke + 1 WHERE squeegee_no = :squeegee_no AND deleted_at IS NULL")
+        $conn->prepare('UPDATE squeegee_master SET squeegeecurrent_stroke = squeegeecurrent_stroke + 1 WHERE squeegee_no = :squeegee_no AND deleted_at IS NULL')
             ->execute([':squeegee_no' => $squeegee_no]);
 
         $response['updated_stencil_stroke'] = $current_stroke;
@@ -122,11 +123,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $response['final_qtyinput'] = $final_qtyinput;
 
-        $serialQuery = "SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
+        $serialQuery = 'SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
         serial_code7, serial_code8, serial_code9, serial_code10, serial_code11, serial_code12, 
         serial_code13, serial_code14, serial_code15, serial_code16, serial_code17, serial_code18, 
         serial_code19, serial_code20, serial_code21, serial_code22, serial_code23, serial_code24
-        FROM label_code WHERE qr_code = :qr_code";
+        FROM label_code WHERE qr_code = :qr_code';
 
         $serialStmt = $conn->prepare($serialQuery);
         $serialStmt->execute([':qr_code' => $qr_code]);
@@ -143,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         ':model_name' => $model_name,
                         ':kepi_lot' => $kepi_lot,
                         ':serial_code' => $serial_code,
-                        ':created_at' => $created_at
+                        ':created_at' => $created_at,
                     ]);
                 }
             }
@@ -152,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $response['status'] = 'success';
         $response['message'] = 'Form submitted successfully!';
     } catch (PDOException $e) {
-        $response['message'] = 'Error submitting form: ' . $e->getMessage();
+        $response['message'] = 'Error submitting form: '.$e->getMessage();
     }
 }
 

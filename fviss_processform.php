@@ -1,12 +1,12 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 header('Content-Type: application/json');
 
 $response = ['status' => 'error', 'message' => '', 'board_count' => 0];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $source = $_POST['source'] ?? '';
     $main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
 
@@ -38,8 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $lastCounter = $counterStmt->fetchColumn();
         $board_counter = ($lastCounter) ? ($lastCounter + 1) : 1;
 
-        $checkQuery = "SELECT mod2_process, fviss_process FROM trace_process WHERE qr_code = :qr_code";
-        //$checkQuery = "SELECT mod2_process, fviss_process FROM trace_process WHERE qr_code = :qr_code";
+        $checkQuery = 'SELECT mod2_process, fviss_process FROM trace_process WHERE qr_code = :qr_code';
+        // $checkQuery = "SELECT mod2_process, fviss_process FROM trace_process WHERE qr_code = :qr_code";
         $checkStmt = $conn->prepare($checkQuery);
         $checkStmt->execute([':qr_code' => $qr_code]);
         $row = $checkStmt->fetch(PDO::FETCH_ASSOC);
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($row['fviss_process'] === 'GOOD') {
                     $response['message'] = 'FVISS Process already has data.';
                     echo json_encode($response);
-                    exit; 
+                    exit;
                 } else {
                     $updateMounter = "UPDATE trace_process SET fviss_process = 'GOOD' WHERE qr_code = :qr_code";
                     $updateStmt = $conn->prepare($updateMounter);
@@ -67,13 +67,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
         $finalQtyStmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $previous_final_qty = $finalQtyStmt->fetchColumn();
-        $final_qtyinput = $previous_final_qty + (int)$qty_input;
+        $final_qtyinput = $previous_final_qty + (int) $qty_input;
 
-        $serialQuery = "SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
+        $serialQuery = 'SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
                         serial_code7, serial_code8, serial_code9, serial_code10, serial_code11, serial_code12, 
                         serial_code13, serial_code14, serial_code15, serial_code16, serial_code17, serial_code18, 
                         serial_code19, serial_code20, serial_code21, serial_code22, serial_code23, serial_code24
-                        FROM label_code WHERE qr_code = :qr_code";
+                        FROM label_code WHERE qr_code = :qr_code';
 
         $serialStmt = $conn->prepare($serialQuery);
         $serialStmt->execute([':qr_code' => $qr_code]);
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ':board_status' => 'GOOD',
                         ':serial_status' => 'GOOD',
                         ':prev_boardstatus' => 'GOOD',
-                        ':prev_serialstatus' => 'GOOD'
+                        ':prev_serialstatus' => 'GOOD',
                     ]);
                 }
             }
@@ -114,13 +114,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $boardCountQuery = "SELECT COUNT(*) FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line";
         $boardCountStmt = $conn->prepare($boardCountQuery);
         $boardCountStmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
-        $realTimeBoardCount = (int)$boardCountStmt->fetchColumn();
+        $realTimeBoardCount = (int) $boardCountStmt->fetchColumn();
 
         $response['status'] = 'success';
         $response['message'] = 'FVI Solderside Process recorded successfully.';
         $response['board_count'] = $realTimeBoardCount;
     } catch (PDOException $e) {
-        $response['message'] = 'Error submitting form: ' . $e->getMessage();
+        $response['message'] = 'Error submitting form: '.$e->getMessage();
     }
 }
 

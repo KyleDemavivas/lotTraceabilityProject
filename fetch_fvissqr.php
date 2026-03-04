@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 header('Content-Type: application/json');
 error_reporting(E_ALL);
@@ -10,27 +11,26 @@ if (!isset($_POST['code'])) {
     exit;
 }
 
-$code = strtoupper(trim($_POST['code']?? ''));
+$code = strtoupper(trim($_POST['code'] ?? ''));
 $source = $_POST['source'] ?? '';
 $main_table = $source === 'main' ? 'mod2_process' : 'batchlot_process';
 
 try {
-
-    if(empty($source)){
-       $response['success'] = false;
-       $response['message'] = 'Source not provided';
+    if (empty($source)) {
+        $response['success'] = false;
+        $response['message'] = 'Source not provided';
         $response['data'] = 'JSON ERROR';
-       echo json_encode($response);
-       exit;
-    }    
+        echo json_encode($response);
+        exit;
+    }
 
-    if($source === 'main'){
-        $qry = "SELECT COUNT(*) FROM batchlot_process WHERE qr_code = :qr_code";
+    if ($source === 'main') {
+        $qry = 'SELECT COUNT(*) FROM batchlot_process WHERE qr_code = :qr_code';
         $stmtBatchlotChk = $conn->prepare($qry);
         $stmtBatchlotChk->execute([':qr_code' => $code]);
         $batchlotCount = $stmtBatchlotChk->fetchColumn();
-        
-        if($batchlotCount > 0){
+
+        if ($batchlotCount > 0) {
             $response['success'] = false;
             $response['message'] = 'This QR Code is currently on BATCH LOT.';
             $response['data'] = 'QR ERROR';
@@ -38,49 +38,46 @@ try {
             exit;
         }
 
-        $query = "SELECT assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM mod2_process WHERE qr_code = :qr_code";
+        $query = 'SELECT assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM mod2_process WHERE qr_code = :qr_code';
 
         $stmt = $conn->prepare($query);
         $stmt->execute([':qr_code' => $code]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    }else if ($source === 'batchlot'){
-        $query = "SELECT assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input, qr_code FROM batchlot_process WHERE serial_code = :serial_code";
+    } elseif ($source === 'batchlot') {
+        $query = 'SELECT assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input, qr_code FROM batchlot_process WHERE serial_code = :serial_code';
 
         $stmt = $conn->prepare($query);
         $stmt->execute([':serial_code' => $code]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    }    
+    }
 
     if (!$row) {
-        echo json_encode(['success' => false, 'message' => 'This QR or Serial Code is not found within the system.', 'title'=>'QR Not Found']);
+        echo json_encode(['success' => false, 'message' => 'This QR or Serial Code is not found within the system.', 'title' => 'QR Not Found']);
         exit;
     }
 
-    if($source === 'main'){
-
-    $query2 = "SELECT COUNT(*) FROM mod2_process WHERE TRIM(UPPER(qr_code)) = :qr_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
+    if ($source === 'main') {
+        $query2 = "SELECT COUNT(*) FROM mod2_process WHERE TRIM(UPPER(qr_code)) = :qr_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
                             UNION ALL
                              SELECT COUNT(*) FROM fviss_process WHERE TRIM(UPPER(qr_code)) = :qr_code2 AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')";
-    $stmt = $conn->prepare($query2);
-    $stmt->execute([':qr_code' => $code, ':qr_code2' => $code]);
-    $holdCount = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmt = $conn->prepare($query2);
+        $stmt->execute([':qr_code' => $code, ':qr_code2' => $code]);
+        $holdCount = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    if ($holdCount[0] > 0 || $holdCount[1] > 0) {
-        echo json_encode(['success' => false, 'message' => 'This QR Code has been marked as NO GOOD and cannot be processed.', 'title'=>'QR on Hold']);
-        exit;
-    }
+        if ($holdCount[0] > 0 || $holdCount[1] > 0) {
+            echo json_encode(['success' => false, 'message' => 'This QR Code has been marked as NO GOOD and cannot be processed.', 'title' => 'QR on Hold']);
+            exit;
+        }
 
-    $stmtbatchlot = $conn->prepare("SELECT COUNT(*) FROM fviss_batchlot WHERE qr_code = :qr_code");
-    $stmtbatchlot->execute([':qr_code' => $code]);
-    $batchlotCount = $stmtbatchlot->fetchColumn();
+        $stmtbatchlot = $conn->prepare('SELECT COUNT(*) FROM fviss_batchlot WHERE qr_code = :qr_code');
+        $stmtbatchlot->execute([':qr_code' => $code]);
+        $batchlotCount = $stmtbatchlot->fetchColumn();
 
-    if ($batchlotCount > 0) {
-        echo json_encode(['success' => false, 'title' => 'QR Code is in Batchlot', 'message' => 'This Board has been transferred to the Batchlot and cannot be processed.']);
-        exit;
-    }
-    } else if($source === 'batchlot'){
-
+        if ($batchlotCount > 0) {
+            echo json_encode(['success' => false, 'title' => 'QR Code is in Batchlot', 'message' => 'This Board has been transferred to the Batchlot and cannot be processed.']);
+            exit;
+        }
+    } elseif ($source === 'batchlot') {
         $query2 = "SELECT COUNT(*) FROM batchlot_process WHERE TRIM(UPPER(serial_code)) = :serial_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
                             UNION ALL
                              SELECT COUNT(*) FROM fviss_batchlot WHERE TRIM(UPPER(serial_code)) = :serial_code2 AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')";
@@ -98,12 +95,12 @@ try {
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = $finalQtyStmt->fetchColumn() ?: 0;
 
-    $serialStmt = $conn->prepare("SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5,
+    $serialStmt = $conn->prepare('SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5,
                serial_code6, serial_code7, serial_code8, serial_code9, serial_code10,
                serial_code11, serial_code12, serial_code13, serial_code14, serial_code15,
                serial_code16, serial_code17, serial_code18, serial_code19, serial_code20,
                serial_code21, serial_code22, serial_code23, serial_code24
-        FROM label_code WHERE TRIM(UPPER(qr_code)) = :qr_code");
+        FROM label_code WHERE TRIM(UPPER(qr_code)) = :qr_code');
 
     $serialStmt->execute([':qr_code' => $code]);
     $serials = $serialStmt->fetch(PDO::FETCH_ASSOC);
@@ -112,7 +109,7 @@ try {
     if ($serials) {
         foreach ($serials as $s) {
             if (!empty($s)) {
-                $serial_qty++;
+                ++$serial_qty;
             }
         }
     }
@@ -129,8 +126,7 @@ try {
         'line' => $row['line'],
         'qty_input' => $row['qty_input'],
         'final_qtyinput' => $final_qtyinput,
-        'serial_qty' => $serial_qty
+        'serial_qty' => $serial_qty,
     ]);
 } catch (Throwable $e) {
-
 }

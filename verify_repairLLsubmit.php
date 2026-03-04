@@ -1,6 +1,6 @@
 <?php
 
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
 $response = ['success' => false, 'message' => 'Something went wrong.'];

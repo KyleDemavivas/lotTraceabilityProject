@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 header('Content-Type: application/json');
 error_reporting(0);
@@ -12,7 +13,7 @@ if (!isset($_POST['serial_code'])) {
 $serial_code = strtoupper(trim($_POST['serial_code'] ?? ''));
 $source = $_POST['source'] ?? '';
 
-if(!in_array($source, ['main', 'batchlot'])){
+if (!in_array($source, ['main', 'batchlot'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid source']);
     exit;
 }
@@ -21,7 +22,6 @@ $main_table = $source === 'main' ? 'partside_process' : 'partside_batchlot';
 $main_table2 = $source === 'main' ? 'partside2_process' : 'partside2_batchlot';
 
 try {
-
     $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
     $stmt->execute([':serial_code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -37,7 +37,7 @@ try {
     $stmt->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
     $holdCount = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    if(in_array('NO GOOD', $holdCount, true)){
+    if (in_array('NO GOOD', $holdCount, true)) {
         echo json_encode(['success' => false, 'errorCode' => 'serialhold', 'message' => 'This Serial Code is currently on HOLD and cannot be processed.']);
         exit;
     }
@@ -57,7 +57,7 @@ try {
         'asmline' => $row['asmline'],
         'line' => $row['line'],
         'qty_input' => $row['qty_input'],
-        'final_qtyinput' => $final_qtyinput
+        'final_qtyinput' => $final_qtyinput,
     ]);
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'message' => 'Database error']);

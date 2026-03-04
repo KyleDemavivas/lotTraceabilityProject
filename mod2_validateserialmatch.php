@@ -1,12 +1,13 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 header('Content-Type: application/json');
 
 $response = [
     'valid' => false,
     'message' => 'Invalid request',
-    'qr_code' => ''
+    'qr_code' => '',
 ];
 
 if (isset($_POST['serial_code'])) {
@@ -14,7 +15,7 @@ if (isset($_POST['serial_code'])) {
     $source = $_POST['source'] ?? '';
 
     try {
-        $stmt = $conn->prepare("SELECT qr_code, serial_status FROM mod2_process WHERE serial_code = :serial");
+        $stmt = $conn->prepare('SELECT qr_code, serial_status FROM mod2_process WHERE serial_code = :serial');
         $stmt->execute([':serial' => $serial]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -22,7 +23,7 @@ if (isset($_POST['serial_code'])) {
             echo json_encode([
                 'valid' => false,
                 'message' => 'Serial code not found',
-                'qr_code' => ''
+                'qr_code' => '',
             ]);
             exit;
         }
@@ -31,7 +32,7 @@ if (isset($_POST['serial_code'])) {
             echo json_encode([
                 'valid' => false,
                 'message' => 'Serial is already tagged as NO GOOD.',
-                'qr_code' => $row['qr_code']
+                'qr_code' => $row['qr_code'],
             ]);
             exit;
         }
@@ -45,7 +46,7 @@ if (isset($_POST['serial_code'])) {
                 echo json_encode([
                     'valid' => false,
                     'message' => 'Serial does not match this QR code',
-                    'qr_code' => $qrCodeFromDB
+                    'qr_code' => $qrCodeFromDB,
                 ]);
                 exit;
             }
@@ -54,15 +55,14 @@ if (isset($_POST['serial_code'])) {
         echo json_encode([
             'valid' => true,
             'message' => '',
-            'qr_code' => $qrCodeFromDB
+            'qr_code' => $qrCodeFromDB,
         ]);
         exit;
-
     } catch (PDOException $e) {
         echo json_encode([
             'valid' => false,
             'message' => 'Database error',
-            'qr_code' => ''
+            'qr_code' => '',
         ]);
         exit;
     }

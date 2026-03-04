@@ -1,10 +1,10 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 if (!isset($_SESSION['user_namefl'])) {
     echo "<script>alert('Please login first!'); window.location.href='login.php';</script>";
-    exit();
+    exit;
 }
 
 if (isset($_POST['delete_id'])) {
@@ -12,10 +12,10 @@ if (isset($_POST['delete_id'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE model_data SET 
+        $sql = 'UPDATE model_data SET 
                 deleted_by = :deleted_by,
                 deleted_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)
-                WHERE id = :id";
+                WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -28,7 +28,7 @@ if (isset($_POST['delete_id'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error deleting model: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error deleting model: ".$e->getMessage()."');</script>";
     }
 }
 
@@ -41,14 +41,14 @@ if (isset($_POST['update_model'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE model_data SET 
+        $sql = 'UPDATE model_data SET 
                 assy_code = :assy_code,
                 model_name = :model_name,
                 letter_allocation = :letter_allocation,
                 serial_qty = :serial_qty,
                 last_modified_by = :last_modified_by,
                 last_modified_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)
-                WHERE id = :id";
+                WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -65,16 +65,16 @@ if (isset($_POST['update_model'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error updating model: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error updating model: ".$e->getMessage()."');</script>";
     }
 }
 
 try {
-    $sql = "SELECT * FROM model_data WHERE deleted_at IS NULL";
+    $sql = 'SELECT * FROM model_data WHERE deleted_at IS NULL';
     $stmt = $conn->query($sql);
     $models = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "<script>alert('Error fetching models: " . $e->getMessage() . "');</script>";
+    echo "<script>alert('Error fetching models: ".$e->getMessage()."');</script>";
     $models = [];
 }
 ?>
@@ -106,7 +106,7 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($models as $model): ?>
+                    <?php foreach ($models as $model) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($model['assy_code']); ?></td>
                             <td><?php echo htmlspecialchars($model['model_name']); ?></td>
@@ -114,17 +114,17 @@ try {
                             <td><?php echo htmlspecialchars($model['serial_qty']); ?></td>
                             <td><?php echo htmlspecialchars($model['last_modified_by'] ?? 'N/A'); ?></td>
                             <td><?php if (isset($model['last_modified_at'])) {
-                                    echo htmlspecialchars(date('m-d-Y h:i:s A', strtotime($model['last_modified_at'])));
-                                } else {
-                                    echo 'N/A';
-                                } ?></td>
+                                echo htmlspecialchars(date('m-d-Y h:i:s A', strtotime($model['last_modified_at'])));
+                            } else {
+                                echo 'N/A';
+                            } ?></td>
 
                             <td>
                                 <button class="btn btn-edit" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($model)); ?>)">EDIT</button>
                                 <button class="btn btn-delete" onclick="confirmDelete(<?php echo htmlspecialchars($model['id']); ?>)">DELETE</button>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

@@ -1,20 +1,20 @@
 <?php
 include 'sidebar.php';
-include 'db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 if (!isset($_SESSION['user_namefl'])) {
     echo "<script>alert('Please login first!'); window.location.href='login.php';</script>";
-    exit();
+    exit;
 }
 if (isset($_POST['delete_id'])) {
     $id = $_POST['delete_id'];
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE squeegee_master SET 
+        $sql = 'UPDATE squeegee_master SET 
                 deleted_by = :deleted_by,
                 deleted_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)
-                WHERE id = :id";
+                WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -27,7 +27,7 @@ if (isset($_POST['delete_id'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error deleting squeegee: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error deleting squeegee: ".$e->getMessage()."');</script>";
     }
 }
 if (isset($_POST['add_squeegee'])) {
@@ -37,8 +37,8 @@ if (isset($_POST['add_squeegee'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "INSERT INTO squeegee_master (squeegee_no, squeegeetotal_stroke, squeegee_status, created_by, created_at) 
-                VALUES (:squeegee_no, :squeegeetotal_stroke, :squeegee_status, :created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))";
+        $sql = 'INSERT INTO squeegee_master (squeegee_no, squeegeetotal_stroke, squeegee_status, created_by, created_at) 
+                VALUES (:squeegee_no, :squeegeetotal_stroke, :squeegee_status, :created_by, DATEADD(HOUR, 8, CURRENT_TIMESTAMP))';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':squeegee_no', $squeegee_no, PDO::PARAM_STR);
@@ -53,7 +53,7 @@ if (isset($_POST['add_squeegee'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error adding Squeegee: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error adding Squeegee: ".$e->getMessage()."');</script>";
     }
 }
 
@@ -65,13 +65,13 @@ if (isset($_POST['update_squeegee'])) {
     $user_namefl = $_SESSION['user_namefl'];
 
     try {
-        $sql = "UPDATE squeegee_master SET 
+        $sql = 'UPDATE squeegee_master SET 
                 squeegee_no = :squeegee_no,
                 squeegeetotal_stroke = :squeegeetotal_stroke,
                 squeegee_status = :squeegee_status,
                 last_modified_by = :last_modified_by,
                 last_modified_at = DATEADD(HOUR, 8, CURRENT_TIMESTAMP)
-                WHERE id = :id";
+                WHERE id = :id';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -87,17 +87,17 @@ if (isset($_POST['update_squeegee'])) {
             </script>";
         }
     } catch (PDOException $e) {
-        echo "<script>alert('Error updating squeegee: " . $e->getMessage() . "');</script>";
+        echo "<script>alert('Error updating squeegee: ".$e->getMessage()."');</script>";
     }
 }
 
 try {
     $sql =
-        "SELECT * FROM squeegee_master WHERE deleted_at IS NULL";
+        'SELECT * FROM squeegee_master WHERE deleted_at IS NULL';
     $stmt = $conn->query($sql);
     $squeegees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "<script>alert('Error fetching squeegees: " . $e->getMessage() . "');</script>";
+    echo "<script>alert('Error fetching squeegees: ".$e->getMessage()."');</script>";
     $squeegees = [];
 }
 ?>
@@ -130,24 +130,24 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($squeegees as $squeegees): ?>
+                    <?php foreach ($squeegees as $squeegees) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($squeegees['squeegee_no']); ?></td>
                             <td><?php echo htmlspecialchars($squeegees['squeegeetotal_stroke']); ?></td>
                             <td><?php echo htmlspecialchars($squeegees['squeegee_status']); ?></td>
                             <td><?php echo htmlspecialchars($squeegees['last_modified_by'] ?? 'N/A'); ?></td>
                             <td><?php if (isset($squeegees['last_modified_at'])) {
-                                    echo htmlspecialchars(date('M-d-Y h:i A', strtotime($squeegees['last_modified_at'])));
-                                } else {
-                                    echo 'N/A';
-                                } ?></td>
+                                echo htmlspecialchars(date('M-d-Y h:i A', strtotime($squeegees['last_modified_at'])));
+                            } else {
+                                echo 'N/A';
+                            } ?></td>
 
                             <td>
                                 <button class="btn btn-edit" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($squeegees)); ?>)">EDIT</button>
                                 <button class="btn btn-delete" onclick="confirmDelete(<?php echo htmlspecialchars($squeegees['id']); ?>)">DELETE</button>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

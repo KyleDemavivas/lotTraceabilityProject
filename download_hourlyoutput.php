@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php';
+
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['line'], $_POST['shift'], $_POST['date'])) {
     $line = $_POST['line'];
@@ -7,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['line'], $_POST['shift
     $selectedDate = $_POST['date'];
 
     $isDayShift = $shift === 'day';
-    $shiftLabel = $isDayShift ? "Day Shift (6 AM - 6 PM)" : "Night Shift (6 PM - 6 AM)";
+    $shiftLabel = $isDayShift ? 'Day Shift (6 AM - 6 PM)' : 'Night Shift (6 PM - 6 AM)';
     $formattedDate = date('F j, Y', strtotime($selectedDate));
     $headerTitle = "Hourly Output for {$line} - {$shiftLabel} on {$formattedDate}";
 
@@ -15,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['line'], $_POST['shift
         $dateFilter = "created_at BETWEEN '{$selectedDate} 06:00:00' AND '{$selectedDate} 17:59:59'";
         $hours = range(6, 17);
     } else {
-        $nextDate = date('Y-m-d', strtotime($selectedDate . ' +1 day'));
+        $nextDate = date('Y-m-d', strtotime($selectedDate.' +1 day'));
         $dateFilter = "(created_at BETWEEN '{$selectedDate} 18:00:00' AND '{$selectedDate} 23:59:59' OR created_at BETWEEN '{$nextDate} 00:00:00' AND '{$nextDate} 05:59:59')";
         $hours = array_merge(range(18, 23), range(0, 5));
     }
@@ -29,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['line'], $_POST['shift
 
     $hourlyData = array_fill_keys($hours, 0);
     foreach ($results as $row) {
-        $hourlyData[(int)$row['hour_slot']] = $row['total_qty'];
+        $hourlyData[(int) $row['hour_slot']] = $row['total_qty'];
     }
 
     header('Content-Type: text/csv');
@@ -43,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['line'], $_POST['shift
 
     $totalQty = 0;
     foreach ($hourlyData as $hour => $qty) {
-        $start = date("g A", strtotime("$hour:00"));
-        $end = date("g A", strtotime(($hour + 1) . ":00"));
+        $start = date('g A', strtotime("$hour:00"));
+        $end = date('g A', strtotime(($hour + 1).':00'));
         fputcsv($output, ["$start - $end", $qty]);
         $totalQty += $qty;
     }
@@ -54,6 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['line'], $_POST['shift
     fclose($output);
     exit;
 } else {
-    echo "Invalid request.";
+    echo 'Invalid request.';
     exit;
 }
