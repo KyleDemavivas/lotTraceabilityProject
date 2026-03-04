@@ -3,7 +3,7 @@ include 'sidebar.php';
 include 'db_connect.php';
 
 try {
-    $sql = 'SELECT DISTINCT * FROM main_repair_view ORDER BY created_at_dt DESC';
+    $sql = 'SELECT DISTINCT * FROM main_repair_view';
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $nogood_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -25,6 +25,8 @@ try {
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>F
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.13.6/sorting/datetime-moment.js"></script>
 
     <style>
         .form-input-date {
@@ -133,7 +135,7 @@ try {
                             <td><?php echo htmlspecialchars($row['assy_code']); ?></td>
                             <td><?php echo htmlspecialchars($row['kepi_lot']); ?></td>
                             <td><?php echo htmlspecialchars($row['status']); ?></td>
-                            <td><?php echo date("F d, Y", strtotime($row['created_at_dt'])); ?></td>
+                            <td><?php echo date('F d, Y', strtotime($row['created_at_dt'])); ?></td>
                             <td><button onclick='openModal(<?php echo json_encode($row); ?>)'>Repair</button></td>
                         </tr>
                     <?php } ?>
@@ -252,6 +254,7 @@ try {
         var table;
 
         $(document).ready(function() {
+            $.fn.dataTable.moment('MMMM DD, YYYY');
             table = $('#repairTable').DataTable({
                 pageLength: 10,
                 order: [
@@ -268,7 +271,6 @@ try {
         });
 
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            console.log(data);
             var dateFrom = $('#dateFrom').val();
             var dateTo = $('#dateTo').val();
             var rowDate = data[15].split('.')[0]; // removes .000 → "2026-02-23 20:33:56"
