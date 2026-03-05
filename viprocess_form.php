@@ -45,14 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        $finalQtyQuery = 'SELECT COALESCE(SUM(TRY_CAST(qty_input AS INT)), 0) AS final_qty FROM vi_process WHERE kepi_lot = :kepi_lot AND line = :line';
+        $finalQtyQuery = 'SELECT final_qtyinput FROM vi_process WHERE kepi_lot = :kepi_lot AND line = :line AND final_qtyinput IS NOT NULL ORDER BY created_at DESC';
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
         $finalQtyStmt->execute([
             ':kepi_lot' => $kepi_lot,
             ':line' => $line,
         ]);
         $previous_final_qty = $finalQtyStmt->fetchColumn();
-        $final_qtyinput = $previous_final_qty + (int) $qty_input;
+        $final_qtyinput = $previous_final_qty + $qty_input;
 
         $serialQuery = 'SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
                         serial_code7, serial_code8, serial_code9, serial_code10, serial_code11, serial_code12, 
