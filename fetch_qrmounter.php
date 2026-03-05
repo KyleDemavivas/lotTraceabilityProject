@@ -15,7 +15,7 @@ if (isset($_POST['qr_code'])) {
         // Check if QR code exists in spa_process
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             // Get the latest final_qtyinput for that kepi_lot
-            $finalQtyQuery = 'SELECT final_qtyinput FROM spa_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC';
+            $finalQtyQuery = 'SELECT final_qtyinput FROM spa_process WHERE kepi_lot = :kepi_lot AND final_qtyinput IS NOT NULL ORDER BY created_at DESC';
             $finalQtyStmt = $conn->prepare($finalQtyQuery);
             $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
             $finalQtyRow = $finalQtyStmt->fetch(PDO::FETCH_ASSOC);

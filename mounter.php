@@ -22,7 +22,7 @@ if (!isset($_SESSION['user_namefl'])) {
                 <input type="text" class="form-input" name="qty_input" readonly hidden>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="final_qtyinput" readonly>
+                    <input type="text" class="form-input" name="final_qtyinput" id="final_qtyinput" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
@@ -112,6 +112,7 @@ if (!isset($_SESSION['user_namefl'])) {
                             $('input[name="operator_name"]').val(response.operator_name);
                             $('input[name="qty_input"]').val(parseInt(response.qty_input) || 0);
                             $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                            console.log(response.final_qtyinput);
 
                             let kepi_lot = response.kepi_lot;
                             qrCounts[kepi_lot] = (qrCounts[kepi_lot] || 0) + 1;

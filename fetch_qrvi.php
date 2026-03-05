@@ -33,7 +33,7 @@ try {
         exit;
     }
 
-    $finalQtyStmt = $conn->prepare('SELECT final_qtyinput FROM vi_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
+    $finalQtyStmt = $conn->prepare('SELECT final_qtyinput FROM vi_process WHERE kepi_lot = :kepi_lot AND final_qtyinput IS NOT NULL ORDER BY created_at DESC');
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
 
