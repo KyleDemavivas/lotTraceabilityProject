@@ -201,7 +201,6 @@ try {
         let currentBoardCount = 0;
 
         function updateUIByBoardCount(boardCount) {
-            console.log(boardCount);
             $('#liveBoardCount').text(`SHEET COUNT: ${boardCount} / 5`);
             if (boardCount >= 5) {
                 $('#angleField').hide();
@@ -307,9 +306,11 @@ try {
                                     $('input[name="qty_input"]').val(response.qty_input);
                                     $('input[name="line"]').val(response.line);
                                     $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                                    console.log('Final Qty Input:', response.final_qtyinput);
                                     checkAndAutoSubmit();
                                 } else {
-                                    $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="qty_input"], input[name="final_qtyinput"]').val('');
+                                    $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"]').val('');
+                                    $('input[name="qty_input"]').val(response.qty_input);
                                     Swal.fire({
                                         icon: 'warning',
                                         title: response.data,
@@ -425,7 +426,6 @@ try {
 
             function resetMainForm() {
                 $('#qr_code').focus().select();
-                updateUIByBoardCount(currentBoardCount);
             }
 
             $('#nogoodForm').submit(function(e) {
