@@ -1,8 +1,8 @@
 <?php
 include 'sidebar.php';
 if (!isset($_SESSION['user_namefl'])) {
-    header("Location: login.php");
-    exit();
+    header('Location: login.php');
+    exit;
 }
 $operator_name = $_SESSION['user_namefl'];
 ?>
@@ -58,7 +58,7 @@ $operator_name = $_SESSION['user_namefl'];
                     <label class="form-label">REASON:</label>
                     <input type="text" class="form-input" name="mi_reason" autocomplete="off">
                 </div>
-                <input type="hidden" name="operator_name" value="<?= htmlspecialchars($operator_name) ?>">
+                <input type="hidden" name="operator_name" value="<?php echo htmlspecialchars($operator_name); ?>">
             </div>
 
             <div class="form-section">
@@ -66,14 +66,14 @@ $operator_name = $_SESSION['user_namefl'];
                     <label class="form-label">QR Code:</label>
                     <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" maxlength="21" required>
                 </div>
-                <input type="hidden" class=" form-input" name="qty_input" readonly>
+                <input type="hidden" class=" form-input" name="final_qtyinput" readonly>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="final_qtyinput" readonly>
+                    <input type="text" class="form-input" name="qty_input" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
-                    <input type="text" class="form-input" value="<?= htmlspecialchars($operator_name) ?>" readonly>
+                    <input type="text" class="form-input" value="<?php echo htmlspecialchars($operator_name); ?>" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">SHIFT:</label>
@@ -211,10 +211,11 @@ $operator_name = $_SESSION['user_namefl'];
                                 $('input[name="assy_code"]').val(response.assy_code);
                                 $('input[name="model_name"]').val(response.model_name);
                                 $('input[name="kepi_lot"]').val(response.kepi_lot);
-                                $('input[name="qty_input"]').val(response.final_qtyinput);
+                                $('input[name="qty_input"]').val(response.qty_input ? response.qty_input :'0'); ;
+                                $('input[name="final_qtyinput"]').val(response.final_qtyinput ? response.final_qtyinput : '0');
                                 validateAndSubmit();
                             } else {
-                                $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="qty_input"], input[name="final_qtyinput"]').val('');
+                                $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"]').val('');
 
                                 Swal.fire({
                                     icon: 'warning',
