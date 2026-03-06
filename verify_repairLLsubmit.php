@@ -3,7 +3,6 @@
 include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
-$response = ['success' => false, 'message' => 'Something went wrong.'];
 date_default_timezone_set('Asia/Manila');
 $created_at_ll = date('Y-m-d H:i:s');
 $judgement = isset($_POST['judgement_ll']) ? $_POST['judgement_ll'] : '';
@@ -25,14 +24,17 @@ if ($judgement === 'GOOD') {
                 $response = ['success' => true, 'message' => 'Repair request verified.'];
             } catch (PDOException $e) {
                 $response = ['success' => false, 'message' => $e->getMessage()];
+                echo json_encode($response);
             }
         }
     } else {
         $response = ['success' => false, 'message' => 'Invalid Request Method.'];
+        echo json_encode($response);
     }
 } else {
     $stmt = $conn->prepare('DELETE FROM repair_master WHERE serial_code = :serial_code');
     $stmt->bindParam(':serial_code', $serial_code);
     $stmt->execute();
+    $response = ['success' => true, 'message' => 'Repair request rejected and deleted.'];
+    echo json_encode($response);
 }
-echo json_encode($response);
