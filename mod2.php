@@ -305,8 +305,8 @@ try {
                                     $('input[name="line"]').val(response.line);
                                     $('input[name="shift"]').val(response.shift);
                                     $('input[name="operator_name"]').val(response.operator_name);
-                                    $('input[name="qty_input"]').val(response.qty_input);
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                                    $('input[name="qty_input"]').val(response.qty_input ?? console.log('final_qtyinput is not a number'));
+                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) ?? console.log('final_qtyinput is not a number'));
 
                                     let kepi_lot = response.kepi_lot;
 
