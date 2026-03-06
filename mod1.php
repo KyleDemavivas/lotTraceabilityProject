@@ -45,10 +45,10 @@ try {
                     <label class="form-label">QR Code:</label>
                     <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" maxlength="21" required>
                 </div>
-                <input type="text" class="form-input" name="qty_input" readonly hidden>
+                <input type="text" class="form-input" name="final_qtyinput" readonly hidden>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="final_qtyinput" readonly>
+                    <input type="text" class="form-input" name="qty_input" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
@@ -295,18 +295,10 @@ try {
                                 qr_code: qr_code
                             },
                             success: function(response) {
-                                console.log(response.holdcount);
                                 if (response.success) {
                                     $('input[name="assy_code"]').val(response.assy_code);
                                     $('input[name="model_name"]').val(response.model_name);
                                     $('input[name="kepi_lot"]').val(response.kepi_lot);
-
-                                    // If new KEPI LOT, reset UI
-                                    if (window.lastKepiLot !== response.kepi_lot) {
-                                        window.lastKepiLot = response.kepi_lot;
-                                        showCounter();
-                                    }
-
                                     $('input[name="asmline"]').val(response.asmline);
                                     $('input[name="line"]').val(response.line);
                                     $('input[name="shift"]').val(response.shift);
