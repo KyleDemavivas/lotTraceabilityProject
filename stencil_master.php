@@ -121,21 +121,21 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($stencils as $stencils) { ?>
+                    <?php foreach ($stencils as $stencil) { ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($stencils['stencil_no']); ?></td>
-                            <td><?php echo htmlspecialchars($stencils['total_stroke']); ?></td>
-                            <td><?php echo htmlspecialchars($stencils['stencil_status']); ?></td>
-                            <td><?php echo htmlspecialchars($stencils['last_modified_by'] ?? 'N/A'); ?></td>
-                            <td><?php if (isset($stencils['last_modified_at'])) {
-                                echo htmlspecialchars(date('M-d-Y h:i A', strtotime($stencils['last_modified_at'])));
+                            <td><?php echo htmlspecialchars($stencil['stencil_no']); ?></td>
+                            <td><?php echo htmlspecialchars($stencil['total_stroke']); ?></td>
+                            <td><?php echo htmlspecialchars($stencil['stencil_status']); ?></td>
+                            <td><?php echo htmlspecialchars($stencil['last_modified_by'] ?? 'N/A'); ?></td>
+                            <td><?php if (isset($stencil['last_modified_at'])) {
+                                echo htmlspecialchars(date('M-d-Y h:i A', strtotime($stencil['last_modified_at'])));
                             } else {
                                 echo 'N/A';
                             } ?></td>
 
                             <td>
-                                <button class="btn btn-edit" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($stencils)); ?>)">EDIT</button>
-                                <button class="btn btn-delete" onclick="confirmDelete(<?php echo htmlspecialchars($stencils['id']); ?>)">DELETE</button>
+                                <button class="btn btn-edit" onclick="openEditModal(<?php echo htmlspecialchars(json_encode($stencil)); ?>)">EDIT</button>
+                                <button class="btn btn-delete" onclick="confirmDelete(<?php echo htmlspecialchars($stencil['id']); ?>)">DELETE</button>
                             </td>
                         </tr>
                     <?php } ?>
