@@ -1,6 +1,6 @@
 <?php
 include 'sidebar.php';
-$_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini'
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 
 try {
     $sql = "SELECT * FROM ai_repair WHERE judgement_ll = 'NO GOOD' OR judgement_vi = 'NO GOOD' ORDER BY created_at DESC";
