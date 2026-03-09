@@ -197,8 +197,8 @@ try {
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>src="js/boardFetchNoGood.js"</script>
     <script>
         $('#modaltest').on('click', function() {
             $('#nogoodModal').show();
@@ -480,6 +480,79 @@ try {
 
             $('#qr_code').focus();
 
+            //scrap logic
+            $('#scrapButton').on('click', function(e) {
+                e.preventDefault();
+
+                const serial_code = $('#modal_serial_code').val().trim();
+
+                const form = document.getElementById('nogoodForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                getBoardData(serial_code, 'fetch_qrmi.php', function(response) {
+                    if (response.status === 'success') {
+                       const scrapData = new FormData();
+                       scrapData.append('qr_code', response.qr_code);
+                       scrapData.append('model_name', response.model_name);
+                       scrapData.append('assy_code', response.assy_code);
+                       scrapData.append('kepi_lot', response.kepi_lot);
+                       scrapData.append('shift', response.shift);
+                       scrapData.append('line', response.line);
+                       scrapData.append('board_number', response.board_number);
+                       scrapData.append('serial_code', response.serial_code);
+                       scrapData.append('defect', 'SCRAP');
+                       scrapData.append('operator_name', $_SESSION['user_namefl']);
+                       scrapData.append('location', 'N/A');
+                       scrapData.append('process_location', 'MOD 1');
+                       scrapData.append('repaired_by', 'N/A');
+                       scrapData.append('action_rp', 'N/A');
+                       scrapData.append('lcr_reading', 'N/A');
+                       scrapData.append('parts_code', 'N/A');
+                       scrapData.append('parts_lot', 'N/A');
+                       scrapData.append('unitmeasurement', 'N/A');
+                       scrapData.append('batchlot', 'N/A');
+                       scrapData.append('repairable', 'N/A');
+
+                       submitScrap(scrapData, function(scrapResponse) {
+                            if (scrapResponse.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Scrapped!',
+                                    text: scrapResponse.message,
+                                    toast: true,
+                                    position: 'top-right',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                                closeNoGoodModal();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: scrapResponse.message,
+                                    toast: true,
+                                    position: 'top-right',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            }
+                       });
+                       
+                    } else {
+                        closeNoGoodModal();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+
             $('#nogoodForm').submit(function(e) {
                 e.preventDefault();
 
@@ -565,37 +638,6 @@ try {
                         formData.append(`location[${i}][]`, loc);
                     });
                 });
-
-                if($("#scrap_mod1").val() === "YES"){
-                    $.ajax({
-                        url: 'repair_submit.php',
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        dataType: 'json',
-                        success: function(response) {
-                            Swal.fire({
-                                
-                            })
-                        }, error: function(xhr, status, error) {
-                            closeNoGoodModal();
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'AJAX Error',
-                                html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`,
-                                toast: true,
-                                position: 'top-right',
-                                timer: 3000,
-                                showConfirmButton: true,
-                                didOpen: () => {
-                                    $('#qr_code').focus().select().val('');
-                                }
-                            });
-                        }
-                    })
-                    return;
-                }
 
                 $.ajax({
                     url: 'mod1_serialnogood.php',
