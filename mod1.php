@@ -167,10 +167,10 @@ try {
                             <option value=""></option>
                             <option value="YES">YES</option>
                             <option value="NO">NO</option>
-                            <option value="YES">FOR REPAIRER</option>
+                            <option value="REPAIR">FOR REPAIRER</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="tenboardGroup">
                         <label for="tenboard" class="form-label">1ST 10 BOARD:</label>
                         <select class="form-input" id="tenboard" name="tenboard" required>
                             <option value=""></option>
@@ -178,13 +178,16 @@ try {
                             <option value="NO">NO</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="actionGroup">
                         <label for="action_mod1" class="form-label">Action:</label>
                         <select class="form-input" name="action_mod1" id="action_mod1" required>
                             <option value="" disabled selected hidden>Select Action</option>
+                             <option value="">N/A</option>
                             <option value="FOR TOUCHUP">FOR TOUCH-UP</option>
                             <option value="FOR REPLACEMENT">FOR REPLACEMENT</option>
                             <option value="FOR PUSH">FOR PUSH</option>
+                            <option value="FOR ALIGN">FOR ALIGN</option>
+                            <option value="FOR REMOVAL">FOR REMOVAL</option>
                         </select>
                     </div>
                 </div>
@@ -225,6 +228,8 @@ try {
 
         function hideCounter() {
             $('#liveBoardCount').hide();
+            $('#actionGroup').hide();
+            $('#tenboardGroup').hide();
         }
 
         // Shows them when new KEPI LOT is scanned
@@ -344,7 +349,6 @@ try {
                                         }
                                     });
 
-                                    checkAndAutoSubmit();
                                 } else {
 
                                     $('input[name="assy_code"]').val('');
@@ -484,6 +488,24 @@ try {
 
             $('#nogoodForm').submit(function(e) {
                 e.preventDefault();
+
+                if($('select[name="repairable"]').val() === "REPAIR") { 
+                    closeNoGoodModal()
+                    Swal.fire({
+                        icon: 'success',
+                     title: 'Saved!',
+                     text: 'Item passed to next process',
+                     toast: true,
+                     position: 'top-right',
+                     timer: 3000,
+                     showConfirmButton: false,
+                     didOpen: () => {
+                             $('#qr_code').focus().select();
+
+                     }
+                 });
+                    return;
+                }
 
                 const defects = $('select[name="defect[]"]').map(function() {
                     return $(this).val();
