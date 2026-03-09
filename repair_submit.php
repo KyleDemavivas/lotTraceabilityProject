@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $unitmeasurement = $_POST['unitmeasurement'];
         $batchlot = $_POST['batchlot'];
         $repairable = $_POST['repairable'];
-        $user_name = $_POST['operator_name'];
 
         date_default_timezone_set('Asia/Manila'); // set PHP timezone
         $created_at = date('Y-m-d H:i:s');
