@@ -214,6 +214,7 @@ try {
         let qrDebounceTimer = null;
         let lastKepiLot = "";
         let boardCount = 0;
+        let UserName = "<?php echo htmlspecialchars($_SESSION['user_namefl']) ?? ''; ?>";
 
         function updateCountDisplay(boardCount) {
             $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
@@ -504,7 +505,7 @@ try {
                        scrapData.append('board_number', response.board_number);
                        scrapData.append('serial_code', response.serial_code);
                        scrapData.append('defect', 'SCRAP');
-                       scrapData.append('operator_name', $_SESSION['user_namefl']);
+                       scrapData.append('operator_name', $UserName);
                        scrapData.append('location', 'N/A');
                        scrapData.append('process_location', 'MOD 1');
                        scrapData.append('repaired_by', 'N/A');
@@ -536,19 +537,27 @@ try {
                                     toast: true,
                                     position: 'top-right',
                                     timer: 3000,
-                                    showConfirmButton: false
+                                    showConfirmButton: false,
+                                    didOpen: () => {
+                                        $('#modal_serial_code').focus().select();
+                                    }
                                 });
                             }
                        });
                        
                     } else {
-                        closeNoGoodModal();
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: response.message,
-                            confirmButtonText: 'OK'
-                        });
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: scrapResponse.message,
+                                    toast: true,
+                                    position: 'top-right',
+                                    timer: 3000,
+                                    showConfirmButton: false,
+                                    didOpen: () => {
+                                        $('#modal_serial_code').focus().select();
+                                    }
+                                });
                     }
                 });
             });
