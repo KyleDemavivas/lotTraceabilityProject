@@ -1,4 +1,11 @@
 function getBoardData(data, source, onSuccess, onError) {
+
+    if(typeof data === 'string'){
+        const formData = new FormData();
+        formData.append('serial_code', data);
+        data = formData;
+    }
+
     $.ajax({
         url: source,
         type: 'POST',
