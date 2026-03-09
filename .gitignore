@@ -1,4 +1,16 @@
-db_connect.php
-.htaccess
-/vendor/
-.gitignore
+# Dependencies
+node_modules/
+vendor/
+
+# Database connection / config files
+db_connect.ini
+*.ini
+config.php
+
+# Environment files
+.env
+.env.local
+
+# Debug logs
+debug.log
+*.log
