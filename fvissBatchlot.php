@@ -169,8 +169,16 @@ try {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="action_fviss" class="form-label">Action:</label>
-                        <input type="text" class="form-input" name="action_fviss" id="action_fviss" required autocomplete="off">
+                        <label for="action_mod1" class="form-label">Action:</label>
+                        <select class="form-input" name="action_mod1" id="action_mod1" required>
+                            <option value="" disabled selected hidden>Select Action</option>
+                             <option value="">N/A</option>
+                            <option value="FOR TOUCHUP">FOR TOUCH-UP</option>
+                            <option value="FOR REPLACEMENT">FOR REPLACEMENT</option>
+                            <option value="FOR PUSH">FOR PUSH</option>
+                            <option value="FOR ALIGN">FOR ALIGN</option>
+                            <option value="FOR REMOVAL">FOR REMOVAL</option>
+                        </select>
                     </div>
                 </div>
                 <div style="margin-top: 20px;">
