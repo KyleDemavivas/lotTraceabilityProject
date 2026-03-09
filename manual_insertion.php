@@ -306,6 +306,7 @@ $operator_name = $_SESSION['user_namefl'];
                         showConfirmButton: false,
                         didOpen: () => {
                             $('#qr_code').focus().select();
+                            $('#qty_input').val('');
                         }
                     });
                     if (response.final_qtyinput !== undefined) {
