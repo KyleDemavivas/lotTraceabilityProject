@@ -482,6 +482,10 @@ try {
             $('#qr_code').focus();
 
             //scrap logic
+            //TODO: TEST SUBMIT TO fetch_qrmi.php
+            //TODO: HAVE SERIALCHECK CALL QRCODE OR JUST USE QR CODE
+            //TODO: HAVE THIS HANDLER AND LIPAT TO UNDER SERIAL CHECKER HANDLER FOR EASIER KASI TINATAMAD AKO
+            //TODO: SEPARATE FORM VALIDITY CHECKER PARA DI SAKIT SA ULO
             $('#scrapButton').on('click', function(e) {
                 e.preventDefault();
 
