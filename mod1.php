@@ -154,14 +154,6 @@ try {
                         <input type="text" class="form-input" name="board_number" id="board_number" required autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="scrap_mod1" class="form-label">Scrap:</label>
-                        <select class="form-input" id="scrap_mod1" name="scrap_mod1" required>
-                            <option value=""></option>
-                            <option value="YES">YES</option>
-                            <option value="NO">NO</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="repairable" class="form-label">Repairable:</label>
                         <select class="form-input" id="repairable" name="repairable" required>
                             <option value=""></option>
@@ -191,8 +183,9 @@ try {
                         </select>
                     </div>
                 </div>
-                <div style="margin-top: 20px;">
-                    <center><button type="submit">Save</button></center>
+                <div style="margin-top: 20px; flex-direction: row; justify-content: center; display: flex;">
+                    <button type="submit" style=" position: absolute; left: 50%; transform: translateX(-50%);">Save</button>
+                    <button type="button" class="button-close" id="scrapButton" name="scrapButton" style = "margin-right: auto;">Scrap</button>
                 </div>
             </form>
 
@@ -259,6 +252,7 @@ try {
         }
 
         $(document).ready(function() {
+
             $('.location-select').select2({
                 tags: true,
                 placeholder: "Select or type locations",
@@ -551,6 +545,19 @@ try {
                 formData.append('tenboard', $('#tenboard').val());
                 formData.append('action_mod1', $('#action_mod1').val());
                 formData.append('source', $('#modal_source').val());
+                formData.append('model_name', $('input[name=model_name]').val());
+                formData.append('assy_code', $('input[name=assy_code]').val());
+                formData.append('kepi_lot', $('input[name=kepi_lot]').val());
+                formData.append('shift', $('input[name=shift]').val());
+                formData.append('line', $('input[name=line]').val());
+                formData.append('process_location', 'MOD1');
+                formData.append('repaired_by', 'N/A');
+                formData.append('action_rp', 'N/A');
+                formData.append('lcr_reading', 'N/A');
+                formData.append('parts_code', 'N/A');
+                formData.append('parts_lot', 'N/A');
+                formData.append('unitmeasurement', 'N/A');
+                formData.append('batchlot', 'N/A');
 
                 validDefects.forEach((defect, i) => {
                     formData.append('defect[]', defect);
@@ -558,6 +565,37 @@ try {
                         formData.append(`location[${i}][]`, loc);
                     });
                 });
+
+                if($("#scrap_mod1").val() === "YES"){
+                    $.ajax({
+                        url: 'repair_submit.php',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function(response) {
+                            Swal.fire({
+                                
+                            })
+                        }, error: function(xhr, status, error) {
+                            closeNoGoodModal();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'AJAX Error',
+                                html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`,
+                                toast: true,
+                                position: 'top-right',
+                                timer: 3000,
+                                showConfirmButton: true,
+                                didOpen: () => {
+                                    $('#qr_code').focus().select().val('');
+                                }
+                            });
+                        }
+                    })
+                    return;
+                }
 
                 $.ajax({
                     url: 'mod1_serialnogood.php',
