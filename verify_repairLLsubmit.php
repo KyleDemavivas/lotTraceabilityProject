@@ -24,17 +24,20 @@ if ($judgement === 'GOOD') {
                 $response = ['success' => true, 'message' => 'Repair request verified.'];
             } catch (PDOException $e) {
                 $response = ['success' => false, 'message' => $e->getMessage()];
-                echo json_encode($response);
             }
         }
     } else {
         $response = ['success' => false, 'message' => 'Invalid Request Method.'];
-        echo json_encode($response);
     }
 } else {
-    $stmt = $conn->prepare('DELETE FROM repair_master WHERE serial_code = :serial_code');
-    $stmt->bindParam(':serial_code', $serial_code);
-    $stmt->execute();
-    $response = ['success' => true, 'message' => 'Repair request rejected and deleted.'];
-    echo json_encode($response);
+    try {
+        $stmt = $conn->prepare('DELETE FROM repair_master WHERE serial_code = :serial_code');
+        $stmt->bindParam(':serial_code', $serial_code);
+        $stmt->execute();
+        $response = ['success' => true, 'message' => 'Repair request rejected and deleted.'];
+    } catch (PDOException $e) {
+        $response = ['success' => false, 'message' => $e->getMessage()];
+    }
 }
+
+echo json_encode($response);
