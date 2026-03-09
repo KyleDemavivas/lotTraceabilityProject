@@ -1,1 +1,27 @@
-{}
+{
+  "name": "traceability",
+  "version": "1.0.0",
+  "description": "A web-based system designed to replace manual paper-based processes for monitoring and tracking lots through production. Significantly reduces lookup times and improves production monitoring efficiency.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KyleDemavivas/lotTraceabilityProject.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/KyleDemavivas/lotTraceabilityProject/issues"
+  },
+  "homepage": "https://github.com/KyleDemavivas/lotTraceabilityProject#readme"
+}
