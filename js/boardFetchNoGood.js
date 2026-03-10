@@ -68,6 +68,7 @@ function buildScrapData(qr_code, serial_code, response, location) {
   scrapData.append("serial_code", serial_code);
   scrapData.append("defect", "SCRAP");
   scrapData.append("operator_name", UserName);
+  scrapData.append("board_number", "SCRAP");
   scrapData.append("location", "N/A");
   scrapData.append("process_location", location);
   scrapData.append("repaired_by", "N/A");
@@ -107,6 +108,5 @@ function showErrorToast(message) {
     },
   });
 }
-
 
 // module.exports = { getBoardData, submitScrap };
