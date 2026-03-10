@@ -455,14 +455,14 @@ $smt_repairs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // AI Repair
 $sql = 'SELECT TOP 1 defect, location, board_number, operator_name, action_rp, repaired_by, verified_ll, verified_vi, created_at
-                FROM ai_repair WHERE serial_code = ? ORDER BY created_at DESC';
+                                FROM ai_repair WHERE serial_code = ? ORDER BY created_at DESC';
 $stmt = $conn->prepare($sql);
 $stmt->execute([$serial_code]);
 $ai_repair = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // HANDWORK Repair
 $sql = 'SELECT TOP 1 defect, location, board_number, operator_name, action_rp, repaired_by, verified_ll, verified_vi, created_at
-                FROM handwork_repair WHERE serial_code = ? ORDER BY created_at DESC';
+                                FROM handwork_repair WHERE serial_code = ? ORDER BY created_at DESC';
 $stmt = $conn->prepare($sql);
 $stmt->execute([$serial_code]);
 $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -492,6 +492,17 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                             </tr>
                         </thead>
                         <tbody>
+                            <?php
+                                if (!empty($repairHistory) && $repairHistory[0]['status'] === 'SCRAP') {
+                                    echo "<tr><td colspan='11' style='text-align: center; color: red; font-weight: bold;'>This board has been scrapped at "
+                                    .htmlspecialchars(date('F d, Y h:i A', strtotime($repairHistory[0]['created_at']))).' on '
+                                    .htmlspecialchars($repairHistory[0]['process_location']).' process </td></tr>';
+
+                                    return;
+                                } elseif (empty($repairHistory)) {
+                                    echo "<tr><td colspan='11' style='text-align: center;'>No repair history found for this board.</td></tr>";
+                                }
+                    ?>
                             <?php foreach ($repairHistory as $row) { ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($row['qr_code']); ?></td>
