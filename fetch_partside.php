@@ -20,8 +20,8 @@ $main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
 $main_table2 = $source === 'main' ? 'partside_process' : 'partside_batchlot';
 
 try {
-    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
-    $stmt->execute([':serial_code' => $serial_code]);
+    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :code");
+    $stmt->execute([':code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
@@ -37,6 +37,15 @@ try {
 
     if (in_array('NO GOOD', $serialStatus, true)) {
         echo json_encode(['success' => false, 'message' => 'This serial is already tagged as NO GOOD and cannot be processed.', 'title' => 'Serial Code No Good']);
+        exit;
+    }
+
+    $query2 = "SELECT COUNT(*) FROM repair_master WHERE TRIM(UPPER(serial_code)) = :code AND status = 'SCRAP'";
+    $stmt2 = $conn->prepare($query2);
+    $stmt2->execute([':code' => $serial_code]);
+    $scrapCount = $stmt2->fetchColumn();
+    if ($scrapCount > 0) {
+        echo json_encode(['success' => false, 'message' => 'This serial is already tagged as SCRAP and cannot be processed.', 'title' => 'Serial Code Scrapped']);
         exit;
     }
 
