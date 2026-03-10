@@ -14,6 +14,8 @@ if (!isset($_POST['code'])) {
 $code = strtoupper(trim($_POST['code'] ?? ''));
 $source = $_POST['source'] ?? '';
 $main_table = $source === 'main' ? 'mod2_process' : 'batchlot_process';
+$column = $source === 'main' ? 'qr_code' : 'serial_code';
+$subject = $source === 'main' ? 'QR Code' : 'Serial Code';
 
 try {
     if (empty($source)) {
@@ -25,9 +27,9 @@ try {
     }
 
     if ($source === 'main') {
-        $qry = 'SELECT COUNT(*) FROM batchlot_process WHERE qr_code = :qr_code';
+        $qry = "SELECT COUNT(*) FROM batchlot_process WHERE TRIM(UPPER($column)) = :code";
         $stmtBatchlotChk = $conn->prepare($qry);
-        $stmtBatchlotChk->execute([':qr_code' => $code]);
+        $stmtBatchlotChk->execute([':code' => $code]);
         $batchlotCount = $stmtBatchlotChk->fetchColumn();
 
         if ($batchlotCount > 0) {
@@ -91,6 +93,16 @@ try {
         }
     }
 
+    $query2 = "SELECT COUNT(*) FROM repair_master WHERE TRIM(UPPER($column)) = :code AND status = 'SCRAP'";
+    $stmt2 = $conn->prepare($query2);
+    $stmt2->execute([':code' => $code]);
+    $scrapCount = $stmt2->fetchColumn();
+
+    if ($scrapCount > 0) {
+        echo json_encode(['success' => false, 'message' => 'This '.$subject.' is already marked as SCRAP and cannot be processed.', 'title' => $subject.' Marked as SCRAP']);
+        exit;
+    }
+
     $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC");
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = $finalQtyStmt->fetchColumn() ?: 0;
@@ -129,4 +141,5 @@ try {
         'serial_qty' => $serial_qty,
     ]);
 } catch (Throwable $e) {
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
