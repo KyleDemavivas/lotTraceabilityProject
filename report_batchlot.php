@@ -494,9 +494,9 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                         <tbody>
                             <?php
                                 if (!empty($repairHistory) && $repairHistory[0]['status'] === 'SCRAP') {
-                                    echo "<tr><td colspan='11' style='text-align: center; color: red; font-weight: bold;'>This board has been scrapped at "
+                                    echo "<tr><td colspan='11' style='text-align: center; color: red; font-weight: bold;'><h2>This board has been scrapped at "
                                     .htmlspecialchars(date('F d, Y h:i A', strtotime($repairHistory[0]['created_at']))).' on '
-                                    .htmlspecialchars($repairHistory[0]['process_location']).' process </td></tr>';
+                                    .htmlspecialchars($repairHistory[0]['process_location']).' process</h2> </td></tr>';
 
                                     return;
                                 } elseif (empty($repairHistory)) {
