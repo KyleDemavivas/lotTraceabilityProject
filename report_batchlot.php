@@ -393,6 +393,7 @@ if ($serial_code != '') {
         </div>
         <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
             <table>
+                <table>
                 <tr>
                     <th>PROCESS</th>
                     <th>LINE</th>
@@ -402,7 +403,10 @@ if ($serial_code != '') {
                     <th>DATE PROCESS</th>
                     <th>TIME END PROCESS</th>
                 </tr>
-                <?php foreach ($process_data as $row) { ?>
+                <?php
+                $isScrap = isset($repairHistory) && !empty($repairHistory) && $repairHistory[0]['status'] === 'SCRAP';
+$rows = $isScrap ? array_slice($process_data, 0, -1) : $process_data;
+foreach ($rows as $row) { ?>
                     <tr>
                         <td><?php echo htmlspecialchars($row['process']); ?></td>
                         <td><?php echo htmlspecialchars($row['line']); ?></td>
@@ -413,17 +417,17 @@ if ($serial_code != '') {
                         <td><?php echo htmlspecialchars($row['time_end_process']); ?></td>
                     </tr>
                 <?php } ?>
-                <?php if (isset($repairHistory) && !empty($repairHistory)) { ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($repairHistory[0]['process_location']); ?></td>
-                            <td><?php echo htmlspecialchars($repairHistory[0]['line']); ?></td>
-                            <td><?php echo htmlspecialchars($repairHistory[0]['shift']); ?></td>
-                            <td><?php echo htmlspecialchars($repairHistory[0]['status']); ?></td>
-                            <td><?php echo htmlspecialchars($repairHistory[0]['operator_name']); ?></td>
-                            <td><?php echo htmlspecialchars(date('d-M', strtotime($repairHistory[0]['created_at']))); ?></td>
-                            <td><?php echo htmlspecialchars(date('g:i A', strtotime($repairHistory[0]['created_at']))); ?></td>   
-                        </tr>
-                    <?php } ?>
+                <?php if ($isScrap) { ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($repairHistory[0]['process_location']); ?></td>
+                        <td><?php echo htmlspecialchars($repairHistory[0]['line']); ?></td>
+                        <td><?php echo htmlspecialchars($repairHistory[0]['shift']); ?></td>
+                        <td><?php echo htmlspecialchars($repairHistory[0]['status']); ?></td>
+                        <td><?php echo htmlspecialchars($repairHistory[0]['operator_name']); ?></td>
+                        <td><?php echo htmlspecialchars(date('d-M', strtotime($repairHistory[0]['created_at']))); ?></td>
+                        <td><?php echo htmlspecialchars(date('g:i A', strtotime($repairHistory[0]['created_at']))); ?></td>   
+                    </tr>
+                <?php } ?>
             </table>
                 </div>
             <!--BATCHLOT HISTORY TABLE ONGOING DEVELOPEMENT-->
@@ -461,8 +465,8 @@ if ($serial_code != '') {
             <div class="board-section">
                 <div class="header">REPAIR HISTORY</div>
                 <?php
-                // SMT Repair
-                $sql = 'SELECT defect, location, board_number, operator_name, action_rp, repaired_by, verified_ll, verified_vi, created_at
+// SMT Repair
+$sql = 'SELECT defect, location, board_number, operator_name, action_rp, repaired_by, verified_ll, verified_vi, created_at
                 FROM repair_process WHERE serial_code = ? ORDER BY created_at DESC';
 $stmt = $conn->prepare($sql);
 $stmt->execute([$serial_code]);
