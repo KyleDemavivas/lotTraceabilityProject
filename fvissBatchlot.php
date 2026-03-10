@@ -43,6 +43,7 @@ try {
             </h1>
             <div class="form-section">
                 <div class="form-group">
+                    <input type="hidden" id="qr_code" name="qr_code" value="">
                     <label class="form-label">Serial Code:</label>
                     <input type="text" class="form-input" name="serial_code_main" id="serial_code_main" autofocus autocomplete="off" minlength="3" required>
                 </div>
