@@ -33,6 +33,10 @@ if ($serial_code != '') {
         }
     }
 
+    $stmt = $conn->prepare('SELECT * FROM repair_master WHERE serial_code = :serial_code ORDER BY created_at');
+    $stmt->execute(['serial_code' => $serial_code]);
+    $repairHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     // Batchlot check in repair_process
     $stmt2 = $conn->prepare('SELECT COUNT(*) AS count FROM fviss_process WHERE serial_code = ?');
     $stmt2->execute([$serial_code]);
@@ -409,6 +413,17 @@ if ($serial_code != '') {
                         <td><?php echo htmlspecialchars($row['time_end_process']); ?></td>
                     </tr>
                 <?php } ?>
+                <?php if (isset($repairHistory) && !empty($repairHistory)) { ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($repairHistory[0]['process_location']); ?></td>
+                            <td><?php echo htmlspecialchars($repairHistory[0]['line']); ?></td>
+                            <td><?php echo htmlspecialchars($repairHistory[0]['shift']); ?></td>
+                            <td><?php echo htmlspecialchars($repairHistory[0]['status']); ?></td>
+                            <td><?php echo htmlspecialchars($repairHistory[0]['operator_name']); ?></td>
+                            <td><?php echo htmlspecialchars(date('d-M', strtotime($repairHistory[0]['created_at']))); ?></td>
+                            <td><?php echo htmlspecialchars(date('g:i A', strtotime($repairHistory[0]['created_at']))); ?></td>   
+                        </tr>
+                    <?php } ?>
             </table>
                 </div>
             <!--BATCHLOT HISTORY TABLE ONGOING DEVELOPEMENT-->
@@ -468,13 +483,6 @@ $stmt->execute([$serial_code]);
 $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
 
 ?>
-
-                <?php if (isset($_GET['serial_code']) && $_GET['serial_code'] !== '') {
-                    $stmt = $conn->prepare('SELECT * FROM repair_master WHERE serial_code = :serial_code ORDER BY created_at');
-                    $stmt->execute(['serial_code' => $serial_code]);
-                    $repairHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    ?>
                     <table style='font-size:13px;'>
                         <thead>
                             <tr>
@@ -502,7 +510,7 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                                 } elseif (empty($repairHistory)) {
                                     echo "<tr><td colspan='11' style='text-align: center;'>No repair history found for this board.</td></tr>";
                                 }
-                    ?>
+?>
                             <?php foreach ($repairHistory as $row) { ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($row['qr_code']); ?></td>
@@ -520,8 +528,6 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                             <?php } ?>
                         </tbody>
                     </table>
-
-                <?php } ?>
             </div>
 
 </body>
