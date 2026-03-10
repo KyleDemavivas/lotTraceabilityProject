@@ -37,6 +37,15 @@ try {
         exit;
     }
 
+    $query2 = "SELECT COUNT(*) FROM repair_master WHERE TRIM(UPPER(qr_code)) = :qr_code AND status = 'SCRAP'";
+    $stmt2 = $conn->prepare($query2);
+    $stmt2->execute([':qr_code' => $qr_code]);
+    $scrapCount = $stmt2->fetchColumn();
+    if ($scrapCount > 0) {
+        echo json_encode(['success' => false, 'message' => 'This QR Code is already marked as SCRAP and cannot be processed.', 'title' => 'QR Marked as SCRAP']);
+        exit;
+    }
+
     $finalQtyStmt = $conn->prepare('SELECT final_qtyinput FROM mod2_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = $finalQtyStmt->fetchColumn() ?: 0;

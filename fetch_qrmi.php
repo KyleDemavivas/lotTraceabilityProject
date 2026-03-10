@@ -24,6 +24,14 @@ try {
         exit;
     }
 
+    $query2 = "SELECT COUNT(*) FROM repair_master WHERE TRIM(UPPER(qr_code)) = :qr_code AND status = 'SCRAP'";
+    $stmt2 = $conn->prepare($query2);
+    $stmt2->execute([':qr_code' => $qr_code]);
+    $scrapCount = $stmt2->fetchColumn();
+    if ($scrapCount > 0) {
+        echo json_encode(['success' => false, 'message' => 'This QR Code is already marked as SCRAP and cannot be processed.', 'title' => 'QR Marked as SCRAP']);
+        exit;
+    }
     // TESTING NO GOOD CHECKING FOR PREVIOUS PROCESS
     /*$stmt = $conn->prepare("SELECT COUNT(*) FROM mi_nogood WHERE qr_code = :qr_code");
     $stmt->execute([':qr_code' => $qr_code]);
