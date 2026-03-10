@@ -37,6 +37,14 @@ if ($serial_code != '') {
     $stmt->execute(['serial_code' => $serial_code]);
     $repairHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $scrapRecord = null;
+    foreach ($repairHistory as $row) {
+        if ($row['status'] === 'SCRAP') {
+            $scrapRecord = $row;
+            break;
+        }
+    }
+
     // Batchlot check in repair_process
     $stmt2 = $conn->prepare('SELECT COUNT(*) AS count FROM fviss_process WHERE serial_code = ?');
     $stmt2->execute([$serial_code]);
@@ -404,7 +412,7 @@ if ($serial_code != '') {
                     <th>TIME END PROCESS</th>
                 </tr>
                 <?php
-                $isScrap = isset($repairHistory) && !empty($repairHistory) && $repairHistory[0]['status'] === 'SCRAP';
+             $isScrap = $scrapRecord !== null;
 $rows = $isScrap ? array_slice($process_data, 0, -1) : $process_data;
 foreach ($rows as $row) { ?>
                     <tr>
@@ -443,18 +451,33 @@ foreach ($rows as $row) { ?>
                         <th>DATE PROCESS</th>
                         <th>TIME END PROCESS</th>
                     </tr>
-                  <?php if (empty($batchlot_data)) { ?>
+                   <?php
+$batchlotRows = $isScrap ? array_slice($batchlot_data, 0, -1) : $batchlot_data;
+?>
+
+<?php if (empty($batchlot_data)) { ?>
     <tr><td colspan='7' style='text-align: center;'>No batch lot history available.</td></tr>
 <?php } else { ?>
-    <?php foreach ($batchlot_data as $row) { ?>
+    <?php foreach ($batchlotRows as $row) { ?>
         <tr>
             <td><?php echo htmlspecialchars($row['process']); ?></td>
             <td><?php echo htmlspecialchars($row['line']); ?></td>
             <td><?php echo htmlspecialchars($row['shift']); ?></td>
             <td><?php echo htmlspecialchars($row['judgement']); ?></td>
             <td><?php echo htmlspecialchars($row['operator']); ?></td>
-            <td><?php echo htmlspecialchars(date('F d, Y', strtotime(substr($row['date_process'], 0, 19)))); ?></td>
-            <td><?php echo htmlspecialchars(date('h:i A', strtotime(substr($row['time_end_process'], 0, 19)))); ?></td>
+            <td><?php echo htmlspecialchars($row['date_process']); ?></td>
+            <td><?php echo htmlspecialchars($row['time_end_process']); ?></td>
+        </tr>
+    <?php } ?>
+    <?php if ($isScrap) { ?>
+        <tr>
+            <td><?php echo htmlspecialchars($scrapRecord['process_location']); ?></td>
+            <td><?php echo htmlspecialchars($scrapRecord['line']); ?></td>
+            <td><?php echo htmlspecialchars($scrapRecord['shift']); ?></td>
+            <td><?php echo htmlspecialchars($scrapRecord['status']); ?></td>
+            <td><?php echo htmlspecialchars($scrapRecord['operator_name']); ?></td>
+            <td><?php echo htmlspecialchars(date('d-M', strtotime($scrapRecord['created_at']))); ?></td>
+            <td><?php echo htmlspecialchars(date('g:i A', strtotime($scrapRecord['created_at']))); ?></td>
         </tr>
     <?php } ?>
 <?php } ?>
@@ -505,10 +528,10 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                         </thead>
                         <tbody>
                             <?php
-                                if (!empty($repairHistory) && $repairHistory[0]['status'] === 'SCRAP') {
+                                if ($scrapRecord) {
                                     echo "<tr><td colspan='11' style='text-align: center; color: red; font-weight: bold;'><h2>This board has been scrapped at "
-                                    .htmlspecialchars(date('F d, Y h:i A', strtotime($repairHistory[0]['created_at']))).' on '
-                                    .htmlspecialchars($repairHistory[0]['process_location']).' process</h2> </td></tr>';
+                                    .htmlspecialchars(date('F d, Y h:i A', strtotime($scrapRecord['created_at']))).' on '
+                                    .htmlspecialchars($scrapRecord['process_location']).' process</h2> </td></tr>';
 
                                     return;
                                 } elseif (empty($repairHistory)) {
