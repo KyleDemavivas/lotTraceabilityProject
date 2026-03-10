@@ -155,14 +155,6 @@ try {
                         <input type="text" class="form-input" name="board_number" id="board_number" required autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="scrap_partside" class="form-label">Scrap:</label>
-                        <select class="form-input" id="modal_scrap_partside" name="scrap_partside" required>
-                            <option value=""></option>
-                            <option value="YES">YES</option>
-                            <option value="NO">NO</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="repairable" class="form-label">Repairable:</label>
                         <select class="form-input" id="modal_repairable" name="repairable" required>
                             <option value=""></option>
@@ -171,8 +163,9 @@ try {
                         </select>
                     </div>
                 </div>
-                <div style="margin-top: 20px;">
-                    <center><button type="submit">Save</button></center>
+                 <div style="margin-top: 20px; flex-direction: row; justify-content: center; display: flex;">
+                    <button type="submit" style=" position: absolute; left: 50%; transform: translateX(-50%);">Save</button>
+                    <button type="button" class="button-close" id="scrapButton" name="scrapButton" style = "margin-right: auto;">Scrap</button>
                 </div>
             </form>
 
@@ -184,8 +177,9 @@ try {
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/boardFetchNoGood.js"></script>
+
     <script>
         const defectOptions = `<?php foreach ($defects as $defect) { ?><option value="<?php echo htmlspecialchars($defect); ?>"><?php echo htmlspecialchars($defect); ?></option><?php } ?>`;
         const locationOptions = `<?php foreach ($locations as $location) { ?><option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option><?php } ?>`;
@@ -612,6 +606,50 @@ try {
                 }
             });
 
+            $('#scrapButton').on('click', function(e) {
+                e.preventDefault();
+
+                //  if (!form.checkValidity()) {
+                //      form.reportValidity();
+                //      return;
+                //  }
+
+                const serial_code = $('#modal_serial_code').val().trim();
+                if (serial_code === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Serial Required',
+                        text: 'Please enter the serial number before proceeding with scrap.',
+                        toast: true,
+                        position: 'top-right',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+                const qr_code = $('#modal_qr_code').val().trim();
+
+                //REPLACE 2ND FUNCTION VARIABLE WITH FETCH FILE ASSOCIATED WITH THIS FILE
+                getBoardData(qr_code, 'fetch_qrmod2.php', function(response) {
+                    if (response.success === true) {
+                        
+                    //PLACE PROCESS LOCATION OF THIS FILE WITH THE 4TH VARIABLE OF THE FUNCTION
+                    const scrapData = buildScrapData(qr_code, serial_code, response, "PARTSIDE 2");
+                    
+                       submitScrap(scrapData, function(scrapResponse) {
+                                     if (scrapResponse.success === true) {
+                                       showSuccessToast(scrapResponse.message);
+                                        closeNoGoodModal();
+                             } else {
+                                        showErrorToast(scrapResponse.message);
+                             }
+                        });
+                       
+                    } else {
+                       showErrorToast(response.message);
+                    }
+                 });
+                });
 
             $('#noGoodBtn').on('click', function() {
                 $('#modal_operator_name').val(loggedInUser);
