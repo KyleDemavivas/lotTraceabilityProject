@@ -20,6 +20,25 @@ body {
     gap: 20px;
 }
 
+.button-close {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #fe4f66, #fe002a);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.button-close:hover {
+  background: linear-gradient(135deg, #fe004c, #fd003f);
+  box-shadow: 0px 4px 8px rgba(0, 194, 254, 0.3);
+}
+
 .column {
     flex: 1;
     min-width: 320px;
