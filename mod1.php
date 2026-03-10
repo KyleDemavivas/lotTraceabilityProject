@@ -162,14 +162,6 @@ try {
                             <option value="REPAIR">FOR REPAIRER</option>
                         </select>
                     </div>
-                    <div class="form-group" id="tenboardGroup">
-                        <label for="tenboard" class="form-label">1ST 10 BOARD:</label>
-                        <select class="form-input" id="tenboard" name="tenboard" required>
-                            <option value=""></option>
-                            <option value="YES">YES</option>
-                            <option value="NO">NO</option>
-                        </select>
-                    </div>
                     <div class="form-group" id="actionGroup">
                         <label for="action_mod1" class="form-label">Action:</label>
                         <select class="form-input" name="action_mod1" id="action_mod1" required>
@@ -198,13 +190,15 @@ try {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>src="js/boardFetchNoGood.js"</script>
+    <script src="js/boardFetchNoGood.js"></script>
     <script>
         $('#modaltest').on('click', function() {
             $('#nogoodModal').show();
         });
         const defectOptions = `<?php foreach ($defects as $defect) { ?><option value="<?php echo htmlspecialchars($defect); ?>"><?php echo htmlspecialchars($defect); ?></option><?php } ?>`;
         const locationOptions = `<?php foreach ($locations as $location) { ?><option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option><?php } ?>`;
+
+        const form = document.getElementById('nogoodForm');
 
         let isSubmitting = false;
         let qrCounts = {};
@@ -214,7 +208,6 @@ try {
         let qrDebounceTimer = null;
         let lastKepiLot = "";
         let boardCount = 0;
-        let UserName = "<?php echo htmlspecialchars($_SESSION['user_namefl']) ?? ''; ?>";
 
         function updateCountDisplay(boardCount) {
             $('#liveBoardCount').text(`BOARD COUNT: ${boardCount} / 10`);
@@ -481,91 +474,6 @@ try {
 
             $('#qr_code').focus();
 
-            //scrap logic
-            //TODO: TEST SUBMIT TO fetch_qrmi.php
-            //TODO: HAVE SERIALCHECK CALL QRCODE OR JUST USE QR CODE
-            //TODO: HAVE THIS HANDLER AND LIPAT TO UNDER SERIAL CHECKER HANDLER FOR EASIER KASI TINATAMAD AKO
-            //TODO: SEPARATE FORM VALIDITY CHECKER PARA DI SAKIT SA ULO
-            $('#scrapButton').on('click', function(e) {
-                e.preventDefault();
-
-                const serial_code = $('#modal_serial_code').val().trim();
-
-                const form = document.getElementById('nogoodForm');
-                if (!form.checkValidity()) {
-                    form.reportValidity();
-                    return;
-                }
-
-                getBoardData(serial_code, 'fetch_qrmi.php', function(response) {
-                    if (response.status === 'success') {
-                       const scrapData = new FormData();
-                       scrapData.append('qr_code', response.qr_code);
-                       scrapData.append('model_name', response.model_name);
-                       scrapData.append('assy_code', response.assy_code);
-                       scrapData.append('kepi_lot', response.kepi_lot);
-                       scrapData.append('shift', response.shift);
-                       scrapData.append('line', response.line);
-                       scrapData.append('board_number', response.board_number);
-                       scrapData.append('serial_code', response.serial_code);
-                       scrapData.append('defect', 'SCRAP');
-                       scrapData.append('operator_name', $UserName);
-                       scrapData.append('location', 'N/A');
-                       scrapData.append('process_location', 'MOD 1');
-                       scrapData.append('repaired_by', 'N/A');
-                       scrapData.append('action_rp', 'N/A');
-                       scrapData.append('lcr_reading', 'N/A');
-                       scrapData.append('parts_code', 'N/A');
-                       scrapData.append('parts_lot', 'N/A');
-                       scrapData.append('unitmeasurement', 'N/A');
-                       scrapData.append('batchlot', 'N/A');
-                       scrapData.append('repairable', 'N/A');
-
-                       submitScrap(scrapData, function(scrapResponse) {
-                            if (scrapResponse.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Scrapped!',
-                                    text: scrapResponse.message,
-                                    toast: true,
-                                    position: 'top-right',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                });
-                                closeNoGoodModal();
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: scrapResponse.message,
-                                    toast: true,
-                                    position: 'top-right',
-                                    timer: 3000,
-                                    showConfirmButton: false,
-                                    didOpen: () => {
-                                        $('#modal_serial_code').focus().select();
-                                    }
-                                });
-                            }
-                       });
-                       
-                    } else {
-                        Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: scrapResponse.message,
-                                    toast: true,
-                                    position: 'top-right',
-                                    timer: 3000,
-                                    showConfirmButton: false,
-                                    didOpen: () => {
-                                        $('#modal_serial_code').focus().select();
-                                    }
-                                });
-                    }
-                });
-            });
-
             $('#nogoodForm').submit(function(e) {
                 e.preventDefault();
 
@@ -733,6 +641,55 @@ try {
                     }, 500);
                 }
             });
+
+            // // //scrap logic
+            // // //TODO: TEST SUBMIT TO fetch_qrmi.php
+            // // //TODO: HAVE SERIALCHECK CALL QRCODE OR JUST USE QR CODE
+            // // //TODO: HAVE THIS HANDLER AND LIPAT TO UNDER SERIAL CHECKER HANDLER FOR EASIER KASI TINATAMAD AKO
+            // // //TODO: SEPARATE FORM VALIDITY CHECKER PARA DI SAKIT SA ULO
+            
+             $('#scrapButton').on('click', function(e) {
+                e.preventDefault();
+
+                //  if (!form.checkValidity()) {
+                //      form.reportValidity();
+                //      return;
+                //  }
+
+                const serial_code = $('#modal_serial_code').val().trim();
+                if (serial_code === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Serial Required',
+                        text: 'Please enter the serial number before proceeding with scrap.',
+                        toast: true,
+                        position: 'top-right',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+                const qr_code = $('#modal_qr_code').val().trim();
+
+                getBoardData(qr_code, 'fetch_qrmi.php', function(response) {
+                    if (response.success === true) {
+
+                    const scrapData = buildScrapData(qr_code, serial_code, response, "MOD 1");
+                    
+                       submitScrap(scrapData, function(scrapResponse) {
+                                     if (scrapResponse.success === true) {
+                                       showSuccessToast(scrapResponse.message);
+                                        closeNoGoodModal();
+                             } else {
+                                        showErrorToast(scrapResponse.message);
+                             }
+                        });
+                       
+                    } else {
+                       showErrorToast(response.message);
+                    }
+                 });
+                });
 
             $('#noGoodBtn').on('click', function() {
                 $('#modal_operator_name').val(loggedInUser);
