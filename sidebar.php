@@ -246,6 +246,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </div>
 
     <script>
+    const UserName = "<?php echo htmlspecialchars($_SESSION['user_namefl']) ?? ''; ?>";
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('expanded');
         }
