@@ -6,6 +6,7 @@ vendor/
 db_connect.ini
 *.ini
 config.php
+/tests
 
 # Environment files
 .env
