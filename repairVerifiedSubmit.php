@@ -41,19 +41,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Normal single process updates
                 $col = $processMap[$process_location];
 
-                $conn->prepare("UPDATE trace_process SET $col = NULL WHERE qr_code = :qr_code")
-                     ->execute([':qr_code' => $qr_code]);
+                $conn->prepare("UPDATE repair_master SET status = 'REPAIRED', process_lead = :process_lead WHERE serial_code = :serial_code AND defect = :defect")
+                 ->execute([':process_lead' => $verifier, ':serial_code' => $serial_code, ':defect' => $defect]);
+
+                $stmt = $conn->prepare("SELECT COUNT(*) FROM repair_master WHERE serial_code = :serial_code AND status != 'REPAIRED'");
+                $stmt->execute([':serial_code' => $serial_code]);
+                $pendingCount = $stmt->fetchColumn();
 
                 $table = strtolower($process_location).'_process';
-                $conn->prepare("UPDATE $table SET board_status = 'GOOD', serial_status = 'GOOD' WHERE qr_code = :qr_code")
+                if ($pendingCount == 0) {
+                    $conn->prepare("UPDATE trace_process SET $col = NULL WHERE qr_code = :qr_code")
                      ->execute([':qr_code' => $qr_code]);
+
+                    $conn->prepare("UPDATE $table SET board_status = 'GOOD', serial_status = 'GOOD' WHERE qr_code = :qr_code")
+                         ->execute([':qr_code' => $qr_code]);
+                }
             } elseif (in_array($process_location, $batchlotProcesses)) {
                 // Batchlot logic
-                $conn->prepare('UPDATE trace_process SET fviss_process = NULL, partside_process = NULL, partside2_process = NULL, micro_process = NULL, wi_process = NULL WHERE serial_code = :serial_code')
-                     ->execute([':serial_code' => $serial_code]);
+                $conn->prepare("UPDATE repair_master SET status = 'REPAIRED', process_lead = :process_lead WHERE serial_code = :serial_code AND defect = :defect")
+                 ->execute([':process_lead' => $verifier, ':serial_code' => $serial_code, ':defect' => $defect]);
 
-                // Insert into batchlot_process from fviss_process
-                $conn->prepare("
+                $stmt = $conn->prepare("SELECT COUNT(*) FROM repair_master WHERE serial_code = :serial_code AND status != 'REPAIRED'");
+                $stmt->execute([':serial_code' => $serial_code]);
+                $pendingCount = $stmt->fetchColumn();
+
+                if ($pendingCount == 0) {
+                    $conn->prepare('UPDATE trace_process SET fviss_process = NULL, partside_process = NULL, partside2_process = NULL, micro_process = NULL, wi_process = NULL WHERE serial_code = :serial_code')
+                          ->execute([':serial_code' => $serial_code]);
+
+                    // Insert into batchlot_process from fviss_process
+                    $conn->prepare("
                     INSERT INTO batchlot_process
                     (qr_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, serial_code, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus)
                     SELECT qr_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, serial_code, board_counter, created_at, 'GOOD', 'GOOD', 'HOLD', 'NO GOOD'
@@ -61,27 +78,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     WHERE serial_code = :serial_code
                 ")->execute([':serial_code' => $serial_code]);
 
-                // Delete from all individual process tables
-                foreach ($batchlotTables as $tbl) {
-                    $conn->prepare("DELETE FROM $tbl WHERE serial_code = :serial_code")
-                         ->execute([':serial_code' => $serial_code]);
+                    // Delete from all individual process tables
+                    foreach ($batchlotTables as $tbl) {
+                        $conn->prepare("DELETE FROM $tbl WHERE serial_code = :serial_code")
+                             ->execute([':serial_code' => $serial_code]);
+                    }
                 }
             } elseif (str_contains($process_location, 'BATCH LOT')) {
                 // Batch lot deletion
-                $conn->prepare('UPDATE trace_process SET fviss_process = NULL, partside_process = NULL, partside2_process = NULL, micro_process = NULL, wi_process = NULL WHERE serial_code = :serial_code')
-                     ->execute([':serial_code' => $serial_code]);
+                $conn->prepare("UPDATE repair_master SET status = 'REPAIRED', process_lead = :process_lead WHERE serial_code = :serial_code AND defect = :defect")
+                 ->execute([':process_lead' => $verifier, ':serial_code' => $serial_code, ':defect' => $defect]);
 
-                foreach ($batchlotTablesBatch as $tbl) {
-                    $conn->prepare("DELETE FROM $tbl WHERE serial_code = :serial_code")
+                $stmt = $conn->prepare("SELECT COUNT(*) FROM repair_master WHERE serial_code = :serial_code AND status != 'REPAIRED'");
+                $stmt->execute([':serial_code' => $serial_code]);
+                $pendingCount = $stmt->fetchColumn();
+
+                if ($pendingCount == 0) {
+                    $conn->prepare('UPDATE trace_process SET fviss_process = NULL, partside_process = NULL, partside2_process = NULL, micro_process = NULL, wi_process = NULL WHERE serial_code = :serial_code')
                          ->execute([':serial_code' => $serial_code]);
+
+                    foreach ($batchlotTablesBatch as $tbl) {
+                        $conn->prepare("DELETE FROM $tbl WHERE serial_code = :serial_code")
+                             ->execute([':serial_code' => $serial_code]);
+                    }
                 }
             } else {
                 throw new Exception('Invalid Process Location.');
             }
-
-            // Update repair_master once
-            $conn->prepare("UPDATE repair_master SET status = 'REPAIRED', process_lead = :process_lead WHERE serial_code = :serial_code AND defect = :defect")
-                 ->execute([':process_lead' => $verifier, ':serial_code' => $serial_code, ':defect' => $defect]);
         } else {
             // NO GOOD -> delete from repair_master
             $conn->prepare('DELETE FROM repair_master WHERE serial_code = :serial_code AND defect = :defect')
