@@ -19,10 +19,10 @@ if (!isset($_SESSION['user_namefl'])) {
                     <label class="form-label">QR Code:</label>
                     <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" maxlength="21" required>
                 </div>
-                <input type="text" class="form-input" name="qty_input" readonly hidden>
+                <input type="text" class="form-input" name="final_qtyinput" id="final_qtyinput" readonly hidden>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="final_qtyinput" id="final_qtyinput" readonly>
+                    <input type="text" class="form-input" name="qty_input" id="qty_input" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
