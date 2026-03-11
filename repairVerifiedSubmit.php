@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $qr_code = $_POST['qr_code'] ?? '';
         $serial_code = $_POST['serial_code'] ?? '';
         $process_location = $_POST['process_location'] ?? '';
+        $defect = $_POST['defect'] ?? '';
 
         if (!$serial_code) {
             throw new Exception('Serial code is required.');
@@ -79,12 +80,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Update repair_master once
-            $conn->prepare("UPDATE repair_master SET status = 'REPAIRED', process_lead = :process_lead WHERE serial_code = :serial_code")
-                 ->execute([':process_lead' => $verifier, ':serial_code' => $serial_code]);
+            $conn->prepare("UPDATE repair_master SET status = 'REPAIRED', process_lead = :process_lead WHERE serial_code = :serial_code AND defect = :defect")
+                 ->execute([':process_lead' => $verifier, ':serial_code' => $serial_code, ':defect' => $defect]);
         } else {
             // NO GOOD -> delete from repair_master
-            $conn->prepare('DELETE FROM repair_master WHERE serial_code = :serial_code')
-                 ->execute([':serial_code' => $serial_code]);
+            $conn->prepare('DELETE FROM repair_master WHERE serial_code = :serial_code AND defect = :defect')
+                 ->execute([':serial_code' => $serial_code, ':defect' => $defect]);
         }
 
         $conn->commit();
