@@ -32,20 +32,7 @@ try {
         echo json_encode(['success' => false, 'message' => 'This QR Code is already marked as SCRAP and cannot be processed.', 'title' => 'QR Marked as SCRAP']);
         exit;
     }
-    // TESTING NO GOOD CHECKING FOR PREVIOUS PROCESS
-    /*$stmt = $conn->prepare("SELECT COUNT(*) FROM mi_nogood WHERE qr_code = :qr_code");
-    $stmt->execute([':qr_code' => $qr_code]);
-    $holdCount = $stmt->fetchColumn();*/
-
-    /*$stmt = $conn->prepare("SELECT COUNT(*) FROM mod1_process WHERE qr_code = :qr_code");
-    $stmt->execute([':qr_code' => $qr_code]);
-    $holdCount = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-    if ($holdCount > 0) {
-        echo json_encode(['success' => false, 'message' => 'This QR Code is currently on HOLD and cannot be processed.', 'title' => 'QR on Hold', 'holdcount'=>$holdCount]);
-        exit;
-    }*/
-
+    
     $finalQtyStmt = $conn->prepare('SELECT final_qtyinput FROM mi_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = $finalQtyStmt->fetchColumn() ?: 0;
