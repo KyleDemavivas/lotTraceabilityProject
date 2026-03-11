@@ -154,14 +154,6 @@ try {
                         <input type="text" class="form-input" name="board_number" id="board_number" required autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="scrap_fviss" class="form-label">Scrap:</label>
-                        <select class="form-input" name="scrap_fviss" required>
-                            <option value=""></option>
-                            <option value="YES">YES</option>
-                            <option value="NO">NO</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="repairable" class="form-label">Repairable:</label>
                         <select class="form-input" name="repairable" required>
                             <option value=""></option>
