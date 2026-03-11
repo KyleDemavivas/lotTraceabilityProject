@@ -196,8 +196,8 @@ if (!isset($_SESSION['user_namefl'])) {
                             timer: 3000
                         });
 
-                        $('input[name="qty_input"]').val(parseInt(response.final_qtyinput) || 0);
-                        $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                        // $('input[name="qty_input"]').val(parseInt(response.final_qtyinput) || 0);
+                        // $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
 
                         const currentLine = $('input[name="line"]').val();
                         if (currentLine) {
