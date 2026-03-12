@@ -173,8 +173,8 @@ try {
                     <div class="form-group" id="actionGroup">
                         <label for="action_mod1" class="form-label">Action:</label>
                         <select class="form-input" name="action_mod2" id="action_mod2" required>
-                            <option value="" disabled selected hidden>Select Action</option>
-                            <option value="">N/A</option>
+                            <option value="NULL" disabled selected hidden>Select Action</option>
+                            <option value="N/A">N/A</option>
                             <option value="FOR TOUCHUP">FOR TOUCH-UP</option>
                             <option value="FOR REPLACEMENT">FOR REPLACEMENT</option>
                             <option value="FOR PUSH">FOR PUSH</option>
