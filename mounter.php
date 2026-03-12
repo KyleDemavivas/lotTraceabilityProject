@@ -110,8 +110,9 @@ if (!isset($_SESSION['user_namefl'])) {
                             $('input[name="line"]').val(response.line);
                             $('input[name="shift"]').val(response.shift);
                             $('input[name="operator_name"]').val(response.operator_name);
-                            $('input[name="qty_input"]').val(parseInt(response.qty_input) || 0);
-                            $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                            //CHANGE THIS TO SWITCH QTY INPUT AND FINAL QTY INPUT FIELDS
+                            $('input[name="final_qtyinput"]').val(parseInt(response.qty_input) || 0);
+                            $('input[name="qty_input"]').val(parseInt(response.final_qtyinput) || 0);
                             console.log(response.final_qtyinput);
 
                             let kepi_lot = response.kepi_lot;
