@@ -25,7 +25,9 @@ try {
         exit;
     }
 
-    $query = "SELECT COUNT(*) FROM mod1_process WHERE TRIM(UPPER(qr_code)) = :qr_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
+
+//TODO: REMOVED FOR TESTING THIS CODE BLOCK IS FOR CHECKING IF BOARD IS NO GOOD ON PREVIOUS AND CURRENT PROCESS
+    /*$query = "SELECT COUNT(*) FROM mod1_process WHERE TRIM(UPPER(qr_code)) = :qr_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
                             UNION ALL
                             SELECT COUNT(*) FROM mod2_process WHERE TRIM(UPPER(qr_code)) = :qr_code2 AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')";
     $stmt = $conn->prepare($query);
@@ -35,7 +37,7 @@ try {
     if ($holdCount[0] > 0 || $holdCount[1] > 0) {
         echo json_encode(['success' => false, 'errorcode' => 'onhold', 'message' => 'This QR Code has been marked as NO GOOD and cannot be processed.', 'title' => 'QR on Hold']);
         exit;
-    }
+    }*/
 
     $query2 = "SELECT COUNT(*) FROM repair_master WHERE TRIM(UPPER(qr_code)) = :qr_code AND status = 'SCRAP'";
     $stmt2 = $conn->prepare($query2);

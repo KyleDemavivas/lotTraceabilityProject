@@ -59,7 +59,9 @@ try {
     }
 
     if ($source === 'main') {
-        $query2 = "SELECT COUNT(*) FROM mod2_process WHERE TRIM(UPPER(qr_code)) = :qr_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
+        
+//TODO: REMOVED FOR TESTING THIS CODE BLOCK IS FOR CHECKING IF BOARD IS NO GOOD ON PREVIOUS AND CURRENT PROCESS
+        /*$query2 = "SELECT COUNT(*) FROM mod2_process WHERE TRIM(UPPER(qr_code)) = :qr_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
                             UNION ALL
                              SELECT COUNT(*) FROM fviss_process WHERE TRIM(UPPER(qr_code)) = :qr_code2 AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')";
         $stmt = $conn->prepare($query2);
@@ -69,7 +71,7 @@ try {
         if ($holdCount[0] > 0 || $holdCount[1] > 0) {
             echo json_encode(['success' => false, 'message' => 'This QR Code has been marked as NO GOOD and cannot be processed.', 'title' => 'QR on Hold']);
             exit;
-        }
+        }*/
 
         $stmtbatchlot = $conn->prepare('SELECT COUNT(*) FROM fviss_batchlot WHERE qr_code = :qr_code');
         $stmtbatchlot->execute([':qr_code' => $code]);
