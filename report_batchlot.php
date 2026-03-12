@@ -10,6 +10,8 @@ $assy_code = '';
 $batchlot = '';
 $batchlot_data = [];
 $process_data = [];
+$scrapRecord = null;
+$repairHistory = [];
 
 if ($serial_code != '') {
     $stmt = $conn->prepare('SELECT TOP 1 model_name, assy_code, qr_code FROM ai_process WHERE serial_code = ? ORDER BY created_at DESC');
@@ -37,7 +39,6 @@ if ($serial_code != '') {
     $stmt->execute(['serial_code' => $serial_code]);
     $repairHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $scrapRecord = null;
     foreach ($repairHistory as $row) {
         if ($row['status'] === 'SCRAP') {
             $scrapRecord = $row;
