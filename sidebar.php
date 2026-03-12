@@ -175,6 +175,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="/traceability/report_batchlot.php"><i class="fas fa-folder-open"></i> <span>History</span></a>
                 </li>
 
+                 <li class="<?php echo ($current_page == '/traceability/scrap_history.php') ? 'active' : ''; ?>">
+                    <a href="/traceability/scrap_history.php"><i class="fas fa-folder-open"></i> <span>Scrapped Boards</span></a>
+                </li>
+
                  <li class="<?php echo ($current_page == '/traceability/fvissBatchlot.php') ? 'active' : ''; ?>">
                     <a href="/traceability/fvissBatchlot.php"><i class="fas fa-map-signs"></i> <span>FVISS Batchlot</span></a>
                 </li>
