@@ -272,7 +272,7 @@ try {
                                     $('input[name="shift"]').val(response.shift);
                                     $('input[name="operator_name"]').val(response.operator_name);
                                     $('input[name="qty_input"]').val(response.qty_input);
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                                    $('input[name="final_qtyinput"]').val('LOADING...');
 
                                     let kepi_lot = response.kepi_lot;
 
@@ -376,6 +376,7 @@ try {
                                 reverseButtons: true,
                                 allowOutsideClick: false
                             }).then((result) => {
+                                $('input[name="final_qtyinput"]').val(parseInt(response.board_count) || 'ERROR');
                                 if (result.isConfirmed) {
                                     Swal.fire({
                                         icon: response.status === 'success' ? 'success' : 'warning',

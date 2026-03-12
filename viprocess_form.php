@@ -45,14 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        $finalQtyQuery = 'SELECT final_qtyinput FROM vi_process WHERE kepi_lot = :kepi_lot AND line = :line AND final_qtyinput IS NOT NULL ORDER BY created_at DESC';
+        $finalQtyQuery = 'SELECT TOP 1 final_qtyinput FROM vi_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC';
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
-        $finalQtyStmt->execute([
-            ':kepi_lot' => $kepi_lot,
-            ':line' => $line,
-        ]);
-        $previous_final_qty = $finalQtyStmt->fetchColumn();
-        $final_qtyinput = $previous_final_qty + $qty_input;
+        $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+        $previous_final_qty = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+        $final_qtyinput = $previous_final_qty + (int) $qty_input;
 
         $serialQuery = 'SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
                         serial_code7, serial_code8, serial_code9, serial_code10, serial_code11, serial_code12, 
@@ -93,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $response['status'] = 'success';
         $response['message'] = 'Visual Inspection Process recorded successfully.';
+        $response['final_qtyinput'] = $final_qtyinput;
     } catch (PDOException $e) {
         $response['message'] = 'Error submitting form: '.$e->getMessage();
     }

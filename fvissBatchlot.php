@@ -47,9 +47,12 @@ try {
                     <label class="form-label">Serial Code:</label>
                     <input type="text" class="form-input" name="serial_code_main" id="serial_code_main" autofocus autocomplete="off" minlength="3" required>
                 </div>
+                  <div class="form-group">
+                    <input type="text" class="form-input" name="qty_input" readonly>
+                </div>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="qty_input" readonly>
+                    <input type="text" class="form-input" name="final_qtyinput" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
@@ -318,7 +321,7 @@ try {
                                     $('input[name="shift"]').val(response.shift);
                                     $('input[name="operator_name"]').val(response.operator_name);
                                     $('input[name="qty_input"]').val(response.qty_input);
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                                    $('input[name="final_qtyinput"]').val('LOADING...');
 
                                     let kepi_lot = response.kepi_lot;
 
@@ -421,6 +424,7 @@ try {
                                 allowOutsideClick: false
                             }).then((result) => {
                                 if (result.isConfirmed) {
+                                    $('input[name="final_qtyinput"]').val(parseInt(response.board_count) || 'ERROR');
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Saved successfully',

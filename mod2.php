@@ -46,10 +46,10 @@ try {
                     <label class="form-label">QR Code:</label>
                     <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" maxlength="21" required>
                 </div>
-                <input type="text" class="form-input" name="final_qtyinput" readonly hidden>
+                <input type="text" class="form-input" name="qty_input" readonly hidden>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="qty_input" readonly>
+                    <input type="text" class="form-input" name="final_qtyinput" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
@@ -159,7 +159,7 @@ try {
                             <option value="" disabled selected hidden>Required</option>
                             <option value="YES">YES</option>
                             <option value="NO">NO</option>
-                            <option value="REPAIR">FOR REPAIRER</option>
+                            <option value="REPAIR">FOR REPAIR</option>
                         </select>
                     </div>
                     <!-- <div class="form-group" id="tenboardGroup">
@@ -306,8 +306,8 @@ try {
                                     $('input[name="line"]').val(response.line);
                                     $('input[name="shift"]').val(response.shift);
                                     $('input[name="operator_name"]').val(response.operator_name);
-                                    $('input[name="qty_input"]').val(response.qty_input ?? console.log('final_qtyinput is not a number'));
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) ?? console.log('final_qtyinput is not a number'));
+                                    $('input[name="qty_input"]').val(response.qty_input);
+                                    $('input[name="final_qtyinput"]').val('LOADING...');
 
                                     let kepi_lot = response.kepi_lot;
 
@@ -420,6 +420,7 @@ try {
                                 allowOutsideClick: false
                             }).then((result) => {
                                 if (result.isConfirmed) {
+                                    $('input[name="final_qtyinput"]').val(response.final_qtyinput || 'ERROR');
                                     Swal.fire({
                                         icon: response.status === 'success' ? 'success' : 'warning',
                                         title: 'Saved!',
@@ -487,7 +488,7 @@ try {
             $('#nogoodForm').submit(function(e) {
                 e.preventDefault();
 
-                if($('select[name="repairable"]').val() === "REPAIR") { 
+                if($('select[name="repairable"]').val() === "YES") { 
                     closeNoGoodModal()
                     Swal.fire({
                         icon: 'success',

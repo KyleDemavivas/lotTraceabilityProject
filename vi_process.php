@@ -47,11 +47,11 @@ try {
                     <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" required>
                 </div>
                 <div class="form-group" hidden>
-                    <input type="text" class="form-input" name="final_qtyinput" readonly hidden>
+                    <input type="text" class="form-input" name="qty_input" readonly hidden>
                 </div>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="qty_input" readonly>
+                    <input type="text" class="form-input" name="final_qtyinput" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
@@ -255,7 +255,7 @@ try {
                                     $('input[name="shift"]').val(response.shift);
                                     $('input[name="operator_name"]').val(response.operator_name);
                                     $('input[name="qty_input"]').val(response.qty_input);
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                                    $('input[name="final_qtyinput"]').val('LOADING...');
 
                                     let kepi_lot = response.kepi_lot;
                                     qrCounts[kepi_lot] = (qrCounts[kepi_lot] || 0) + 1;
@@ -320,6 +320,7 @@ try {
                                         showConfirmButton: false
                                     });
                                     $('#qr_code').val('').focus().select();
+                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 'ERROR');
 
                                 } else {
                                     $('#modal_qr_code').val($('input[name="qr_code"]').val());

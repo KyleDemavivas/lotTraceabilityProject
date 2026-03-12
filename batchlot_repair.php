@@ -23,7 +23,7 @@ try {
 
 <body>
     <div class="container">
-        <h2>BATCH LOT REPAIR</h2>
+        <h2>BATCH LOT VERIFICATION</h2>
         <div class="table-container">
             <div style="float: left; margin-bottom: 30px;">
                 <span style="font-weight: bold;">SERIAL CODE:</span>

@@ -111,7 +111,7 @@ if (!isset($_SESSION['user_namefl'])) {
                             $('input[name="shift"]').val(response.shift);
                             $('input[name="operator_name"]').val(response.operator_name);
                             $('input[name="qty_input"]').val(parseInt(response.qty_input) || 0);
-                            $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                            $('input[name="final_qtyinput"]').val('LOADING...');
                             console.log(response.final_qtyinput);
 
                             let kepi_lot = response.kepi_lot;
@@ -195,6 +195,8 @@ if (!isset($_SESSION['user_namefl'])) {
                             showConfirmButton: false,
                             timer: 3000
                         });
+                        $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
+                        $('input[name="qty_input"]').select().focus().val('');
 
                         // $('input[name="qty_input"]').val(parseInt(response.final_qtyinput) || 0);
                         // $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);

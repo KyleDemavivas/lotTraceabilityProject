@@ -47,15 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $updateStmt = $conn->prepare($updateMounter);
         $updateStmt->execute([':qr_code' => $qr_code]);
 
-        $finalQtyQuery = 'SELECT COALESCE(SUM(TRY_CAST(qty_input AS INT)), 0) AS final_qty 
-                          FROM mounter_process WHERE kepi_lot = :kepi_lot AND line = :line';
+        $finalQtyQuery = 'SELECT TOP 1 final_qtyinput FROM mounter_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC';
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
         $finalQtyStmt->execute([
-            ':kepi_lot' => $kepi_lot,
-            ':line' => $line,
-        ]);
-        $previous_final_qty = $finalQtyStmt->fetchColumn();
-        $final_qtyinput = $previous_final_qty + $qty_input;
+            ':kepi_lot' => $kepi_lot]);
+        $previous_final_qty = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+        $final_qtyinput = $previous_final_qty + (int) $qty_input;
 
         $query = 'INSERT INTO mounter_process (qr_code, qty_input, final_qtyinput, operator_name, shift, line, assy_code, model_name, kepi_lot, created_at, mounter_status) 
                   VALUES (:qr_code, :qty_input, :final_qtyinput, :operator_name, :shift, :line, :assy_code, :model_name, :kepi_lot, :created_at, :mounter_status)';
@@ -76,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $response['status'] = 'success';
         $response['message'] = 'Mounter Process recorded and Trace Process updated successfully.';
+        $response['final_qtyinput'] = $final_qtyinput;
         // $response['final_qtyinput'] = $final_qtyinput;
     } catch (PDOException $e) {
         $response['status'] = false;

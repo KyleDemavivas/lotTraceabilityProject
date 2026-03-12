@@ -50,10 +50,10 @@ try {
                     <label class="form-label">QR Code:</label>
                     <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" maxlength="21" required>
                 </div>
-                <input type="hidden" class="form-input" name="final_qtyinput" readonly>
+                <input type="hidden" class="form-input" name="qty_input" readonly>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="qty_input" readonly>
+                    <input type="text" class="form-input" name="final_qtyinput" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
@@ -305,11 +305,10 @@ try {
                                     $('input[name="kepi_lot"]').val(response.kepi_lot);
                                     $('input[name="qty_input"]').val(response.qty_input);
                                     $('input[name="line"]').val(response.line);
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
-                                    console.log('Final Qty Input:', response.final_qtyinput);
+                                    $('input[name="final_qtyinput"]').val('LOADING...');
                                     checkAndAutoSubmit();
                                 } else {
-                                    $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"]').val('');
+                                    $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"], input[name="final_qtyinput"]').val('');
                                     $('input[name="qty_input"]').val(response.qty_input);
                                     Swal.fire({
                                         icon: 'warning',
@@ -379,6 +378,7 @@ try {
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     resetMainForm();
+                                    $('input[name="final_qtyinput"]').val(response.final_qtyinput);
 
                                     Swal.fire({
                                         icon: response.status === 'success' ? 'success' : 'warning',

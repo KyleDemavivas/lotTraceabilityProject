@@ -66,10 +66,10 @@ $operator_name = $_SESSION['user_namefl'];
                     <label class="form-label">QR Code:</label>
                     <input type="text" class="form-input" name="qr_code" id="qr_code" autofocus autocomplete="off" minlength="21" maxlength="21" required>
                 </div>
-                <input type="hidden" class=" form-input" name="final_qtyinput" readonly>
+                <input type="hidden" class=" form-input" name="qty_input" readonly>
                 <div class="form-group">
                     <label class="form-label">QTY INPUT:</label>
-                    <input type="text" class="form-input" name="qty_input" readonly>
+                    <input type="text" class="form-input" name="final_qtyinput" readonly>
                 </div>
                 <div class="form-group">
                     <label class="form-label">OPERATOR:</label>
@@ -211,8 +211,8 @@ $operator_name = $_SESSION['user_namefl'];
                                 $('input[name="assy_code"]').val(response.assy_code);
                                 $('input[name="model_name"]').val(response.model_name);
                                 $('input[name="kepi_lot"]').val(response.kepi_lot);
-                                $('input[name="qty_input"]').val(response.qty_input ? response.qty_input :'0'); ;
-                                $('input[name="final_qtyinput"]').val(response.final_qtyinput ? response.final_qtyinput : '0');
+                                $('input[name="qty_input"]').val(response.qty_input ? response.qty_input : '0'); 
+                                $('input[name="final_qtyinput"]').val('LOADING...');
                                 validateAndSubmit();
                             } else {
                                 $('input[name="assy_code"], input[name="model_name"], input[name="kepi_lot"]').val('');
@@ -297,6 +297,7 @@ $operator_name = $_SESSION['user_namefl'];
 
             $.post('manual_insertion_form.php', $(this).serialize(), function(response) {
                 if (response.status === 'success') {
+                    $('input[name="final_qtyinput"]').val(response.final_qtyinput || 'ERROR');
                     Swal.fire({
                         toast: true,
                         position: 'top-end',

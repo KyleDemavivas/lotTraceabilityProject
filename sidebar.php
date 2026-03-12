@@ -89,8 +89,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>Repair Process ▾</span></a>
                     <ul class="submenu">
                         <li class="<?php echo ($current_page == '/traceability/repair_table.php') ? 'active' : ''; ?>"><a href="/traceability/repair_table.php">Repair Table</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/verify_repairLL.php') ? 'active' : ''; ?>"><a href="/traceability/verify_repairLL.php">Verify Repair Table</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/batchlot_repair.php') ? 'active' : ''; ?>"><a href="/traceability/batchlot_repair.php">Batch Lot Repair</a></li>
+                        <li class="<?php echo ($current_page == '/traceability/verify_repairLL.php') ? 'active' : ''; ?>"><a href="/traceability/verify_repairLL.php">Line Leader</a></li>
+                        <li class="<?php echo ($current_page == '/traceability/batchlot_repair.php') ? 'active' : ''; ?>"><a href="/traceability/batchlot_repair.php">Batch Lot Verification</a></li>
                         <li class="<?php echo ($current_page == '/traceability/verify_processleader.php') ? 'active' : ''; ?>"><a href="/traceability/verify_processleader.php">Process Verification</a></li>
                     </ul>
                 </li>

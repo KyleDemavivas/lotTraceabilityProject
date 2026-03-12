@@ -66,9 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Final qty
-        $stmt = $conn->prepare('SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) FROM partside_process WHERE kepi_lot = :kepi_lot AND line = :line');
-        $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
-        $final_qtyinput = (int) $stmt->fetchColumn() + $qty_input;
+        $finalqtyQuery = "SELECT TOP 1 final_qtyinput FROM $counter_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC";
+        $stmt = $conn->prepare($finalqtyQuery);
+        $stmt->execute([':kepi_lot' => $kepi_lot]);
+        $previous_final_qty = (int) ($stmt->fetchColumn() ?: 0);
+        $final_qtyinput = $previous_final_qty + (int) $qty_input;
 
         // Insert into correct table
         $stmt = $conn->prepare("INSERT INTO $main_table 

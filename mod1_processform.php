@@ -12,10 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $operator_name = $_POST['operator_name'] ?? '';
         $shift = $_POST['shift'] ?? '';
         $asmline = $_POST['asmline'] ?? '';
-        $line = $_POST['line'] ?? '';
+        $line = strtoupper(trim($_POST['line'] ?? ''));
         $assy_code = strtoupper($_POST['assy_code'] ?? '');
         $model_name = strtoupper($_POST['model_name'] ?? '');
-        $kepi_lot = strtoupper($_POST['kepi_lot'] ?? '');
+        $kepi_lot = strtoupper(trim($_POST['kepi_lot'] ?? ''));
         $serial_qty = $_POST['serial_qty'] ?? 0;
         $qr_count = $_POST['qr_count'] ?? 0;
         $qty_input = $_POST['qty_input'] ?? 0;
@@ -59,10 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        $finalQtyQuery = 'SELECT TOP 1 final_qtyinput FROM mod1_process WHERE kepi_lot = :kepi_lot AND line = :line AND final_qtyinput IS NOT NULL ORDER BY id DESC';
+        $finalQtyQuery = 'SELECT TOP 1 final_qtyinput FROM mod1_process WHERE kepi_lot = :kepi_lot ORDER BY id DESC';
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
-        $finalQtyStmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
-        (int) $previous_final_qty = $finalQtyStmt->fetchColumn() ?: 0;
+        $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+        $previous_final_qty = (int) ($finalQtyStmt->fetchColumn() ?: 0);
         $final_qtyinput = $previous_final_qty + (int) $qty_input;
 
         $serialQuery = 'SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
@@ -115,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $response['status'] = 'success';
         $response['message'] = 'Modificator 1 Process recorded successfully.';
         $response['board_count'] = $realTimeBoardCount;
+        $response['final_qtyinput'] = $final_qtyinput;
     } catch (PDOException $e) {
         $response['message'] = 'Error submitting form: '.$e->getMessage();
     }

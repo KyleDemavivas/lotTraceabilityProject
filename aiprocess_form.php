@@ -52,13 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        $finalQtyQuery = 'SELECT COALESCE(SUM(TRY_CAST(qty_input AS INT)), 0) AS final_qty FROM ai_process WHERE kepi_lot = :kepi_lot AND line = :line';
+        $finalQtyQuery = 'SELECT TOP 1 final_qtyinput FROM ai_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC';
         $finalQtyStmt = $conn->prepare($finalQtyQuery);
-        $finalQtyStmt->execute([
-            ':kepi_lot' => $kepi_lot,
-            ':line' => $line,
-        ]);
-        $previous_final_qty = $finalQtyStmt->fetchColumn();
+        $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+        $previous_final_qty = (int) ($finalQtyStmt->fetchColumn() ?: 0);
         $final_qtyinput = $previous_final_qty + (int) $qty_input;
 
         $serialQuery = 'SELECT serial_code1, serial_code2, serial_code3, serial_code4, serial_code5, serial_code6, 
@@ -104,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $response['message'] = 'AI Process recorded successfully.';
         $response['boardCount'] = $board_counter;
         $response['lastBoardCount'] = $lastCounter + 1;
+        $response['final_qtyinput'] = $final_qtyinput;
     } catch (PDOException $e) {
         $response['success'] = false;
         $response['data'] = 'Insert Unsuccessful.';

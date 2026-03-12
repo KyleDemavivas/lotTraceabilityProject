@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        $stmt = $conn->prepare('SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) FROM fviss_batchlot WHERE kepi_lot = :kepi_lot AND line = :line');
+        $stmt = $conn->prepare('SELECT TOP 1 * FROM fviss_batchlot WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC');
         $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
         $final_qtyinput = (int) $stmt->fetchColumn() + $qty_input;
 
@@ -91,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $response['status'] = 'success';
         $response['message'] = 'Partside Process recorded successfully.';
         $response['board_count'] = (int) $stmt->fetchColumn();
+        $response['final_qtyinput'] = $final_qtyinput;
     } catch (Throwable $e) {
         $response['message'] = $e->getMessage();
     }
