@@ -401,7 +401,6 @@ if ($serial_code != '') {
           
         </div>
         <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
-            <table>
                 <table>
                 <tr>
                     <th>PROCESS</th>
