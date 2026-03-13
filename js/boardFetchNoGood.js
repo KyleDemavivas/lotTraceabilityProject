@@ -58,7 +58,7 @@ function submitScrap(data, onSuccess, onError) {
 
 function updateScrap(data, onSuccess, onError) {
   $.ajax({
-    url: "scrapSubmit.php",
+    url: "scrapUpdate.php",
     data: data,
     type: "POST",
     processData: false,

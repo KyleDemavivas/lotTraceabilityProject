@@ -11,10 +11,12 @@ $created_at = date('Y-m-d H:i:s');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $serial_code = (string) strtoupper(trim($_POST['serial_code']));
+        $defect = (string) strtoupper(trim($_POST['defect']));
+        $location = (string) strtoupper(trim($_POST['location']));
 
-        $qry = "UPDATE repair_master SET status = 'SCRAP' WHERE serial_code = :serial_code";
+        $qry = "UPDATE repair_master SET status = 'SCRAP', ll_verified = 'SCRAP', process_lead = 'SCRAP', repairable = 'SCRAP'  WHERE serial_code = :serial_code AND defect = :defect AND location = :location";
         $stmt = $conn->prepare($qry);
-        $stmt->execute([':serial_code' => $serial_code]);
+        $stmt->execute([':serial_code' => $serial_code, ':defect' => $defect, ':location' => $location]);
 
         if ($stmt->rowcount() === 0) {
             $response = ['success' => false, 'message' => 'Database Error, serial code is not found in database.'];
