@@ -27,6 +27,7 @@ try {
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.13.6/sorting/datetime-moment.js"></script>
+    <script src="js/boardFetchNoGood.js"></script>
 
     <style>
         .form-input-date {
@@ -234,17 +235,10 @@ try {
                         <option value="NO">No</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Repairable</label>
-                    <select class="form-input" name="repairable" required autocomplete="off">
-                        <option value="">Select here</option>
-                        <option value="YES">Yes</option>
-                        <option value="NO">No</option>
-                    </select>
-                </div>
                 <div class="modal-footer">
                     <button type="submit">Submit</button>
                     <button type="button" class="button-close" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="button-close" id="scrapButton" name="scrapButton">Scrap</button>
                 </div>
             </form>
         </div>
@@ -385,6 +379,46 @@ try {
                     console.error('Fetch error:', error);
                 });
         });
+
+        $(document).ready(() => {
+            $('#scrapButton').on('click', function(e) {
+                e.preventDefault();
+
+                data = new FormData($('#repairForm')[0]);
+
+                for (let [key, value] of data.entries()) {
+                    console.log(key, value);
+                }
+
+                submitScrap(data, function(response){
+                    if(response.success === true){
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Scrapped',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-right',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                closeModal();
+                            }
+                        }).then(()=>{
+                            location.reload();
+                        })
+                    } else {
+                        console.log(response.message);
+                    }
+                })
+
+                //  if (!form.checkValidity()) {
+                //      form.reportValidity();
+                //      return;
+                //  }
+               
+                });
+        })
+        
 
         /*document.getElementById('searchSerialCode').addEventListener('input', function() {
             const filter = this.value.toUpperCase();
