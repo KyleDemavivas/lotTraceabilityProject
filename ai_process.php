@@ -159,7 +159,7 @@ try {
                             </div>
                             <div class="half-group">
                                 <label class="form-label">Location:</label>
-                                <select class="form-input location-select" name="location[0][]" multiple="multiple" required>
+                                <select class="form-input location-select" name="location2[0][]" multiple="multiple" required>
                                     <?php foreach ($locations as $location) { ?>
                                         <option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option>
                                     <?php } ?>
@@ -535,8 +535,8 @@ try {
                             },
                             dataType: 'json',
                             success: function(response) {
+                                $('#modal_qr_code').val(response.qr_code);
                                 if (currentToken !== serialValidationToken) return;
-
                                 if (!response.valid) {
                                     $('#serial_code').css('border', '2px solid red');
                                     $('#serial_error').text(response.message).show();
@@ -560,13 +560,16 @@ try {
                 }
             });
 
+            const form = $('#nogoodForm')[0];
+
             $('#scrapButton').on('click', function(e) {
                 e.preventDefault();
+                  
+                if (!form.checkValidity()) {
+                        form.reportValidity();
+                      return;
 
-                //  if (!form.checkValidity()) {
-                //      form.reportValidity();
-                //      return;
-                //  }
+                  }
 
                 const serial_code = $('#serial_code').val().trim();
                 if (serial_code === '') {
@@ -582,11 +585,13 @@ try {
                     return;
                 }
                 const qr_code = $('#modal_qr_code').val().trim();
+                const location = $('select[name="location2[0][]"]').val();
+                const defect = $('select[name="defect[]"]').val();
 
                 getBoardData(qr_code, 'fetch_qrvi.php', function(response) {
                     if (response.success === true) {
 
-                    const scrapData = buildScrapData(qr_code, serial_code, response, "AI");
+                    const scrapData = buildScrapData(qr_code, serial_code, response, location, defect, "AI");
                     
                        submitScrap(scrapData, function(scrapResponse) {
                                      if (scrapResponse.success === true) {
@@ -602,7 +607,6 @@ try {
                     }
                  });
                 });
-
             $('#noGoodBtn').on('click', function() {
                 $('#modal_operator_name').val(loggedInUser);
                 $('#nogoodModal').show();
@@ -643,7 +647,7 @@ try {
                 </div>
                 <div class="half-group">
                     <label class="form-label">Location:</label>
-                    <select class="form-input location-select" name="location[${defectIndex}][]" multiple="multiple">
+                    <select class="form-input location-select" name="location2[${defectIndex}][]" multiple="multiple">
                         ${locationOptions}
                     </select>
                 </div>
@@ -651,7 +655,7 @@ try {
 
                 $('#defect-location-container').append(newRow);
 
-                $(`select[name="location[${defectIndex}][]"]`).select2({
+                $(`select[name="location2[${defectIndex}][]"]`).select2({
                     tags: true,
                     placeholder: "Select or type locations",
                     tokenSeparators: [','],
