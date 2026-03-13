@@ -513,13 +513,16 @@ try {
                 }
             });
 
+            const form = $('#nogoodForm')[0];
+
             $('#scrapButton').on('click', function(e) {
                 e.preventDefault();
+                  
+                if (!form.checkValidity()) {
+                        form.reportValidity();
+                      return;
 
-                //  if (!form.checkValidity()) {
-                //      form.reportValidity();
-                //      return;
-                //  }
+                  }
 
                 const serial_code = $('#serial_code').val().trim();
                 if (serial_code === '') {
@@ -535,11 +538,13 @@ try {
                     return;
                 }
                 const qr_code = $('#modal_qr_code').val().trim();
+                const location = $('select[name="location[0][]"]').val();
+                const defect = $('select[name="defect[]"]').val();
 
                 getBoardData(qr_code, 'fetch_qrvi2.php', function(response) {
                     if (response.success === true) {
 
-                    const scrapData = buildScrapData(qr_code, serial_code, response, "VI");
+                    const scrapData = buildScrapData(qr_code, serial_code, response, location, defect, "VI");
                     
                        submitScrap(scrapData, function(scrapResponse) {
                                      if (scrapResponse.success === true) {

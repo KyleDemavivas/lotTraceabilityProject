@@ -82,6 +82,7 @@ function buildScrapData(
   serial_code,
   response,
   location,
+  defect,
   process_location,
 ) {
   const scrapData = new FormData();
