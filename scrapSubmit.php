@@ -8,7 +8,7 @@ $response = ['success' => false, 'message' => 'Something went wrong.', 'data' =>
 date_default_timezone_set('Asia/Manila');
 $created_at = date('Y-m-d H:i:s');
 
-if($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $qr_code = $_POST['qr_code'] ?? '';
         $model_name = $_POST['model_name'] ?? '';
@@ -36,11 +36,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         serial_code, defect, operator_name, location, process_location, 
         repaired_by, action_rp, lcr_reading, parts_code, parts_lot, 
         unitmeasurement, batchlot, repairable, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SCRAP', ?)";
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)";
 
         $stmt = $conn->prepare($query);
 
-        $stmt ->execute([
+        $stmt->execute([
             $qr_code,
             $model_name,
             $assy_code,
@@ -61,12 +61,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $unitmeasurement,
             $batchlot,
             $repairable,
-            $created_at
+            $created_at,
         ]);
 
         $response = ['success' => true, 'message' => 'Data submitted successfully.'];
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         $response = ['success' => false, 'message' => $e->getMessage()];
     }
 } else {
