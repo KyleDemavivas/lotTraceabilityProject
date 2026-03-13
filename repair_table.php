@@ -383,6 +383,7 @@ try {
         $(document).ready(() => {
             $('#scrapButton').on('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
 
                 data = new FormData($('#repairForm')[0]);
 

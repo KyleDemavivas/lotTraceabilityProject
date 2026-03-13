@@ -19,6 +19,8 @@ try {
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/repair_process.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/boardFetchNoGood.js"></script>
 </head>
 
 <body>
@@ -188,6 +190,7 @@ try {
                 <div class="modal-footer">
                     <button type="submit">Submit</button>
                     <button type="button" class="button-close" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="button-close" id="scrapButton" name="scrapButton">Scrap</button>
                 </div>
             </form>
         </div>
@@ -331,6 +334,49 @@ try {
 
             document.getElementById('noResultsRow').style.display = matchCount === 0 ? '' : 'none';
         });
+
+         $(document).ready(() => {
+            $('#scrapButton').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                data = new FormData();
+                data.append('serial_code', $('#serial_code').val());
+                data.append('defect', $('#defect').val());
+                data.append('location', $('#location').val());
+
+                for (let [key, value] of data.entries()) {
+                    console.log(key, value);
+                }
+
+                updateScrap(data, function(response){
+                    if(response.success === true){
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Scrapped',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-right',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                closeModal();
+                            }
+                        }).then(()=>{
+                            location.reload();
+                        })
+                    } else {
+                        console.log(response.message);
+                    }
+                })
+
+                //  if (!form.checkValidity()) {
+                //      form.reportValidity();
+                //      return;
+                //  }
+               
+                });
+        })
     </script>
 </body>
 
