@@ -1,5 +1,6 @@
 <?php
 
+ob_start();
 include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
 header('Content-Type: application/json');
 
@@ -29,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $parts_lot = $_POST['parts_lot'];
         $unitmeasurement = $_POST['unitmeasurement'];
         $batchlot = $_POST['batchlot'];
-        $repairable = $_POST['repairable'];
+        $repairable = 'YES';
 
         date_default_timezone_set('Asia/Manila'); // set PHP timezone
         $created_at = date('Y-m-d H:i:s');
