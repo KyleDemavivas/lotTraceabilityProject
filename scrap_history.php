@@ -35,7 +35,9 @@ $scrapRecord = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <th>Serial Code</th>
                 <th>Assembly Code</th>
                 <th>Model Name</th>
+                <th>Process</th>
                 <th>Location</th>
+                <th>Defect</th>
                 <th>Operator</th>
                 <th>Date</th>
                 <th>Time</th>
@@ -50,6 +52,8 @@ $scrapRecord = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?php echo $rows['assy_code']; ?></td>
                 <td><?php echo $rows['model_name']; ?></td>
                 <td><?php echo $rows['process_location']; ?></td>
+                <td><?php echo $rows['location']; ?></td>
+                <td><?php echo $rows['defect']; ?></td>
                 <td><?php echo $rows['operator_name']; ?></td>
                 <td><?php echo date('M d, Y', strtotime($rows['created_at'])); ?></td>
                 <td><?php echo date('H:i', strtotime($rows['created_at'])); ?></td>
