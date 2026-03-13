@@ -109,7 +109,7 @@ try {
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h3 class="modal-header">Repair Action Form</h3>
-            <form id="repairForm" class="form-container">
+            <form id="repairForm" class="form-container">   
                 <input type="hidden" name="id" id="id">
                 <input type="hidden" name="qr_code" id="qr_code">
                 <input type="hidden" name="model_name" id="model_name">
@@ -122,7 +122,7 @@ try {
                 <input type="hidden" name="parts_code" id="parts_code">
                 <input type="hidden" name="parts_lot" id="parts_lot">
                 <input type="hidden" name="repairable" id="repairable">
-
+                <h3 class="modal-header" style="color: red;" hidden id="scrapHeader">THIS BOARD IS FOR SCRAP</h3>
                 <div class="form-group">
                     <label class="form-label">Serial Code</label>
                     <input class="form-input" type="text" name="serial_code" id="serial_code" readonly>
@@ -173,7 +173,7 @@ try {
                     <input class="form-input" type="text" name="batchlot" id="batchlot" readonly>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="judgementSection">
                     <label class="form-label">Judgement</label>
                     <select class="form-input" name="judgement_ll" required autocomplete="off">
                         <option value="">Select here</option>
@@ -188,8 +188,9 @@ try {
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit">Submit</button>
+                    <button type="submit" id="submitButton">Submit</button>
                     <button type="button" class="button-close" onclick="closeModal()">Cancel</button>
+                                        <button type="button" id="cancelScrap" name="cancelScrap" hidden style="text-align: right;">Cancel Scrap</button>
                     <button type="button" class="button-close" id="scrapButton" name="scrapButton">Scrap</button>
                 </div>
             </form>
@@ -226,7 +227,13 @@ try {
             document.getElementById('created_at').value = data.created_at;
             document.getElementById('parts_code').value = data.parts_code;
             document.getElementById('parts_lot').value = data.parts_lot;
-            document.getElementById('repairable').value = data.repairable;
+            const checkRepair = document.getElementById('repairable').value = data.repairable;
+            if(checkRepair === 'SCRAP') {
+                $('#submitButton').hide();
+                $('#judgementSection').hide();
+                $('#scrapHeader').show();
+                $('#cancelScrap').show();
+            }
         }
 
         function closeModal() {
@@ -376,6 +383,37 @@ try {
                 //  }
                
                 });
+                
+            $('#cancelScrap').on('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const data = new FormData();
+
+                data.append('serial_code', $('#serial_code').val().trim().toUpperCase());
+                data.append('action', 'CANCEL');
+
+                updateScrap(data, function(response){
+                    if(response.success === true){
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Scrapped',
+                            text: response.message,
+                            toast: true,
+                            position: 'top-right',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                closeModal();
+                            }
+                        }).then(()=>{
+                            location.reload();
+                        })
+                    } else {
+                        console.log(response.message);
+                    }
+                })
+            })    
         })
     </script>
 </body>

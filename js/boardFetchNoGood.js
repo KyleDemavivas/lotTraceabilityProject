@@ -77,7 +77,13 @@ function updateScrap(data, onSuccess, onError) {
   });
 }
 
-function buildScrapData(qr_code, serial_code, response, location) {
+function buildScrapData(
+  qr_code,
+  serial_code,
+  response,
+  location,
+  process_location,
+) {
   const scrapData = new FormData();
   scrapData.append("qr_code", qr_code);
   scrapData.append("model_name", response.model_name);
@@ -87,11 +93,11 @@ function buildScrapData(qr_code, serial_code, response, location) {
   scrapData.append("line", response.line);
   scrapData.append("board_number", response.board_number);
   scrapData.append("serial_code", serial_code);
-  scrapData.append("defect", "SCRAP");
+  scrapData.append("defect", defect);
   scrapData.append("operator_name", UserName);
   scrapData.append("board_number", "SCRAP");
-  scrapData.append("location", "N/A");
-  scrapData.append("process_location", location);
+  scrapData.append("location", location);
+  scrapData.append("process_location", process_location);
   scrapData.append("repaired_by", "N/A");
   scrapData.append("action_rp", "N/A");
   scrapData.append("lcr_reading", "N/A");
