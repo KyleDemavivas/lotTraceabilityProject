@@ -56,6 +56,27 @@ function submitScrap(data, onSuccess, onError) {
   });
 }
 
+function updateScrap(data, onSuccess, onError) {
+  $.ajax({
+    url: "scrapSubmit.php",
+    data: data,
+    type: "POST",
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function (response) {
+      if (typeof onSuccess === "function") {
+        onSuccess(response);
+      }
+    },
+    error: function (xhr, status, error) {
+      if (typeof onError === "function") {
+        onError(xhr, status, error);
+      }
+    },
+  });
+}
+
 function buildScrapData(qr_code, serial_code, response, location) {
   const scrapData = new FormData();
   scrapData.append("qr_code", qr_code);
