@@ -101,6 +101,7 @@ function buildScrapData(
   location,
   defect,
   process_location,
+  board_number,
 ) {
   const scrapData = new FormData();
   scrapData.append("qr_code", qr_code);
@@ -113,7 +114,7 @@ function buildScrapData(
   scrapData.append("serial_code", serial_code);
   scrapData.append("defect", defect);
   scrapData.append("operator_name", UserName);
-  scrapData.append("board_number", "SCRAP");
+  scrapData.append("board_number", board_number);
   scrapData.append("location", location);
   scrapData.append("process_location", process_location);
   scrapData.append("repaired_by", "N/A");

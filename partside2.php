@@ -607,13 +607,16 @@ try {
                 }
             });
 
+             const form = $('#nogoodForm')[0];
+
             $('#scrapButton').on('click', function(e) {
                 e.preventDefault();
+                  
+                if (!form.checkValidity()) {
+                        form.reportValidity();
+                      return;
 
-                //  if (!form.checkValidity()) {
-                //      form.reportValidity();
-                //      return;
-                //  }
+                  }
 
                 const serial_code = $('#modal_serial_code').val().trim();
                 if (serial_code === '') {
@@ -629,13 +632,14 @@ try {
                     return;
                 }
                 const qr_code = $('#modal_qr_code').val().trim();
+                const location = $('select[name="location[0][]"]').val();
+                const defect = $('select[name="defect[]"]').val();
+                const board_number = $('#board_number').val();
 
-                //REPLACE 2ND FUNCTION VARIABLE WITH FETCH FILE ASSOCIATED WITH THIS FILE
-                getBoardData(qr_code, 'fetch_qrmod2.php', function(response) {
+                getBoardData(serial_code, 'fetch_partside2.php', function(response) {
                     if (response.success === true) {
-                        
-                    //PLACE PROCESS LOCATION OF THIS FILE WITH THE 4TH VARIABLE OF THE FUNCTION
-                    const scrapData = buildScrapData(qr_code, serial_code, response, "PARTSIDE 2");
+
+                    const scrapData = buildScrapData(qr_code, serial_code, response, location, defect, "PARTSIDE2", board_number);
                     
                        submitScrap(scrapData, function(scrapResponse) {
                                      if (scrapResponse.success === true) {
@@ -649,7 +653,9 @@ try {
                     } else {
                        showErrorToast(response.message);
                     }
-                 });
+                 }, function(error){
+                        showErrorToast(error.message);
+                 }, "main");
                 });
 
             $('#noGoodBtn').on('click', function() {

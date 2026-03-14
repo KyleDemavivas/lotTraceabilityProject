@@ -540,11 +540,12 @@ try {
                 const qr_code = $('#modal_qr_code').val().trim();
                 const location = $('select[name="location[0][]"]').val();
                 const defect = $('select[name="defect[]"]').val();
+                const board_number = $('#board_number').val();
 
                 getBoardData(qr_code, 'fetch_qrvi2.php', function(response) {
                     if (response.success === true) {
 
-                    const scrapData = buildScrapData(qr_code, serial_code, response, location, defect, "VI");
+                    const scrapData = buildScrapData(qr_code, serial_code, response, location, defect, "VI", board_number);
                     
                        submitScrap(scrapData, function(scrapResponse) {
                                      if (scrapResponse.success === true) {
@@ -558,14 +559,16 @@ try {
                     } else {
                        showErrorToast(response.message);
                     }
-                 });
+                 }, function(error) {
+                        showErrorToast(error.message);
+                 }, null);
                 });
 
             $('#noGoodBtn').on('click', function() {
                 $('#operator_name').val(loggedInUser);
                 $('#nogoodModal').show();
                 $('#modal_source').val('');
-                $('#serial_code').focus();
+                $('#serial_code').focus().select();
             });
 
             $('#closeModal').on('click', function() {

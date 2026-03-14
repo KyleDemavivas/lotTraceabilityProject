@@ -45,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':serial_code' => $serial_code]);
         $viProcess = $stmt->fetchColumn();
 
-        /*if ($viProcess === 'GOOD') {
+        if ($viProcess === 'GOOD') {
             throw new Exception('Micro Process already has data.');
-        }*/
+        }
 
         if ($viProcess !== false) {
             $stmt = $conn->prepare("UPDATE trace_process SET micro_process = 'GOOD' WHERE serial_code = :serial_code");

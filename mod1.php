@@ -648,14 +648,16 @@ try {
             // // //TODO: HAVE SERIALCHECK CALL QRCODE OR JUST USE QR CODE
             // // //TODO: HAVE THIS HANDLER AND LIPAT TO UNDER SERIAL CHECKER HANDLER FOR EASIER KASI TINATAMAD AKO
             // // //TODO: SEPARATE FORM VALIDITY CHECKER PARA DI SAKIT SA ULO
-            
-             $('#scrapButton').on('click', function(e) {
-                e.preventDefault();
+            const form = $('#nogoodForm')[0];
 
-                //  if (!form.checkValidity()) {
-                //      form.reportValidity();
-                //      return;
-                //  }
+            $('#scrapButton').on('click', function(e) {
+                e.preventDefault();
+                  
+                if (!form.checkValidity()) {
+                        form.reportValidity();
+                      return;
+
+                  }
 
                 const serial_code = $('#modal_serial_code').val().trim();
                 if (serial_code === '') {
@@ -671,11 +673,14 @@ try {
                     return;
                 }
                 const qr_code = $('#modal_qr_code').val().trim();
+                const location = $('select[name="location[0][]"]').val();
+                const defect = $('select[name="defect[]"]').val();
+                const board_number = $('#board_number').val();
 
                 getBoardData(qr_code, 'fetch_qrmi.php', function(response) {
                     if (response.success === true) {
 
-                    const scrapData = buildScrapData(qr_code, serial_code, response, "MOD 1");
+                    const scrapData = buildScrapData(qr_code, serial_code, response, location, defect, "MOD1", board_number);
                     
                        submitScrap(scrapData, function(scrapResponse) {
                                      if (scrapResponse.success === true) {
@@ -689,14 +694,16 @@ try {
                     } else {
                        showErrorToast(response.message);
                     }
-                 });
+                 }, function(error) {
+                        showErrorToast(error.message);
+                 }, null);
                 });
 
             $('#noGoodBtn').on('click', function() {
                 $('#modal_operator_name').val(loggedInUser);
                 $('#modal_source').val('manual');
                 $('#nogoodModal').show();
-                $('#serial_code').focus();
+                $('#serial_code').focus().select();
             });
 
             $('#closeModal').on('click', function() {
