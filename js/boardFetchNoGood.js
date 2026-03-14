@@ -1,7 +1,24 @@
-function getBoardData(data, source, onSuccess, onError) {
+function isEmpty(value) {
+  if (value === null || value === undefined || value === false) return true;
+  if (typeof value === "number") return value === 0;
+  if (typeof value === "string") return value.trim() === "";
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "object") return Object.keys(value).length === 0;
+  return false;
+}
+
+function getBoardData(data, source, onSuccess, onError, batchlot) {
   if (typeof data === "string") {
     const formData = new FormData();
     formData.append("qr_code", data);
+    formData.append("code", data);
+    formData.append("serial_code", data);
+
+    if (!isEmpty(batchlot)) {
+      console.log("source empty check");
+      formData.append("source", batchlot);
+    }
+
     data = formData;
   }
 
