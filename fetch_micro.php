@@ -22,15 +22,6 @@ $main_table = $source === 'main' ? 'partside2_process' : 'partside2_batchlot';
 $main_table2 = $source === 'main' ? 'micro_process' : 'micro_batchlot';
 
 try {
-    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table2 WHERE TRIM(UPPER(serial_code)) = :serial_code");
-    $stmt->execute([':serial_code' => $serial_code]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($row) {
-        echo json_encode(['success' => false, 'message' => 'Serial already exists']);
-        exit;
-    }
-
     $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");
     $stmt->execute([':serial_code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
