@@ -241,6 +241,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                 <?php } ?>
 
+                <!-- VI PROCESS MENUS -->
+                 <?php if ($_SESSION['user_process'] === 'VISUAL INSPECTION') { ?>
+                    <li class="<?php echo ($current_page == '/traceability/vi_process.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/vi_process.php"><i class="fas fa-window-wrench"></i> <span>Visual Inspection</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/mounter.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/mounter.php"><i class="fas fa-wrench"></i> <span>Mounter</span></a>
+                    </li>
+                <?php } ?>
+
                 <li class="<?php echo ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
                     <a href="account_settings.php"><i class="fas fa-user-cog"></i> <span>Account Settings</span></a>
                 </li>
