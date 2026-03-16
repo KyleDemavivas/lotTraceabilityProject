@@ -44,7 +44,7 @@ switch ($_SESSION['user_process']) {
         header('Location: microscope_process.php');
         break;
     case 'WITHSTAND INSULATION TEST':
-        header('Location: wi_process.php');
+        header('Location: wi.php');
         break;
     case 'REPAIRER':
         header('Location: repair_table.php');

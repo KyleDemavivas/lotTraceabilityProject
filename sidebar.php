@@ -250,6 +250,32 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a href="/traceability/mounter.php"><i class="fas fa-wrench"></i> <span>Mounter</span></a>
                     </li>
                 <?php } ?>
+                    
+                <!--FVISS MENUS -->
+                <?php if ($_SESSION['user_process'] === 'FVI SOLDERSIDE') { ?>
+                    <li class="<?php echo ($current_page == '/traceability/fviss.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/fviss.php"><i class="fas fa-window-wrench"></i> <span>FVI Solderside</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/fvissBatchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/fvissBatchlot.php"><i class="fas fa-wrench"></i> <span>FVISS Batchlot</span></a>
+                    </li>
+                <?php } ?>
+
+                <!--PARTSIDE MENUS -->
+                <?php if ($_SESSION['user_process'] === 'PARTSIDE 1' || $_SESSION['user_process'] === 'PARTSIDE 2') { ?>
+                    <li class="<?php echo ($current_page == '/traceability/partside.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/partside.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 1</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/partside2.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/partside2.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 2</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/partside1Batchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/partside1Batchlot.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 1 BATCHLOT</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/partside2Batchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/partside2Batchlot.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 2 BATCHLOT</span></a>
+                    </li>
+                <?php } ?>
 
                 <li class="<?php echo ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
                     <a href="account_settings.php"><i class="fas fa-user-cog"></i> <span>Account Settings</span></a>
