@@ -38,7 +38,7 @@ try {
     <div class="form-container">
         <form method="POST" id="mainForm" name="mainForm">
             <h1>
-                <center>WI</center>
+                <center>WI Batchlot</center>
             </h1>
             <div class="form-section">
                 <div class="form-group">

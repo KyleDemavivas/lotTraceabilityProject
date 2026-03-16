@@ -39,7 +39,7 @@ try {
     <div class="form-container">
         <form method="POST" id="mainForm" name="mainForm">
             <h1>
-                <center>Micro</center>
+                <center>Micro Batchlot</center>
             </h1>
             <div class="form-section">
                 <div class="form-group">

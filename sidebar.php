@@ -209,13 +209,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <!--REPAIR MENUS-->
                 <?php if ($_SESSION['user_process'] === 'REPAIRER') { ?>
                     <li class="<?php echo ($current_page == '/traceability/repair_table.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/repair_table.php"><i class="fas fa-window-wrench"></i> <span>Repair Table</span></a>
+                        <a href="/traceability/repair_table.php"><i class="fas fa-wrench"></i> <span>Repair Table</span></a>
                     </li>
                     <li class="<?php echo ($current_page == '/traceability/verify_repairLL.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/verify_repairLL.php"><i class="fas fa-wrench"></i> <span>Verify Repair Table</span></a>
+                        <a href="/traceability/verify_repairLL.php"><i class="fas fa-wrench"></i> <span>Line Leader</span></a>
                     </li>
                     <li class="<?php echo ($current_page == '/traceability/batchlot_repair.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/batchlot_repair.php"><i class="fas fa-window-wrench"></i> <span>Batch Lot Repair</span></a>
+                        <a href="/traceability/batchlot_repair.php"><i class="fas fa-wrench"></i> <span>Batch Lot Verify</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/verify_processleader.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/verify_processleader.php"><i class="fas fa-wrench"></i> <span>Process Lead Verify</span></a>
                     </li>
                 <?php } ?>
 
@@ -274,6 +277,26 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                     <li class="<?php echo ($current_page == '/traceability/partside2Batchlot.php') ? 'active' : ''; ?>">
                         <a href="/traceability/partside2Batchlot.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 2 BATCHLOT</span></a>
+                    </li>
+                <?php } ?>
+
+                 <!--MICRO MENUS -->
+                <?php if ($_SESSION['user_process'] === 'MICROSCOPE INSPECTION') { ?>
+                    <li class="<?php echo ($current_page == '/traceability/micro.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/micro.php"><i class="fas fa-window-wrench"></i> <span>Micro</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/microBatchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/microBatchlot.php"><i class="fas fa-wrench"></i> <span>Micro Batchlot</span></a>
+                    </li>
+                <?php } ?>
+
+                 <!--FVISS MENUS -->
+                <?php if ($_SESSION['user_process'] === 'WITHSTAND INSULATION TEST') { ?>
+                    <li class="<?php echo ($current_page == '/traceability/wi.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/wi.php"><i class="fas fa-window-wrench"></i> <span>WI</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceability/wiBatchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceability/wiBatchlot.php"><i class="fas fa-wrench"></i> <span>WI Batchlot</span></a>
                     </li>
                 <?php } ?>
 

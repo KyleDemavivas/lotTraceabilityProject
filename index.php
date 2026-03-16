@@ -31,7 +31,7 @@ switch ($_SESSION['user_process']) {
     case 'MODIFICATOR 2':
         header('Location: mod2.php');
         break;
-    case 'FVISS':
+    case 'FVI SOLDERSIDE':
         header('Location: fviss.php');
         break;
     case 'PARTSIDE 1':
@@ -41,7 +41,7 @@ switch ($_SESSION['user_process']) {
         header('Location: partside2.php');
         break;
     case 'MICROSCOPE INSPECTION':
-        header('Location: microscope_process.php');
+        header('Location: micro.php');
         break;
     case 'WITHSTAND INSULATION TEST':
         header('Location: wi.php');
