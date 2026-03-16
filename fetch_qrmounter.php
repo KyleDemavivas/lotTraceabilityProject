@@ -29,7 +29,7 @@ if (isset($_POST['qr_code'])) {
         } else {
             echo json_encode([
                 'success' => false,
-                'message' => 'QR Code has no data found in SPA Process.',
+                'message' => 'Rescan QR Code',
             ]);
         }
     } catch (PDOException $e) {
