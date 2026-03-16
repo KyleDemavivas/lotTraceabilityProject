@@ -293,13 +293,13 @@ include 'sidebar.php';
                             position: 'top-right',
                             timer: 1500,
                             showConfirmButton: false
-                        })/*.then(() => {
+                        }).then(() => {
                             $("#mainForm")[0].reset();
                             $("#user_username").text("");
                             $("#password_message").text("");
                             $('#username_message').text("");
                             $("#user_password, #confirm_password").css("border", "");
-                        })*/
+                        })
                     } else {
                         Swal.fire({
                             icon: 'error',
