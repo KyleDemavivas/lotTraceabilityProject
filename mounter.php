@@ -196,7 +196,7 @@ if (!isset($_SESSION['user_namefl'])) {
                             timer: 3000
                         });
                         $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
-                        $('input[name="qty_input"]').select().focus().val('');
+                        $('input[name="qty_input"]').select().focus();
 
                         // $('input[name="qty_input"]').val(parseInt(response.final_qtyinput) || 0);
                         // $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput) || 0);
