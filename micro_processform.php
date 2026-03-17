@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     $main_table = $source === 'main' ? 'micro_process' : 'micro_batchlot';
+    $process_location = $sourcePage === 'main' ? 'MICRO' : 'MICRO BATCH LOT';
 
     try {
         $qr_code = strtoupper($_POST['qr_code'] ?? '');
@@ -54,9 +55,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        $stmt = $conn->prepare("SELECT COALESCE(SUM(CAST(qty_input AS INT)),0) FROM $main_table WHERE kepi_lot = :kepi_lot AND line = :line");
-        $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
-        $final_qtyinput = (int) $stmt->fetchColumn() + $qty_input;
+        $query = "SELECT COUNT(process_location) FROM repair_master WHERE serial_code = :serial_code AND process_location = $process_location";
+        $stmt = $conn->prepare($query);
+        $stmt->execute([':serial_code' => $serial_code]);
+        $repaired = (int) $stmt->fetchColumn();
+
+        if ($repaired > 0) {
+            $finalQtyStmt = $conn->prepare("SELECT TOP 1 final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC");
+            $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+            $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+        } else {
+            $finalQtyStmt = $conn->prepare("SELECT TOP 1 final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC");
+            $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+            $previous_final_qty = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+            $final_qtyinput = $previous_final_qty + (int) $qty_input;
+        }
 
         $stmt = $conn->prepare("INSERT INTO $main_table (qr_code, serial_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus) 
                 VALUES (:qr_code, :serial_code, :qty_input, :final_qtyinput, :operator_name, :shift, :asmline, :line, :assy_code, :model_name, :kepi_lot, :board_counter, :created_at,'GOOD','GOOD','GOOD','GOOD')");

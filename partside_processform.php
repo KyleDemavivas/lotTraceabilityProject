@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Determine which table to use
         $main_table = $sourcePage === 'main' ? 'partside_process' : 'partside_batchlot';
         $counter_table = $main_table; // both use same table for board_counter
+        $process_location = $sourcePage === 'main' ? 'PARTSIDE 1' : 'PARTSIDE 1 BATCH LOT';
 
         // Check if NO GOOD
         $stmtNG = $conn->prepare('SELECT serial_status FROM partside_process WHERE serial_code = :serial_code');
@@ -65,12 +66,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        // Final qty
-        $finalqtyQuery = "SELECT TOP 1 final_qtyinput FROM $counter_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC";
-        $stmt = $conn->prepare($finalqtyQuery);
-        $stmt->execute([':kepi_lot' => $kepi_lot]);
-        $previous_final_qty = (int) ($stmt->fetchColumn() ?: 0);
-        $final_qtyinput = $previous_final_qty + (int) $qty_input;
+        $query = "SELECT COUNT(process_location) FROM repair_master WHERE serial_code = :serial_code AND process_location = $process_location";
+        $stmt = $conn->prepare($query);
+        $stmt->execute([':serial_code' => $serial_code]);
+        $repaired = (int) $stmt->fetchColumn();
+
+        if ($repaired > 0) {
+            $finalQtyStmt = $conn->prepare("SELECT TOP 1 final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC");
+            $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+            $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+        } else {
+            $finalQtyStmt = $conn->prepare("SELECT TOP 1 final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC");
+            $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+            $previous_final_qty = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+            $final_qtyinput = $previous_final_qty + (int) $qty_input;
+        }
 
         // Insert into correct table
         $stmt = $conn->prepare("INSERT INTO $main_table 

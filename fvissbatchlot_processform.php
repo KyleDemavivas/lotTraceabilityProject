@@ -62,9 +62,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        $stmt = $conn->prepare('SELECT TOP 1 * FROM fviss_batchlot WHERE kepi_lot = :kepi_lot AND line = :line ORDER BY id DESC');
-        $stmt->execute([':kepi_lot' => $kepi_lot, ':line' => $line]);
-        $final_qtyinput = (int) $stmt->fetchColumn() + $qty_input;
+        $query = "SELECT COUNT(process_location) FROM repair_master WHERE serial_code = :serial_code AND process_location = 'FVISS BATCH LOT'";
+        $stmt = $conn->prepare($query);
+        $stmt->execute([':serial_code' => $serial_code]);
+        $repaired = (int) $stmt->fetchColumn();
+
+        if ($repaired > 0) {
+            $finalQtyStmt = $conn->prepare('SELECT TOP 1 final_qtyinput FROM fviss_batchlot WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
+            $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+            $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+        } else {
+            $finalQtyStmt = $conn->prepare('SELECT TOP 1 final_qtyinput FROM fviss_batchlot WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
+            $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
+            $previous_final_qty = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+            $final_qtyinput = $previous_final_qty + (int) $qty_input;
+        }
 
         $stmt = $conn->prepare("INSERT INTO fviss_batchlot (qr_code, serial_code, qty_input, final_qtyinput, operator_name, shift, asmline, line, assy_code, model_name, kepi_lot, board_counter, created_at, board_status, serial_status, prev_boardstatus, prev_serialstatus) 
                 VALUES (:qr_code, :serial_code, :qty_input, :final_qtyinput, :operator_name, :shift, :asmline, :line, :assy_code, :model_name, :kepi_lot, :board_counter, :created_at,'GOOD','GOOD','GOOD','GOOD')");
