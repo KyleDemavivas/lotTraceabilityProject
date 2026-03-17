@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        $query = "SELECT COUNT(process_location) FROM repair_master WHERE serial_code = :serial_code AND process_location = $process_location";
+        $query = "SELECT COUNT(process_location) FROM repair_master WHERE serial_code = :serial_code AND process_location = '$process_location'";
         $stmt = $conn->prepare($query);
         $stmt->execute([':serial_code' => $serial_code]);
         $repaired = (int) $stmt->fetchColumn();
