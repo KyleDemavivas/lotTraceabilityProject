@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception('Source is NULL.');
         }
         $main_table = $source === 'main' ? 'wi_process' : 'wi_batchlot';
-        $process_location = $source === 'main' ? 'WI' : 'WI BATCH LOT';
+        $process_location =
+        $source === 'main' ? 'WI' : 'WI BATCH LOT';
 
         $qr_code = strtoupper($_POST['qr_code'] ?? '');
         $serial_code = strtoupper($_POST['serial_code'] ?? '');
@@ -53,9 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':serial_code' => $serial_code]);
         }
 
-        $query = "SELECT COUNT(process_location) FROM repair_master WHERE serial_code = :serial_code AND process_location = '$process_location'";
+        $query = 'SELECT COUNT(process_location) FROM repair_master WHERE serial_code = :serial_code AND process_location = :process_location';
         $stmt = $conn->prepare($query);
-        $stmt->execute([':serial_code' => $serial_code]);
+        $stmt->execute([':serial_code' => $serial_code, ':process_location' => $process_location]);
         $repaired = (int) $stmt->fetchColumn();
 
         if ($repaired > 0) {
