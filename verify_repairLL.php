@@ -205,6 +205,11 @@ try {
         });
 
         function openModal(data) {
+            $('#submitButton').show();
+            $('#judgementSection').show();
+            $('#scrapHeader').hide();
+            $('#cancelScrap').hide();
+
             document.getElementById('id').value = data.id;
             document.getElementById('qr_code').value = data.qr_code;
             document.getElementById('model_name').value = data.model_name;
