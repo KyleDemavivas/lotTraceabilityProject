@@ -148,7 +148,6 @@ try {
             </tbody>
         </table>
     </div>
-    </div>
 
     <!-- Modal -->
     <div id="actionModal" class="modal">
