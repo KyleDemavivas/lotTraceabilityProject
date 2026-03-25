@@ -384,35 +384,18 @@ try {
                         isSubmitting = false;
                         if (response.status === 'success') {
                             Swal.fire({
-                                title: 'Confirm Result',
-                                text: "Is everything good?",
-                                icon: 'question',
-                                showCancelButton: true,
-                                confirmButtonText: 'GOOD',
-                                cancelButtonText: 'NO GOOD',
-                                reverseButtons: true,
-                                allowOutsideClick: false
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.board_count) || 'ERROR');
-                                    Swal.fire({
-                                        icon: response.status === 'success' ? 'success' : 'warning',
-                                        title: 'Saved!',
-                                        text: response.message,
-                                        toast: true,
-                                        position: 'top-right',
-                                        timer: 3000,
-                                        showConfirmButton: false
-                                    });
-                                    $('#serial_code').focus().select();
-                                } else {
-                                    $('#modal_qr_code').val($('input[name="qr_code"]').val());
-                                    $('#modal_operator_name').val('<?php echo $_SESSION['user_namefl']; ?>');
-                                    $('#modal_source').val('alert');
-                                    $('#nogoodModal').show();
-                                    $('#serial_code').focus().select();
+                                icon: 'success',
+                                title: 'Success!',
+                                message: 'Board has been recorded',
+                                toast: true,
+                                showConfirmButton: false,
+                                position: 'top-right',
+                                timer: 1500,
+                                didOpen: () => {
+                                    $("#qr_code").select().focus();
+                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput));
                                 }
-                            });
+                            })
                         } else {
                             Swal.fire({
                                 icon: 'error',

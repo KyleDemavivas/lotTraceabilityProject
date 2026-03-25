@@ -96,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $response['status'] = 'success';
         $response['message'] = 'Micro Process recorded successfully.';
         $response['board_count'] = (int) $stmt->fetchColumn();
+        $response['final_qtyinput'] = $final_qtyinput;
     } catch (Throwable $e) {
         $response['message'] = $e->getMessage();
     }

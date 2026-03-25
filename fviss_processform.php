@@ -68,9 +68,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $repaired = (int) $stmt->fetchColumn();
 
         if ($repaired > 0) {
+            echo json_encode([
+                'debug_qty_input' => $qty_input,
+                'debug_repaired' => $repaired,
+            ]);
+            exit;
             $finalQtyStmt = $conn->prepare('SELECT TOP 1 final_qtyinput FROM '.$main_table.' WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
             $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
             $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+            $final_qtyinput = $previous_final_qty + (int) $qty_input;
         } else {
             $finalQtyStmt = $conn->prepare('SELECT TOP 1 final_qtyinput FROM '.$main_table.' WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
             $finalQtyStmt->execute([':kepi_lot' => $kepi_lot]);
