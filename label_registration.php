@@ -13,7 +13,42 @@
     <script>
         let isSubmitting = false;
 
+        function isQRValid() {
+            const qrInput = document.getElementById("qr_code");
+            const qrCode = qrInput.value.toUpperCase(); // no trim — field is already trimmed on input
+            const kepiLot = document.getElementById("kepi_lot").value.trim().toUpperCase();
+            const qrErrorSpan = document.getElementById("qr_code_error");
+
+            if (qrCode.length !== 21) {
+                qrErrorSpan.textContent = "QR Code must be exactly 21 characters.";
+                qrErrorSpan.style.display = "block";
+                qrInput.style.border = "2px solid red";
+                return false;
+            }
+
+            if (qrCode.substring(0, 15) !== kepiLot) {
+                qrErrorSpan.textContent = "KEPI LOT and QR Code do not match.";
+                qrErrorSpan.style.display = "block";
+                qrInput.style.border = "2px solid red";
+                return false;
+            }
+
+            if (!/^-\d{5}$/.test(qrCode.substring(15))) {
+                qrErrorSpan.textContent = "QR Code must end with a dash and 5 digits (e.g., -12345).";
+                qrErrorSpan.style.display = "block";
+                qrInput.style.border = "2px solid red";
+                return false;
+            }
+
+            // all good — clear any previous error
+            qrErrorSpan.style.display = "none";
+            qrInput.style.border = "";
+            return true;
+        }
+
         function autoSubmitFormIfValid() {
+            if (!isQRValid()) return;
+
             const form = document.querySelector("form");
             const inputs = form.querySelectorAll("input[required]");
             let isValid = true;
@@ -180,7 +215,6 @@
         }
 
         let assyTimeout = null;
-        let lastAssyRequest = 0;
 
         function fetchAssyDataDebounced() {
             clearTimeout(assyTimeout);
@@ -227,9 +261,10 @@
             xhr.send("assy_code=" + encodeURIComponent(assyCode));
         }
 
-
         function resetQRAndSerial() {
             document.getElementById("qr_code").value = "";
+            document.getElementById("qr_code_error").style.display = "none";
+            document.getElementById("qr_code").style.border = "";
             document.getElementById("serial-container").innerHTML = "";
             generateSerialFields();
         }
@@ -266,52 +301,18 @@
 
             document.getElementById("qr_code").addEventListener("input", function(e) {
                 const qrInput = e.target;
-                const qrCode = qrInput.value.toUpperCase();
-                const kepiLot = document.getElementById("kepi_lot").value.trim().toUpperCase();
+                // trim whitespace/newlines that scanners may append, then uppercase
+                qrInput.value = qrInput.value.replace(/\s/g, '').toUpperCase();
+
                 const qrErrorSpan = document.getElementById("qr_code_error");
-                qrInput.value = qrCode;
-                qrErrorSpan.style.display = "none";
 
-                if (!kepiLot || kepiLot.length !== 15) {
-                    qrInput.style.border = "2px solid red";
-                    return;
-                }
+                // At 21 chars — validate immediately, independent of serials
+                if (!isQRValid()) return;
 
-                if (qrCode.length < 21) {
-                    qrInput.style.border = "";
-                    return;
-                }
-
-                if (qrCode.length > 21) {
-                    qrInput.style.border = "2px solid red";
-                    Swal.fire("Too Long", "QR Code must be exactly 21 characters.", "error");
-                    return;
-                }
-
-                if (qrCode.substring(0, 15) !== kepiLot) {
-                    qrInput.style.border = "2px solid red";
-                    const qrErrorSpan = document.getElementById("qr_code_error");
-                    qrErrorSpan.textContent = "KEPI LOT and QR Code do not match.";
-                    qrErrorSpan.style.display = "block";
-                    qrInput.style.border = "2px solid red";
-                    return;
-                }
-
-                const suffix = qrCode.substring(15);
-                if (!/^-\d{5}$/.test(suffix)) {
-                    qrInput.style.border = "2px solid red";
-                    Swal.fire("Invalid Format", "QR Code must end with a dash and 5 digits (e.g., -12345).", "error");
-                    return;
-                }
-
-                qrInput.style.border = "";
-
-                autoSubmitFormIfValid();
-
+                // Valid — focus first serial input
                 const firstSerial = document.querySelector(".serial-input");
                 if (firstSerial) firstSerial.focus();
             });
-
 
             document.getElementById("resetButton").addEventListener("click", function() {
                 resetForm();
@@ -333,7 +334,6 @@
         <form action="submitlabel_form.php" method="POST">
             <label>Assy Code:</label>
             <input type="text" id="assy_code" name="assy_code" required autocomplete="off" oninput="fetchAssyDataDebounced()" minlength="9" maxlength="9">
-
             <span id="assy_code_error" style="color: red; font-size: 22px; display: none;"></span>
 
             <label>Model:</label>
@@ -350,7 +350,7 @@
             <span id="kepi_lot_error" style="color: red; font-size: 22px; display: none;"></span>
 
             <label>QR Code:</label>
-            <input type="text" id="qr_code" name="qr_code" required autocomplete="off" minlength="21" maxlength="21">
+            <input type="text" id="qr_code" name="qr_code" required autocomplete="off" maxlength="21">
             <span id="qr_code_error" style="color: red; font-size: 22px; display: none;"></span>
             <br><br>
 
