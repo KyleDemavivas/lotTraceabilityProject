@@ -7,6 +7,7 @@ db_connect.ini
 *.ini
 config.php
 /tests
+mysql_conn.php
 
 # Environment files
 .env
