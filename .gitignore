@@ -16,3 +16,5 @@ mysql_conn.php
 # Debug logs
 debug.log
 *.log
+
+.env

@@ -375,6 +375,18 @@ if ($serial_code != '') {
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
+
+    // FT
+    $sql = 'SELECT TOP 1 * FROM FT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    $stmt = $conn2->prepare($sql);
+    $stmt->execute(['BoardSerial' => $serial_code]);
+    $ft_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // ICT
+    $sql = 'SELECT TOP 1 * FROM ICT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    $stmt = $conn2->prepare($sql);
+    $stmt->execute(['BoardSerial' => $serial_code]);
+    $ict_data = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
 
@@ -436,6 +448,33 @@ foreach ($rows as $row) { ?>
                         <td><?php echo htmlspecialchars(date('g:i A', strtotime($repairHistory[0]['created_at']))); ?></td>   
                     </tr>
                 <?php } ?>
+
+                <!-- FT ROW -->
+    <?php if (!empty($ft_data)) { ?>
+        <tr>
+            <td>FUNCTIONAL TEST</td>
+            <td><?php echo htmlspecialchars('Line 7'); ?></td>
+            <td><?php echo htmlspecialchars('N/A'); ?></td>
+            <td><?php echo htmlspecialchars($ft_data['Result'] ?? 'Error'); ?></td>
+            <td><?php echo htmlspecialchars('N/A'); ?></td>
+            <td><?php echo isset($ft_data['DateTime']) ? date('d-M', strtotime($ft_data['DateTime'])) : 'N/A'; ?></td>
+            <td><?php echo isset($ft_data['DateTime']) ? date('g:i A', strtotime($ft_data['DateTime'])) : 'N/A'; ?></td>
+        </tr>
+    <?php } ?>
+
+    <!-- ICT ROW -->
+    <?php if (!empty($ict_data)) { ?>
+        <tr>
+            <td>ICT</td>
+            <td><?php echo htmlspecialchars('Line 7'); ?></td>
+            <td><?php echo htmlspecialchars('N/A'); ?></td>
+            <td><?php echo htmlspecialchars($ict_data['Result'] ?? 'Error'); ?></td>
+            <td><?php echo htmlspecialchars('N/A'); ?></td>
+            <td><?php echo isset($ict_data['DateTime']) ? date('d-M', strtotime($ict_data['DateTime'])) : 'N/A'; ?></td>
+            <td><?php echo isset($ict_data['DateTime']) ? date('g:i A', strtotime($ict_data['DateTime'])) : 'N/A'; ?></td>
+        </tr>
+    <?php } ?>
+
             </table>
                 </div>
             <!--BATCHLOT HISTORY TABLE ONGOING DEVELOPEMENT-->
