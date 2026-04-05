@@ -454,9 +454,19 @@ foreach ($rows as $row) { ?>
         <tr>
             <td>FUNCTIONAL TEST</td>
             <td><?php echo htmlspecialchars('Line 7'); ?></td>
-            <td><?php echo htmlspecialchars('N/A'); ?></td>
+            <td>
+                <?php
+if (isset($ft_data['DateTime'])) {
+    $hour = (int) date('G', strtotime($ft_data['DateTime']));
+    echo ($hour >= 6 && $hour < 18) ? 'Dayshift' : 'Nightshift';
+} else {
+    echo 'N/A';
+}
+
+        ?>
+            </td>
             <td><?php echo htmlspecialchars($ft_data['Result'] ?? 'Error'); ?></td>
-            <td><?php echo htmlspecialchars('N/A'); ?></td>
+            <td><?php echo htmlspecialchars('FT'); ?></td>
             <td><?php echo isset($ft_data['DateTime']) ? date('d-M', strtotime($ft_data['DateTime'])) : 'N/A'; ?></td>
             <td><?php echo isset($ft_data['DateTime']) ? date('g:i A', strtotime($ft_data['DateTime'])) : 'N/A'; ?></td>
         </tr>
@@ -469,7 +479,7 @@ foreach ($rows as $row) { ?>
             <td><?php echo htmlspecialchars('Line 7'); ?></td>
             <td><?php echo htmlspecialchars('N/A'); ?></td>
             <td><?php echo htmlspecialchars($ict_data['Result'] ?? 'Error'); ?></td>
-            <td><?php echo htmlspecialchars('N/A'); ?></td>
+            <td><?php echo htmlspecialchars('ICT'); ?></td>
             <td><?php echo isset($ict_data['DateTime']) ? date('d-M', strtotime($ict_data['DateTime'])) : 'N/A'; ?></td>
             <td><?php echo isset($ict_data['DateTime']) ? date('g:i A', strtotime($ict_data['DateTime'])) : 'N/A'; ?></td>
         </tr>
