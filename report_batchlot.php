@@ -377,16 +377,16 @@ if ($serial_code != '') {
     }
 
     // FT
-    $sql = 'SELECT TOP 1 * FROM FT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    $sql = 'SELECT * FROM FT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
     $stmt = $conn2->prepare($sql);
     $stmt->execute(['BoardSerial' => $serial_code]);
-    $ft_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $ft_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // ICT
-    $sql = 'SELECT TOP 1 * FROM ICT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    $sql = 'SELECT * FROM ICT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
     $stmt = $conn2->prepare($sql);
     $stmt->execute(['BoardSerial' => $serial_code]);
-    $ict_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $ict_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 
@@ -449,44 +449,103 @@ foreach ($rows as $row) { ?>
                     </tr>
                 <?php } ?>
 
-                <!-- FT ROW -->
-    <?php if (!empty($ft_data)) { ?>
+               <!-- FT ROW -->
+                <?php if (!empty($ft_data)) {
+                    $ft_row = $ft_data[0]; ?>
+                    <tr>
+                        <td>FUNCTIONAL TEST</td>
+                        <td><?php echo htmlspecialchars('Line 7'); ?></td>
+                        <td>
+                            <?php
+                            if (isset($ft_row['DateTime'])) {
+                                $hour = (int) date('G', strtotime($ft_row['DateTime']));
+                                echo ($hour >= 6 && $hour < 18) ? 'Dayshift' : 'Nightshift';
+                            } else {
+                                echo 'N/A';
+                            }
+                    ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($ft_row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
+                        <td><?php echo htmlspecialchars('FT'); ?></td>
+                        <td><?php echo isset($ft_row['DateTime']) ? date('d-M', strtotime($ft_row['DateTime'])) : 'N/A'; ?></td>
+                        <td><?php echo isset($ft_row['DateTime']) ? date('g:i A', strtotime($ft_row['DateTime'])) : 'N/A'; ?></td>
+                    </tr>
+                <?php } ?>
+    <!-- ICT ROW -->
+    <?php if (!empty($ict_data)) {
+        $ict_row = $ict_data[0]; ?>
         <tr>
-            <td>FUNCTIONAL TEST</td>
+            <td>ICT TEST</td>
             <td><?php echo htmlspecialchars('Line 7'); ?></td>
             <td>
                 <?php
-if (isset($ft_data['DateTime'])) {
-    $hour = (int) date('G', strtotime($ft_data['DateTime']));
-    echo ($hour >= 6 && $hour < 18) ? 'Dayshift' : 'Nightshift';
-} else {
-    echo 'N/A';
-}
-
+                if (isset($ict_row['DateTime'])) {
+                    $hour = (int) date('G', strtotime($ict_row['DateTime']));
+                    echo ($hour >= 6 && $hour < 18) ? 'Dayshift' : 'Nightshift';
+                } else {
+                    echo 'N/A';
+                }
         ?>
             </td>
-            <td><?php echo htmlspecialchars($ft_data['Result'] ?? 'Error'); ?></td>
-            <td><?php echo htmlspecialchars('FT'); ?></td>
-            <td><?php echo isset($ft_data['DateTime']) ? date('d-M', strtotime($ft_data['DateTime'])) : 'N/A'; ?></td>
-            <td><?php echo isset($ft_data['DateTime']) ? date('g:i A', strtotime($ft_data['DateTime'])) : 'N/A'; ?></td>
-        </tr>
-    <?php } ?>
-
-    <!-- ICT ROW -->
-    <?php if (!empty($ict_data)) { ?>
-        <tr>
-            <td>ICT</td>
-            <td><?php echo htmlspecialchars('Line 7'); ?></td>
-            <td><?php echo htmlspecialchars('N/A'); ?></td>
-            <td><?php echo htmlspecialchars($ict_data['Result'] ?? 'Error'); ?></td>
+            <td><?php echo htmlspecialchars($ict_row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
             <td><?php echo htmlspecialchars('ICT'); ?></td>
-            <td><?php echo isset($ict_data['DateTime']) ? date('d-M', strtotime($ict_data['DateTime'])) : 'N/A'; ?></td>
-            <td><?php echo isset($ict_data['DateTime']) ? date('g:i A', strtotime($ict_data['DateTime'])) : 'N/A'; ?></td>
+            <td><?php echo isset($ict_row['DateTime']) ? date('d-M', strtotime($ict_row['DateTime'])) : 'N/A'; ?></td>
+            <td><?php echo isset($ict_row['DateTime']) ? date('g:i A', strtotime($ict_row['DateTime'])) : 'N/A'; ?></td>
         </tr>
     <?php } ?>
 
             </table>
                 </div>
+
+                <!-- FT HISTORY SECTION -->
+                 <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
+                    <div class="header">FUNCTIONAL TEST HISTORY</div>
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Model</th>
+                            <th>Serial Code</th>
+                            <th>Judgement</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                        </tr>
+                        <?php foreach ($ft_data as $row) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($row['Id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['ModelName']); ?></td>
+                                <td><?php echo htmlspecialchars($row['BoardSerial']); ?></td>
+                                <td><?php echo htmlspecialchars($row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
+                                <td><?php echo htmlspecialchars(date('d-M', strtotime($row['DateTime']))); ?></td>
+                                <td><?php echo htmlspecialchars(date('g:i A', strtotime($row['DateTime']))); ?></td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                 </div>
+
+                  <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
+                    <div class="header">ICT HISTORY</div>
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Model</th>
+                            <th>Serial Code</th>
+                            <th>Judgement</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                        </tr>
+                        <?php foreach ($ict_data as $row) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($row['Id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['ModelName']); ?></td>
+                                <td><?php echo htmlspecialchars($row['BoardSerial']); ?></td>
+                                <td><?php echo htmlspecialchars($row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
+                                <td><?php echo htmlspecialchars(date('d-M', strtotime($row['DateTime']))); ?></td>
+                                <td><?php echo htmlspecialchars(date('g:i A', strtotime($row['DateTime']))); ?></td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                 </div>
+
             <!--BATCHLOT HISTORY TABLE ONGOING DEVELOPEMENT-->
             <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
                 <div class="header">BATCH LOT HISTORY</div>
