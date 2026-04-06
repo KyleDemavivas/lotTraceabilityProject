@@ -74,16 +74,17 @@ if ($serial_code != '') {
     }
 
     // Labelling data
-    $process_data[] = [
-        'process' => 'LABELLING',
-        'line' => $spa_row['line'] ?? '',
-        'shift' => $spa_row['shift'] ?? '',
-        'judgement' => $spa_row['judgement'] ?? '',
-        'operator' => $label_row['operator'] ?? '',
-        'date_process' => isset($label_row['created_at']) ? date('d-M', strtotime($label_row['created_at'])) : '',
-        'time_end_process' => isset($label_row['created_at']) ? date('g:i a', strtotime($label_row['created_at'])) : '',
-    ];
-
+    if ($label_row) {
+        $process_data[] = [
+            'process' => 'LABELLING',
+            'line' => $spa_row['line'] ?? '',
+            'shift' => $spa_row['shift'] ?? '',
+            'judgement' => $spa_row['judgement'] ?? '',
+            'operator' => $label_row['operator'] ?? '',
+            'date_process' => isset($label_row['created_at']) ? date('M d Y', strtotime($label_row['created_at'])) : '',
+            'time_end_process' => isset($label_row['created_at']) ? date('g:i a', strtotime($label_row['created_at'])) : '',
+        ];
+    }
     // SPA
     if ($spa_row) {
         $process_data[] = [
@@ -92,7 +93,7 @@ if ($serial_code != '') {
             'shift' => $spa_row['shift'],
             'judgement' => $spa_row['judgement'],
             'operator' => $spa_row['operator'],
-            'date_process' => date('d-M', strtotime($spa_row['created_at'])),
+            'date_process' => date('M d Y', strtotime($spa_row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($spa_row['created_at'])),
         ];
     }
@@ -110,7 +111,7 @@ if ($serial_code != '') {
                 'shift' => $row['shift'],
                 'judgement' => $row['judgement'],
                 'operator' => $row['operator'],
-                'date_process' => date('d-M', strtotime($row['created_at'])),
+                'date_process' => date('M d Y', strtotime($row['created_at'])),
                 'time_end_process' => date('g:i a', strtotime($row['created_at'])),
             ];
         }
@@ -128,7 +129,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -145,7 +146,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -162,7 +163,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => 'GOOD',
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -179,7 +180,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -196,7 +197,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -213,7 +214,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -230,7 +231,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -247,7 +248,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -264,7 +265,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -281,7 +282,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -299,7 +300,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -317,7 +318,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -335,7 +336,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -353,7 +354,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -371,7 +372,7 @@ if ($serial_code != '') {
             'shift' => $row['shift'],
             'judgement' => $row['judgement'],
             'operator' => $row['operator'],
-            'date_process' => date('d-M', strtotime($row['created_at'])),
+            'date_process' => date('M d Y', strtotime($row['created_at'])),
             'time_end_process' => date('g:i a', strtotime($row['created_at'])),
         ];
     }
@@ -444,7 +445,7 @@ foreach ($rows as $row) { ?>
                         <td><?php echo htmlspecialchars($repairHistory[0]['shift']); ?></td>
                         <td><?php echo htmlspecialchars($repairHistory[0]['status']); ?></td>
                         <td><?php echo htmlspecialchars($repairHistory[0]['operator_name']); ?></td>
-                        <td><?php echo htmlspecialchars(date('d-M', strtotime($repairHistory[0]['created_at']))); ?></td>
+                        <td><?php echo htmlspecialchars(date('M d Y', strtotime($repairHistory[0]['created_at']))); ?></td>
                         <td><?php echo htmlspecialchars(date('g:i A', strtotime($repairHistory[0]['created_at']))); ?></td>   
                     </tr>
                 <?php } ?>
@@ -465,9 +466,9 @@ foreach ($rows as $row) { ?>
                             }
                     ?>
                         </td>
-                        <td><?php echo htmlspecialchars($ft_row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
+                        <td><?php echo htmlspecialchars($ft_row['Result'] === '1' ? 'PASS' : 'FAIL'); ?></td>
                         <td><?php echo htmlspecialchars('FT'); ?></td>
-                        <td><?php echo isset($ft_row['DateTime']) ? date('d-M', strtotime($ft_row['DateTime'])) : 'N/A'; ?></td>
+                        <td><?php echo isset($ft_row['DateTime']) ? date('M d Y', strtotime($ft_row['DateTime'])) : 'N/A'; ?></td>
                         <td><?php echo isset($ft_row['DateTime']) ? date('g:i A', strtotime($ft_row['DateTime'])) : 'N/A'; ?></td>
                     </tr>
                 <?php } ?>
@@ -487,9 +488,9 @@ foreach ($rows as $row) { ?>
                 }
         ?>
             </td>
-            <td><?php echo htmlspecialchars($ict_row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
+            <td><?php echo htmlspecialchars($ict_row['Result'] === 'PASS' ? 'PASS' : 'FAIL'); ?></td>
             <td><?php echo htmlspecialchars('ICT'); ?></td>
-            <td><?php echo isset($ict_row['DateTime']) ? date('d-M', strtotime($ict_row['DateTime'])) : 'N/A'; ?></td>
+            <td><?php echo isset($ict_row['DateTime']) ? date('M d Y', strtotime($ict_row['DateTime'])) : 'N/A'; ?></td>
             <td><?php echo isset($ict_row['DateTime']) ? date('g:i A', strtotime($ict_row['DateTime'])) : 'N/A'; ?></td>
         </tr>
     <?php } ?>
@@ -509,16 +510,20 @@ foreach ($rows as $row) { ?>
                             <th>Date</th>
                             <th>Time</th>
                         </tr>
+                        <?php if (empty($ft_data)) {?>
+                            <tr><td colspan='6' style='text-align: center;'>No functional test history available.</td></tr>
+                            <?php } else {?>
                         <?php foreach ($ft_data as $row) { ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($row['Id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['ModelName']); ?></td>
                                 <td><?php echo htmlspecialchars($row['BoardSerial']); ?></td>
-                                <td><?php echo htmlspecialchars($row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
-                                <td><?php echo htmlspecialchars(date('d-M', strtotime($row['DateTime']))); ?></td>
+                                <td><?php echo htmlspecialchars($row['Result'] === '1' ? 'PASS' : 'FAIL'); ?></td>
+                                <td><?php echo htmlspecialchars(date('M d Y', strtotime($row['DateTime']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('g:i A', strtotime($row['DateTime']))); ?></td>
                             </tr>
-                        <?php } ?>
+                        <?php }
+                        } ?>
                     </table>
                  </div>
 
@@ -533,16 +538,20 @@ foreach ($rows as $row) { ?>
                             <th>Date</th>
                             <th>Time</th>
                         </tr>
+                        <?php if (empty($ict_data)) { ?>
+                        <tr><td colspan='7' style='text-align: center;'>No ICT data available.</td></tr>
+                        <?php } else { ?>
                         <?php foreach ($ict_data as $row) { ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($row['Id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['ModelName']); ?></td>
                                 <td><?php echo htmlspecialchars($row['BoardSerial']); ?></td>
-                                <td><?php echo htmlspecialchars($row['Result'] === '1' ? 'GOOD' : 'FAIL'); ?></td>
-                                <td><?php echo htmlspecialchars(date('d-M', strtotime($row['DateTime']))); ?></td>
+                                <td><?php echo htmlspecialchars($row['Result'] === 'PASS' ? 'PASS' : 'FAIL'); ?></td>
+                                <td><?php echo htmlspecialchars(date('M d Y', strtotime($row['DateTime']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('g:i A', strtotime($row['DateTime']))); ?></td>
                             </tr>
-                        <?php } ?>
+                        <?php }
+                        }?>
                     </table>
                  </div>
 
@@ -584,7 +593,7 @@ $batchlotRows = $isScrap ? array_slice($batchlot_data, 0, -1) : $batchlot_data;
             <td><?php echo htmlspecialchars($scrapRecord['shift']); ?></td>
             <td><?php echo htmlspecialchars($scrapRecord['status']); ?></td>
             <td><?php echo htmlspecialchars($scrapRecord['operator_name']); ?></td>
-            <td><?php echo htmlspecialchars(date('d-M', strtotime($scrapRecord['created_at']))); ?></td>
+            <td><?php echo htmlspecialchars(date('M d Y', strtotime($scrapRecord['created_at']))); ?></td>
             <td><?php echo htmlspecialchars(date('g:i A', strtotime($scrapRecord['created_at']))); ?></td>
         </tr>
     <?php } ?>
