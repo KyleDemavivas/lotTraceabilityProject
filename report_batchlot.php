@@ -378,14 +378,14 @@ if ($serial_code != '') {
     }
 
     // FT
-    $sql = 'SELECT * FROM FT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
-    $stmt = $conn2->prepare($sql);
+    $sql = 'SELECT * FROM [192.168.1.138, 1433].[MachineLogsDb].[dbo].[FT] WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    $stmt = $conn->prepare($sql);
     $stmt->execute(['BoardSerial' => $serial_code]);
     $ft_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // ICT
-    $sql = 'SELECT * FROM ICT WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
-    $stmt = $conn2->prepare($sql);
+    $sql = 'SELECT * FROM [192.168.1.138, 1433].[MachineLogsDb].[dbo].[ICT] WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    $stmt = $conn->prepare($sql);
     $stmt->execute(['BoardSerial' => $serial_code]);
     $ict_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
