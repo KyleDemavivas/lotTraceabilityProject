@@ -18,3 +18,5 @@ debug.log
 *.log
 
 .env
+
+/dev_env
