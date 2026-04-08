@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['SerialCode'])) {
     $BoardSerial = $_POST['SerialCode'];
 
     try {
-        $query = 'SELECT TOP 3 Result FROM [192.168.1.138, 1433].[MachineLogsDb].[dbo].[ICT] WHERE BoardSerial = :BoardSerial ORDER BY DateTime ASC';
+        $query = 'SELECT TOP 3 Result FROM v_ict WHERE BoardSerial = :BoardSerial ORDER BY DateTime ASC';
         $stmt = $conn->prepare($query);
         $stmt->bindParam(':BoardSerial', $BoardSerial);
         $stmt->execute();

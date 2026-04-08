@@ -43,6 +43,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtNG->execute([':serial_code' => $serial_code]);
         $fvissStatus = $stmtNG->fetchColumn();
 
+        // TODO: ADDING ICT CHECK FOR PARTSIDE PROCESS
+        // $query = "SELECT COUNT(Result) FROM v_ict WHERE serial_code = :serial_code AND Result = 'FAIL'";
+        // $stmt = $conn->prepare($query);
+        // $stmt->execute([':serial_code' => $serial_code]);
+        // $ictFailCount = (int) $stmt->fetchColumn();
+
+        // if($ictFailCount >= 2) {
+        //     throw new Exception('This board has failed ICT Testing.');
+        // }
+
         if ($fvissStatus === 'NO GOOD') {
             throw new Exception('This serial is already tagged as NO GOOD and cannot be processed.');
         }
