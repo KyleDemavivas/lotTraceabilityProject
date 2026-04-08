@@ -58,7 +58,7 @@ require $_SERVER['DOCUMENT_ROOT'].'/traceability/sidebar.php';
                         url: 't_judgement.php',
                         method: 'POST',
                         data: {
-                            BoardSerial: SerialCode  // Fix: matches PHP's $_POST['BoardSerial']
+                            SerialCode: SerialCode  // Fix: matches PHP's $_POST['BoardSerial']
                         },
                         success: function(response) {
                             if (response.success === true) {
