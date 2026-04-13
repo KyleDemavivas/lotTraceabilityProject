@@ -104,21 +104,18 @@ tr:hover {
   }
 }
 
-.button-close {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
+.btn-close {
+  text-align: center;
   background: linear-gradient(135deg, #fe4f66, #fe002a);
   color: white;
-  font-size: 20px;
-  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 25px;
+  border-color: transparent;
 }
 
-.button-close:hover {
+.btn-close:hover {
   background: linear-gradient(135deg, #fe004c, #fd003f);
   box-shadow: 0px 4px 8px rgba(0, 194, 254, 0.3);
 }
@@ -286,4 +283,10 @@ tr:hover {
   margin-right: auto;
   border-radius: 25px;
   border-color: transparent;
+}
+
+.btn-selection {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }

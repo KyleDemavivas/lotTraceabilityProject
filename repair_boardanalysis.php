@@ -48,7 +48,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?php echo htmlspecialchars($row['action']); ?></td>
                     <td><?php echo htmlspecialchars($row['result']); ?></td>
                     <td><?php echo htmlspecialchars($row['operator']); ?></td>
-                    <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($row['DateTime']))); ?></td>
+                    <td><?php echo htmlspecialchars($row['DateTime']); ?></td>
                     <td>
                         <button class="btn-repair" id="repairbtn" name="repairbtn"
                         data-serialcode = "<?php echo $row['serialcode']; ?>"
@@ -155,7 +155,12 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <label class="form-label" for="operator">Operator:</label>
                     <input id="operator" name="operator" class="form-input" readonly>
                 </div>
-
+            </div>
+            <div class="form-section">
+                <div class="btn-selection">
+                    <button class="btn-close" id="scrap-btn">Scrap</button>
+                    <button class="btn-save" id="repair-btn">Repair</button>
+                </div>
             </div>
         </div>
     </div>
@@ -191,6 +196,17 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $('#ft_ref').val(data.ft_ref);
                 $('#ft_result').val(data.ft_result);
             }
+
+            if(process==='WI') {
+                $('.ict-section').show();
+                $('#ict_component').val(data.ict_component);
+                $('#ict_ref').val(data.ict_ref);
+                $('#ict_reading').val(data.ict_reading);
+                $('.ft-section').show();
+                $('#ft_step').val(data.ft_step);
+                $('#ft_ref').val(data.ft_ref);
+                $('#ft_result').val(data.ft_result);
+            }
         }
 
         function hideModal(){
@@ -216,6 +232,14 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $(document).on('click', '.btn-repair', function(){
                 data = $(this).data();
                 openModal(data);
+            })
+
+            $('#repair-btn').on('click', function(){
+                Swal.fire({icon: 'success', title: 'This is the repair button'});
+            })
+
+             $('#scrap-btn').on('click', function(){
+                Swal.fire({icon: 'error', title: 'This is the scrap button'});
             })
 
         })

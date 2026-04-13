@@ -22,12 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['serialcode']) {
         $action = $_POST['action'];
         $result_analysis = $_POST['result_analysis'];
         $operator_name = $_POST['operator_name'];
+        $component_ict = $_POST['component_ict'] ?? null;
+        $reference_ict = $_POST['reference_ict'] ?? null;
+        $reading_ict = $_POST['reading_ict'] ?? null;
+        $step_ft = $_POST['step_ft'] ?? null;
+        $reference_ft = $_POST['reference_ft'] ?? null;
+        $result_ft = $_POST['result_ft'] ?? null;
 
         if ($process === 'ICT') {
-            $component_ict = $_POST['component_ict'];
-            $reference_ict = $_POST['reference_ict'];
-            $reading_ict = $_POST['reading_ict'];
-
             $query = 'INSERT INTO repair_boardanalysis (serialcode, defect, process, ict_jig, wi_jig, ft_jig, analysis, action, result, operator, ict_component, ict_ref, ict_reading, DateTime) 
                   VALUES (:serialcode, :defect, :process, :ict_jig, :wi_jig, :ft_jig, :analysis, :action, :result, :operator, :ict_component, :ict_ref, :ict_reading, GETDATE())';
 
@@ -51,10 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['serialcode']) {
         }
 
         if ($process === 'FT') {
-            $step_ft = $_POST['step_ft'];
-            $reference_ft = $_POST['reference_ft'];
-            $result_ft = $_POST['result_ft'];
-
             $query = 'INSERT INTO repair_boardanalysis (serialcode, defect, process, ict_jig, wi_jig, ft_jig, analysis, action, result, operator, ft_step, ft_ref, ft_result, DateTime) 
                   VALUES (:serialcode, :defect, :process, :ict_jig, :wi_jig, :ft_jig, :analysis, :action, :result, :operator, :ft_step, :ft_ref, :ft_result, GETDATE())';
 
@@ -78,12 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['serialcode']) {
         }
 
         if ($process === 'WI') {
-            $component_ict = $_POST['component_ict'];
-            $reference_ict = $_POST['reference_ict'];
-            $reading_ict = $_POST['reading_ict'];
-
-            $query = 'INSERT INTO repair_boardanalysis (serialcode, defect, process, ict_jig, wi_jig, ft_jig, analysis, action, result, operator, component_ict, reference_ict, reading_ict,ft_step, ft_ref, ft_result, DateTime) 
-                  VALUES (:serialcode, :defect, :process, :ict_jig, :wi_jig, :ft_jig, :analysis, :action, :result, :operator, :component_ict, :reference_ict, :reading_ict, :ft_step, :ft_ref, :ft_result, GETDATE())';
+            $query = 'INSERT INTO repair_boardanalysis (serialcode, defect, process, ict_jig, wi_jig, ft_jig, analysis, action, result, operator, ict_component, ict_ref, ict_reading, ft_step, ft_ref, ft_result, DateTime) 
+                  VALUES (:serialcode, :defect, :process, :ict_jig, :wi_jig, :ft_jig, :analysis, :action, :result, :operator, :ict_component, :ict_ref, :ict_reading, :ft_step, :ft_ref, :ft_result, GETDATE())';
 
             $stmt = $conn->prepare($query);
 
@@ -97,9 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['serialcode']) {
             $stmt->bindParam(':action', $action);
             $stmt->bindParam(':result', $result_analysis);
             $stmt->bindParam(':operator', $operator_name);
-            $stmt->bindParam(':component_ict', $component_ict);
-            $stmt->bindParam(':reference_ict', $reference_ict);
-            $stmt->bindParam(':reading_ict', $reading_ict);
+            $stmt->bindParam(':ict_component', $component_ict);
+            $stmt->bindParam(':ict_ref', $reference_ict);
+            $stmt->bindParam(':ict_reading', $reading_ict);
             $stmt->bindParam(':ft_step', $step_ft);
             $stmt->bindParam(':ft_ref', $reference_ft);
             $stmt->bindParam(':ft_result', $result_ft);
