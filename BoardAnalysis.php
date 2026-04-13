@@ -1,11 +1,12 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
 require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
+require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
 
 $query = 'SELECT BoardSerial, ModelName, Process, DateTime FROM board_analysis';
 $stmt = $conn->prepare($query);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
     <!DOCTYPE html>
@@ -40,21 +41,8 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tr>
                     </thead>
                     <tbody id="tResults">
-                        <?php foreach ($results as $row) { ?>
-                            <tr>
-                                <td><?php echo $row['BoardSerial']; ?></td>
-                                <td><?php echo $row['ModelName']; ?></td>
-                                <td><?php echo $row['Process']; ?></td>
-                                <td><?php echo date('Y-m-d', strtotime($row['DateTime'])); ?></td>
-                                <td>
-                                    <button class="btn-analysis"
-                                            data-serialcode="<?php echo $row['BoardSerial']; ?>"
-                                            data-process="<?php echo $row['Process']; ?>">
-                                        Analysis
-                                    </button>
-                                </td>
-                            </tr>
-                        <?php } ?>
+                        
+</tbody>
 
 <!---- Sample data for testing -->
                         <!--<tr>
@@ -83,6 +71,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h2>Board Analysis</h2>
                 </div>
                 <div class="modal-body">
+                    <form id="analysisForm" type="submit" method="POST">
                     <div class="form-section">
                         <div class="form-group">
                             <label for="serialcode" class="form-label">Serial Code:</label>
@@ -178,8 +167,8 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="form-group">
                             <button type="button" class="btn btn-primary btn-save" id="submitBtn">Save Analysis</button>
                         </div>
-
                     </div>
+</form>
 
                 </div>
             </div>
@@ -223,8 +212,6 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
              let FTValid = false;
              let processValid = false;
 
-             console.log(process);
-
              switch(process){
                 case 'ICT':
                     component_ict = $('#component_ict').val().trim();
@@ -264,23 +251,35 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 });
                 return false;
              } 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'success!',
-                    text: 'Analysis saved successfully.',
-                    toast: true,
-                    showConfirmButton: false,
-                    position: 'top-right',
-                    timer: 3000
-                })
-
+             $('#analysisForm').submit();
                 return true;
         }
 
         $(document).ready(function () {
             table = $('#table_main').DataTable({
+                "ajax": {
+                    "url": "boardanalysis_fetch.php",
+                    "dataSrc": "" // This tells DataTables the JSON is a simple list
+                },
+                "columns": [
+                    { "data": "BoardSerial" },
+                    { "data": "ModelName" },
+                    { "data": "Process" },
+                    { "data": "DateTime" },
+                    { 
+                        "data": null,
+                        "render": function(data, type, row) {
+                            // This builds your "Analysis" button for every row
+                            return `<button class="btn-analysis" 
+                                    data-serialcode="${row.BoardSerial}" 
+                                    data-process="${row.Process}">
+                                    Analysis</button>`;
+                        }
+                    }
+                ],
                 "paging": true,
                 "searching": true,
+                deferRender: true,
                 "ordering": true,
                 "order": [[3, "desc"]],
                 "info": false,
@@ -337,6 +336,44 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $('#submitBtn').on('click', function() {
              const process = $('#process').val();
              checkFields(process);
+        })
+
+        $('#analysisForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+
+            $.ajax({
+                url: 'board_analysis_submit.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if(response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sent for Repair.',
+                            text: response.data,
+                            confirmButtonText: 'OK',
+                            didOpen: ()=> {
+                                closeModal();
+                                table.draw();
+                            }
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message,
+                            confirmButtonText: 'OK',
+                            didOpen: ()=>{
+                                closeModal();
+                            }
+                        })
+                    }
+                }
+            })
         })
      })
 

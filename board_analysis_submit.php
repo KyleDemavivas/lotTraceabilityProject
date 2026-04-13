@@ -11,7 +11,17 @@ $response = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['serialcode']) {
-    $serialcode = $_POST['serialcode'];
-
-    $query = 'INSERT INTO repair';
+    $response = [
+        'success' => true,
+        'message' => 'Data submitted successfully.',
+        'data' => $_POST['serialcode'],
+    ];
+} else {
+    $response = [
+        'success' => false,
+        'message' => 'Invalid request. Serial code is required.',
+        'data' => null,
+    ];
 }
+
+echo json_encode($response);
