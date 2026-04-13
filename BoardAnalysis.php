@@ -17,6 +17,10 @@ require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
     </head>
     <body>
         <div class="form-container">
+
+        <center>
+            <h2>Analysis Table</h2>
+        </center>
             
                 <span>Date From:</span>
                 <input type="date" id="date_from" name="date_from" onchange="filterDates()">
