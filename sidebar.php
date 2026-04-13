@@ -95,6 +95,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/BoardAnalysis.php', '/traceabilitydev/repair_boardanalysis.php']) ? 'active open' : ''; ?>">
+                    <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>ICT Repair ▾</span></a>
+                    <ul class="submenu">
+                        <li class="<?php echo ($current_page == '/traceabilitydev/BoardAnalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/BoardAnalysis.php">Board Analysis</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/repair_boardanalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/repair_boardanalysis.php">Repair Table</a></li>
+                    </ul>
+                </li>
+
                 <?php /*  <li class="<?= ($current_page == '/traceability/vi_repair.php') ? 'active' : '' ?>">
                 <a href="/traceability/vi_repair.php"><i class="fas fa-gavel"></i> <span>SMT VI Repair</span></a>
             </li> */ ?>
