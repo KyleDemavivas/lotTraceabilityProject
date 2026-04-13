@@ -1,12 +1,5 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
-
-$query = 'SELECT BoardSerial, ModelName, Process, DateTime FROM board_analysis';
-$stmt = $conn->prepare($query);
-$stmt->execute();
-$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
     <!DOCTYPE html>
@@ -259,7 +252,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             table = $('#table_main').DataTable({
                 "ajax": {
                     "url": "boardanalysis_fetch.php",
-                    "dataSrc": "" // This tells DataTables the JSON is a simple list
+                    "dataSrc": ""
                 },
                 "columns": [
                     { "data": "BoardSerial" },
@@ -269,7 +262,6 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     { 
                         "data": null,
                         "render": function(data, type, row) {
-                            // This builds your "Analysis" button for every row
                             return `<button class="btn-analysis" 
                                     data-serialcode="${row.BoardSerial}" 
                                     data-process="${row.Process}">
