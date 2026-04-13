@@ -173,7 +173,6 @@ require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
             const loggedInUser = "<?php echo $_SESSION['user_namefl']; ?>";
             
             function filterDates() {
-            console.log("fires");
             table.draw();
         }
 
@@ -349,9 +348,10 @@ require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
                             text: response.data,
                             confirmButtonText: 'OK',
                             didOpen: ()=> {
-                                closeModal();
-                                table.draw();
+                                hideModal();
                             }
+                        }).then(()=>{
+                            table.ajax.reload();
                         })
                     } else {
                         Swal.fire({
@@ -360,7 +360,7 @@ require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
                             text: response.message,
                             confirmButtonText: 'OK',
                             didOpen: ()=>{
-                                closeModal();
+                                hideModal();
                             }
                         })
                     }
