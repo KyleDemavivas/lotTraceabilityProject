@@ -50,8 +50,23 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?php echo htmlspecialchars($row['operator']); ?></td>
                     <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($row['DateTime']))); ?></td>
                     <td>
-                        <button class="btn-repair"
+                        <button class="btn-repair" id="repairbtn" name="repairbtn"
                         data-serialcode = "<?php echo $row['serialcode']; ?>"
+                        data-defect="<?php echo $row['defect']; ?>"
+                        data-process="<?php echo $row['process']; ?>"
+                        data-analysis="<?php echo $row['analysis']; ?>"
+                        data-action="<?php echo $row['action']; ?>"
+                        data-result="<?php echo $row['result']; ?>"
+                        data-operator="<?php echo $row['operator']; ?>"
+                        data-ict_jig="<?php echo $row['ict_jig']; ?>"
+                        data-wi_jig="<?php echo $row['wi_jig']; ?>"
+                        data-ft_jig="<?php echo $row['ft_jig']; ?>"
+                        data-ict_component="<?php echo $row['ict_component']; ?>"
+                        data-ict_ref="<?php echo $row['ict_ref']; ?>"
+                        data-ict_reading="<?php echo $row['ict_reading']; ?>"
+                        data-ft_step="<?php echo $row['ft_step']; ?>"
+                        data-ft_ref="<?php echo $row['ft_ref']; ?>"
+                        data-ft_result="<?php echo $row['ft_result']; ?>"
                         >Repair</button>
                     </td>
                 </tr>
@@ -59,10 +74,131 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tbody>
     </table>
     </div>
+    <div class="modal">
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="modal-header">
+                <button class="close" onClick="hideModal()">&times;</button>
+                <center>
+                    <h4>Board Details</h4>
+                </center>
+            </div>
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label" for="serialcode">Serial Code:</label>
+                    <input id="serialcode" name="serialcode" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="defect">Defect:</label>
+                    <input id="defect" name="defect" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="process">Process:</label>
+                    <input id="process" name="process" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="analysis">Analysis:</label>
+                    <input id="analysis" name="analysis" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="action">Action:</label>
+                    <input id="action" name="action" class="form-input" readonly>
+                </div>
+                 <div class="form-group">
+                    <label class="form-label" for="ict_jig">ICT Jig No.:</label>
+                    <input id="ict_jig" name="ict_jig" class="form-input" readonly>
+                </div>
+                 <div class="form-group">
+                    <label class="form-label" for="wi_jig">WI Jig No.:</label>
+                    <input id="wi_jig" name="wi_jig" class="form-input" readonly>
+                </div>
+                 <div class="form-group">
+                    <label class="form-label" for="ft_jig">FT Jig No.:</label>
+                    <input id="ft_jig" name="ft_jig" class="form-input" readonly>
+                </div>
+
+                <div class="ict-section">
+                        <div class="form-group">
+                            <label class="form-label" for="ict_component">ICT Component:</label>
+                            <input id="ict_component" name="ict_component" class="form-input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ict_ref">ICT Reference:</label>
+                            <input id="ict_ref" name="ict_ref" class="form-input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ict_reading">ICT Reading:</label>
+                            <input id="ict_reading" name="ict_reading" class="form-input" readonly>
+                        </div>
+                    </div>
+
+                <div class="ft-section">
+                    <div class="form-group">
+                            <label class="form-label" for="ft_step">FT Step:</label>
+                            <input id="ft_step" name="ft_step" class="form-input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ft_ref">FT Reference:</label>
+                            <input id="ft_ref" name="ft_ref" class="form-input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ft_result">FT Result:</label>
+                            <input id="ft_result" name="ft_result" class="form-input" readonly>
+                        </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="result">Result:</label>
+                    <input id="result" name="result" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="operator">Operator:</label>
+                    <input id="operator" name="operator" class="form-input" readonly>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
     <script>
         let table;
 
-        table = $('#table_main').DataTable({
+        function openModal(data){
+            $('.modal').css('display', 'block');
+            process = data.process;
+
+            $('#serialcode').val(data.serialcode);
+            $('#defect').val(data.defect);
+            $('#process').val(data.process);
+            $('#analysis').val(data.analysis);
+            $('#action').val(data.action);
+            $('#ict_jig').val(data.ict_jig);
+            $('#wi_jig').val(data.wi_jig);
+            $('#ft_jig').val(data.ft_jig);
+            $('#result').val(data.result);
+            $('#operator').val(data.operator);
+
+            if(process === 'ICT') {
+                $('.ict-section').show();
+                $('#ict_component').val(data.ict_component);
+                $('#ict_ref').val(data.ict_ref);
+                $('#ict_reading').val(data.ict_reading);
+            }
+
+            if(process === 'FT') {
+                $('.ft-section').show();
+                $('#ft_step').val(data.ft_step);
+                $('#ft_ref').val(data.ft_ref);
+                $('#ft_result').val(data.ft_result);
+            }
+        }
+
+        function hideModal(){
+            $('.modal').css('display', 'none');
+        }
+
+        $(document).ready(function(){
+            table = $('#table_main').DataTable({
                 "paging": true,
                 "searching": true,
                 deferRender: true,
@@ -76,6 +212,13 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     {"orderable": false, "targets": [0,1,2,4,5,6]}
                 ]
             });
+
+            $(document).on('click', '.btn-repair', function(){
+                data = $(this).data();
+                openModal(data);
+            })
+
+        })
     </script>
 </body>
 </html>
