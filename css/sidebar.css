@@ -1,157 +1,156 @@
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    display: flex;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .sidebar {
-    width: 25vh;
-    height: 100vh;
-    background: #333;
-    color: white;
-    position: fixed;
-    left: 0;
-    top: 0;
-    transition: width 0.3s ease-in-out;
-    overflow-x: hidden;
-    z-index: 1000;
+  width: 30vh;
+  height: 100vh;
+  background: #333;
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: width 0.3s ease-in-out;
+  overflow-x: hidden;
+  z-index: 1000;
 }
 
 .sidebar .toggle-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 25px;
-    cursor: pointer;
-    display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 25px;
+  cursor: pointer;
+  display: none;
 }
 
 .sidebar .menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .sidebar .menu li {
-    padding: 15px;
-    text-align: left;
-    transition: 0.3s;
-    cursor: pointer;
-    width: 100%;
+  padding: 15px;
+  text-align: left;
+  transition: 0.3s;
+  cursor: pointer;
+  width: 100%;
 }
 .sidebar .menu li:hover {
-    background: #444;
+  background: #444;
 }
 
 .sidebar .menu li a {
-    text-decoration: none;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .sidebar .menu li a i {
-    width: 10px;
-    text-align: center;
-    margin-right: 0;
-
+  width: 10px;
+  text-align: center;
+  margin-right: 0;
 }
 
 .submenu {
-    display: none;
-    list-style: none;
-    padding-left: 20px;
-    background: #444;
+  display: none;
+  list-style: none;
+  padding-left: 20px;
+  background: #444;
 }
 
 .submenu li {
-    padding: 10px 15px;
+  padding: 10px 15px;
 }
 
 .submenu li a {
-    text-decoration: none;
-    color: white;
-    display: block;
+  text-decoration: none;
+  color: white;
+  display: block;
 }
 
 .menu li .submenu a:hover {
-    background: #575757;
-    border-radius: 5px;
+  background: #575757;
+  border-radius: 5px;
 }
 
 /* Active & open */
 .menu li.active,
 .submenu li.active {
-    background: #575757;
-    border-left: 4px solid #00bcd4;
+  background: #575757;
+  border-left: 4px solid #00bcd4;
 }
 
 .menu li.active a,
 .submenu li.active a {
-    color: #00bcd4;
-    font-weight: bold;
+  color: #00bcd4;
+  font-weight: bold;
 }
 
-.menu li.dropdown.open>.submenu {
-    display: block !important;
+.menu li.dropdown.open > .submenu {
+  display: block !important;
 }
 
 /* Mobile view */
 @media screen and (max-width: 768px) {
-    .sidebar {
-        width: 0;
-        overflow: hidden;
-    }
+  .sidebar {
+    width: 0;
+    overflow: hidden;
+  }
 
-    .sidebar.expanded {
-        width: 250px;
-    }
+  .sidebar.expanded {
+    width: 250px;
+  }
 
-    .sidebar .menu li a span {
-        display: none;
-    }
+  .sidebar .menu li a span {
+    display: none;
+  }
 
-    .sidebar.expanded .menu li a span {
-        display: inline;
-    }
+  .sidebar.expanded .menu li a span {
+    display: inline;
+  }
 
-    .sidebar .toggle-btn {
-        display: block;
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 2001;
-    }
+  .sidebar .toggle-btn {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2001;
+  }
 }
 
 /* Tablet view */
 @media screen and (max-width: 1025px) {
-    .sidebar {
-        width: 60px;
-    }
+  .sidebar {
+    width: 60px;
+  }
 
-    .sidebar.expanded {
-        width: 250px;
-    }
+  .sidebar.expanded {
+    width: 250px;
+  }
 
-    .sidebar .menu li a span {
-        display: none;
-    }
+  .sidebar .menu li a span {
+    display: none;
+  }
 
-    .sidebar.expanded .menu li a span {
-        display: inline;
-    }
+  .sidebar.expanded .menu li a span {
+    display: inline;
+  }
 
-    .sidebar .toggle-btn {
-        display: block;
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 2001;
-    }
+  .sidebar .toggle-btn {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2001;
+  }
 }
