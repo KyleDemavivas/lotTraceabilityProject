@@ -219,7 +219,7 @@ tr:hover {
   margin: 20px auto;
   padding: 25px;
   background-color: #ffffff;
-  margin-left: 25vh;
+  margin-right: 25vh;
 }
 
 .form-section {
@@ -254,7 +254,7 @@ tr:hover {
   z-index: 10000 !important;
 }
 
-.btn-analysis {
+.btn-repair {
   width: 100%;
   text-align: center;
   background: linear-gradient(135deg, #4facfe, #00c2fe);

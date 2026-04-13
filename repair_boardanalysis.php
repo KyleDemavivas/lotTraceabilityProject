@@ -29,20 +29,12 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <th>Board Serial</th>
                 <th>Defect</th>
                 <th>Process</th>
-                <th>ICT Jig No.</th>
-                <th>WI Jig No.</th>
-                <th>FT Jig No.</th>
-                <th>ICT Component</th>
-                <th>ICT Reference</th>
-                <th>ICT Reading</th>
-                <th>FT Step</th>
-                <th>FT Reference</th>
-                <th>FT Result</th>
                 <th>Analysis</th>
                 <th>Action</th>
                 <th>Result</th>
                 <th>Operator Name</th>
                 <th>Date</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -52,20 +44,16 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td><?php echo htmlspecialchars($row['serialcode']); ?></td>
                     <td><?php echo htmlspecialchars($row['defect']); ?></td>
                     <td><?php echo htmlspecialchars($row['process']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ict_jig']); ?></td>
-                    <td><?php echo htmlspecialchars($row['wi_jig']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ft_jig']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ict_component']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ict_ref']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ict_reading']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ft_step']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ft_ref']); ?></td>
-                    <td><?php echo htmlspecialchars($row['ft_result']); ?></td>
                     <td><?php echo htmlspecialchars($row['analysis']); ?></td>
                     <td><?php echo htmlspecialchars($row['action']); ?></td>
                     <td><?php echo htmlspecialchars($row['result']); ?></td>
                     <td><?php echo htmlspecialchars($row['operator']); ?></td>
                     <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($row['DateTime']))); ?></td>
+                    <td>
+                        <button class="btn-repair"
+                        data-serialcode = "<?php echo $row['serialcode']; ?>"
+                        >Repair</button>
+                    </td>
                 </tr>
             <?php } ?>
         </tbody>
@@ -79,13 +67,13 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 "searching": true,
                 deferRender: true,
                 "ordering": true,
-                "order": [[16, "desc"]],
+                "order": [[7, "desc"]],
                 "info": false,
                 "lengthChange": false,
                 "pageLength": 10,
                 "columnDefs": [
-                    {"searchable": false, "targets": 3},
-                    {"orderable": false, "targets": [0,1,2,4,5,6,7,8,9,10,11,12,13,14,15]}
+                    {"searchable": false, "targets": 7},
+                    {"orderable": false, "targets": [0,1,2,4,5,6]}
                 ]
             });
     </script>
