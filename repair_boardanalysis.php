@@ -265,7 +265,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     timer: 1500,
                                 }).then(function(){
                                     hideModal();
-                                     location.reload();
+                                    location.reload();
                                 })
                             }
                         }
