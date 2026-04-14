@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (Exception $e) {
         $response = [
             'success' => false,
-            'message' => $e,
+            'message' => $e->getMessage(),
             'data' => null,
         ];
     }

@@ -3,7 +3,7 @@
 require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
 
-$query = 'SELECT * FROM repair_boardanalysis';
+$query = 'SELECT * FROM repair_boardanalysis WHERE status IS NULL';
 $stmt = $conn->prepare($query);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -17,7 +17,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Document</title>
     <link rel="stylesheet" href="css/repair_boardanalysis.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-4.0.0.slim.min.js" integrity="sha256-8DGpv13HIm+5iDNWw1XqxgFB4mj+yOKFNb+tHBZOowc=" crossorigin="anonymous"></script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 </head>
@@ -84,6 +84,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </center>
             </div>
             <div class="form-section">
+                <form id="modalSubmit" name="modalSubmit">
                 <div class="form-group">
                     <label class="form-label" for="serialcode">Serial Code:</label>
                     <input id="serialcode" name="serialcode" class="form-input" readonly>
@@ -158,15 +159,17 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="form-section">
                 <div class="btn-selection">
-                    <button class="btn-close" id="scrap-btn">Scrap</button>
-                    <button class="btn-save" id="repair-btn">Repair</button>
+                    <button type="submit" class="btn-close" id="scrap-btn" data-btn="scrap">Scrap</button>
+                    <button type="submit" class="btn-save" id="repair-btn" data-btn="repair">Repair</button>
                 </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
     <script>
-        let table;
+        let table=null;
+        let btn=null;
 
         function openModal(data){
             $('.modal').css('display', 'block');
@@ -234,12 +237,44 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 openModal(data);
             })
 
-            $('#repair-btn').on('click', function(){
-                Swal.fire({icon: 'success', title: 'This is the repair button'});
+            $('[data-btn]').on('click', function(){
+                btn = $(this).data('btn');
             })
 
-             $('#scrap-btn').on('click', function(){
-                Swal.fire({icon: 'error', title: 'This is the scrap button'});
+            $('#modalSubmit').on('submit', function(e){
+                e.preventDefault();
+                const formdata = new FormData(this);
+                console.log(btn)
+
+                if(btn==='repair'){
+                    $.ajax({
+                        url: 'repair_boardanalysis_submit.php',
+                        type: 'POST',
+                        data: formdata,
+                        processData: false,
+                        contentType: false,
+                        success: function(response){
+                            if(response.success){
+                                Swal.fire({
+                                    icon:'success',
+                                    title:'Board Sent for Verification.',
+                                    text:response.message,
+                                    showConfirmButton: false,
+                                    toast: true,
+                                    position: 'top-right',
+                                    timer: 1500,
+                                }).then(function(){
+                                    hideModal();
+                                     location.reload();
+                                })
+                            }
+                        }
+                    })
+                }
+
+                if(btn==='scrap'){
+                    Swal.fire('Scrap button')
+                }
             })
 
         })
