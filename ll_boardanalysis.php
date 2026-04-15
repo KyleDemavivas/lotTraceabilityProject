@@ -254,10 +254,11 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             e.preventDefault();
 
             formdata = new FormData(this);
+            formdata.append('process','ll');
 
             if(btn==='repair'){
                 $.ajax({
-                    url:'ll_boardanalysis_submit.php',
+                    url:'repair_boardanalysis_submit.php',
                     type:'POST',
                     data:formdata,
                     processData:false,

@@ -244,7 +244,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $('#modalSubmit').on('submit', function(e){
                 e.preventDefault();
                 const formdata = new FormData(this);
-                console.log(btn)
+                formdata.append('process','repair');
 
                 if(btn==='repair'){
                     $.ajax({

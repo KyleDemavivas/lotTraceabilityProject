@@ -5,26 +5,32 @@ header('Content-Type: application/json;');
 
 $response = [
     'success' => false,
+    'status' => 500,
     'message' => 'Database Error.',
     'data' => null,
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $status = $_POST['process'] === 'repair' ? 'll' : 'mod';
+    $message = $status === 'll' ? 'Line Leader' : 'Modificator';
+
     try {
         $serialcode = $_POST['serialcode'];
 
-        $query = "UPDATE repair_boardanalysis SET status = 'll' WHERE serialcode = :serialcode";
+        $query = "UPDATE repair_boardanalysis SET status = '".$status."' WHERE serialcode = :serialcode";
         $stmt = $conn->prepare($query);
         $stmt->bindParam(':serialcode', $serialcode);
         $stmt->execute();
         $response = [
             'success' => true,
-            'message' => 'Board successfully sent for Line Leader Verification.',
+            'status' => 200,
+            'message' => 'Board successfully sent for '.$message.' Verification.',
             'data' => null,
         ];
     } catch (Exception $e) {
         $response = [
             'success' => false,
+            'status' => 400,
             'message' => $e->getMessage(),
             'data' => null,
         ];
