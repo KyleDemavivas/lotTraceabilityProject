@@ -236,6 +236,51 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     {"orderable": false, "targets": [0,1,2,3,4,5,6,8]}
                 ]
             });
+
+            $(document).on('click', '.btn-repair', function(){
+                data = $(this).data();
+                openModal(data);
+            })
+
+            $('[data-btn]').on('click', function(){
+                btn=$(this).data('btn');
+            })
+
+            $('#modalSubmit').on('submit', function(e){
+                e.preventDefault();
+                const formdata = new FormData(this);
+                formdata.append('process','repair');
+
+                if(btn==='repair'){
+                    $.ajax({
+                        url: 'repair_boardanalysis_submit.php',
+                        type: 'POST',
+                        data: formdata,
+                        processData: false,
+                        contentType: false,
+                        success: function(response){
+                            if(response.success){
+                                Swal.fire({
+                                    icon:'success',
+                                    title:'Board Sent for Verification.',
+                                    text:response.message,
+                                    showConfirmButton: false,
+                                    toast: true,
+                                    position: 'top-right',
+                                    timer: 1500,
+                                }).then(function(){
+                                    hideModal();
+                                    location.reload();
+                                })
+                            }
+                        }
+                    })
+                }
+
+                if(btn==='scrap'){
+                    Swal.fire('Scrap button')
+                }
+            })
     })
 </script>
 </body>
