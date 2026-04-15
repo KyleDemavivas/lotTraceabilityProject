@@ -38,6 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     COMMIT;';
         $stmt->bindParam(':serialcode', $serialcode);
         $stmt->execute();
+
+        $response = [
+            'success' => true,
+            'status' => 200,
+            'message' => 'Board Successfully Verified.',
+            'data' => null,
+        ];
     } catch (Exception $e) {
         $response = [
             'success' => false,
