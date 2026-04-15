@@ -1,9 +1,9 @@
 <?php
 
-require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
 require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
+require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
 
-$query = "SELECT * FROM repair_boardanalysis WHERE status = 'll' AND status IS NOT NULL";
+$query = "SELECT * FROM repair_boardanalysis WHERE status='mod'";
 $stmt = $conn->prepare($query);
 $stmt->execute();
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -15,23 +15,20 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
-     <link rel="stylesheet" href="css/repair_boardanalysis.css">
-     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
+    <link rel="stylesheet" href="css/repair_boardanalysis.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
-
-<div class="form-container">
-    <div class="form-label">
-        <center>
-            <h3>Line Leader Verification</h3>
-        </center>
-    </div>
-    <table id="table_main" class="display">
+    <div class="form-container">
+        <div class="form-label">
+            <center>
+                <h3>Modificator 1&2 Verification</h3>
+            </center>
+        </div>
+       <table id="table_main" class="display">
         <thead>
             <tr>
                 <th>Board Serial</th>
@@ -80,9 +77,8 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php } ?>
         </tbody>
     </table>
-</div>
-
-<div class="modal">
+    </div>
+    <div class="modal">
     <div class="modal-content">
         <div class="modal-body">
             <div class="modal-header">
@@ -240,58 +236,6 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     {"orderable": false, "targets": [0,1,2,3,4,5,6,8]}
                 ]
             });
-
-        $(document).on('click','.btn-repair',function(){
-            data = $(this).data();
-            openModal(data);
-        })
-        
-        $('[data-btn]').on('click',function(){
-            btn = $(this).data('btn');
-        })
-        
-        $('#modalSubmit').on('submit',function(e){
-            e.preventDefault();
-
-            formdata = new FormData(this);
-            formdata.append('process','ll');
-
-            if(btn==='repair'){
-                $.ajax({
-                    url:'repair_boardanalysis_submit.php',
-                    type:'POST',
-                    data:formdata,
-                    processData:false,
-                    contentType:false,
-                    success:function(response){
-                        if(response.success){
-                            Swal.fire({
-                                icon:'success',
-                                title:'Successfully Verified',
-                                text:response.message,
-                                toast:true,
-                                position:'top-right',
-                                showConfirmButton:false,
-                                timer:1500
-                            }).then(()=>{
-                                hideModal();
-                                location.reload();
-                            })
-                        } else{
-                            Swal.fire({
-                                icon:'error',
-                                title:response.status,
-                                text:response.message
-                            })
-                        }
-                    }
-                })
-            }
-
-            if(btn==='scrap'){
-                Swal.fire('scrap')
-            }
-        })
     })
 </script>
 </body>
