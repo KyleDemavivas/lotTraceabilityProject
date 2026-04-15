@@ -95,11 +95,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
-                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/BoardAnalysis.php', '/traceabilitydev/repair_boardanalysis.php']) ? 'active open' : ''; ?>">
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/BoardAnalysis.php', '/traceabilitydev/repair_boardanalysis.php', '/traceabilitydev/ll_boardanalysis.php', '/traceabilitydev/mod_boardanalysis.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>ICT Repair ▾</span></a>
                     <ul class="submenu">
                         <li class="<?php echo ($current_page == '/traceabilitydev/BoardAnalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/BoardAnalysis.php">Board Analysis</a></li>
                         <li class="<?php echo ($current_page == '/traceabilitydev/repair_boardanalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/repair_boardanalysis.php">Repair Table</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/ll_boardanalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/ll_boardanalysis.php">Line Leader Analysis Table</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/mod_boardanalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/mod_boardanalysis.php">Modificator Analysis Table</a></li>
                     </ul>
                 </li>
 

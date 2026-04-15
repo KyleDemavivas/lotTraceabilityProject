@@ -24,20 +24,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':serialcode', $serialcode);
         $stmt->execute();
 
-        $query = 'UPDATE trace_process SET wi_process=NULL, micro_process=NULL, partside1_process=NULL, partside2_process=NULL, fviss_process=NULL WHERE serialcode = :serialcode';
+        $query = 'UPDATE trace_process SET wi_process=NULL, micro_process=NULL, partside_process=NULL, partside2_process=NULL, fviss_process=NULL WHERE serial_code = :serial_code';
         $stmt = $conn->prepare($query);
-        $stmt->bindParam(':serialcode', $serialcode);
+        $stmt->bindParam(':serial_code', $serialcode);
         $stmt->execute();
 
-        $query = 'BEGIN TRANSACTION;
-                    DELETE FROM wi_process WHERE serialcode = :serialcode;
-                    DELETE FROM micro_process WHERE serialcode = :serialcode;
-                    DELETE FROM partside1_process WHERE serialcode = :serialcode;
-                    DELETE FROM partside2_process WHERE serialcode = :serialcode;
-                    DELETE FROM fviss_process WHERE serialcode = :serialcode;
-                    COMMIT;';
-        $stmt->bindParam(':serialcode', $serialcode);
-        $stmt->execute();
+        $conn->beginTransaction();
+
+        $deleteQueries = [
+            'DELETE FROM fviss_process WHERE serial_code=?',
+            'DELETE FROM partside_process WHERE serial_code=?',
+            'DELETE FROM partside2_process WHERE serial_code=?',
+            'DELETE FROM micro_process WHERE serial_code=?',
+            'DELETE FROM wi_process WHERE serial_code=?',
+        ];
+
+        foreach ($deleteQueries as $query) {
+            $stmt = $conn->prepare($query);
+            $stmt->bindValue(1, $serialcode);
+            $stmt->execute();
+        }
+
+        $conn->commit();
 
         $response = [
             'success' => true,

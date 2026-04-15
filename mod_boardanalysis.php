@@ -249,11 +249,10 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $('#modalSubmit').on('submit', function(e){
                 e.preventDefault();
                 const formdata = new FormData(this);
-                formdata.append('process','repair');
 
                 if(btn==='repair'){
                     $.ajax({
-                        url: 'repair_boardanalysis_submit.php',
+                        url: 'mod_boardanalysis_submit.php',
                         type: 'POST',
                         data: formdata,
                         processData: false,
@@ -271,6 +270,15 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 }).then(function(){
                                     hideModal();
                                     location.reload();
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: response.status,
+                                    text: response.message,
+                                    confirmButtonText: 'OK'
+                                }).then(()=>{
+                                    hideModal();
                                 })
                             }
                         }
