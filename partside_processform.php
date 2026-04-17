@@ -43,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtNG->execute([':serial_code' => $serial_code]);
         $fvissStatus = $stmtNG->fetchColumn();
 
-        $query = 'SELECT COUNT(serialcode) FROM repair_boardanalysis WHERE serialcode = ?';
+        $query = 'SELECT serialcode, status FROM repair_boardanalysis WHERE serialcode = ?';
         $stmt = $conn->prepare($query);
         $stmt->bindValue(1, $serial_code);
-        $count = $stmt->fetch();
+        $serialICT = $stmt->fetch();
 
-        if ($count > 0) {
+        if ($serialICT['serialcode'] && $serialICT['status'] !== 'done') {
             throw new Exception('Board is currently marked as No Good.');
         }
 
