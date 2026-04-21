@@ -1,139 +1,140 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f8f9fa;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f8f9fa;
 }
 
 .header {
-    background: #005ca5;
-    color: white;
-    padding: 12px;
-    font-weight: bold;
-    text-align: center;
-    font-size: 1.2rem;
+  background: #005ca5;
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.2rem;
 }
 
 .container {
-    margin: auto;
-    margin-top:10px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 1300px;
-    background: #fff;
-    margin-left: 20%;
+  margin: auto;
+  margin-top: 10px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1300px;
+  background: #fff;
+  margin-left: 20%;
+  overflow-x: auto;
 }
 
 .board-section {
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 1px solid #005ca5;
-    border-radius: 0px;
-    background: #fdfdfd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #005ca5;
+  border-radius: 0px;
+  background: #fdfdfd;
 }
 
 .board-section label {
-    margin-right: 8px;
-    font-weight: bold;
+  margin-right: 8px;
+  font-weight: bold;
 }
 
 .board-section input[type="text"] {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    width: 250px;
-    max-width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 250px;
+  max-width: 100%;
 }
 
 .board-section button {
-    background: #005ca5;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    margin-left: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s ease;
+  background: #005ca5;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  margin-left: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s ease;
 }
 
 .board-section button:hover {
-    background: #004680;
+  background: #004680;
 }
 
 .board-section span {
-    display: inline-block;
-    min-width: 180px;
-    font-weight: bold;
+  display: inline-block;
+  min-width: 180px;
+  font-weight: bold;
 }
 
 /* Table Styling */
 .table-container {
-    width: 100%;
-    overflow-x: auto;
-    /* responsive scroll */
+  width: 100%;
+  overflow-x: auto;
+  /* responsive scroll */
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 0.95rem;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.95rem;
 }
 
 table th {
-    background: #005ca5;
-    color: white;
-    padding: 10px;
-    text-align: left;
-    white-space: nowrap;
+  background: #005ca5;
+  color: white;
+  padding: 10px;
+  text-align: left;
+  white-space: nowrap;
 }
 
 table td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    white-space: nowrap;
+  border: 1px solid #ccc;
+  padding: 8px;
+  white-space: nowrap;
 }
 
 .highlight {
-    background: yellow;
-    font-weight: bold;
+  background: yellow;
+  font-weight: bold;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .board-section {
-        display: flex;
-        flex-direction: column;
-    }
+  .board-section {
+    display: flex;
+    flex-direction: column;
+  }
 
-    .board-section form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+  .board-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-    .board-section input[type="text"] {
-        width: 100%;
-    }
+  .board-section input[type="text"] {
+    width: 100%;
+  }
 
-    .board-section button {
-        width: 100%;
-        margin-left: 0;
-    }
+  .board-section button {
+    width: 100%;
+    margin-left: 0;
+  }
 
-    table th,
-    table td {
-        font-size: 0.85rem;
-        padding: 6px;
-    }
+  table th,
+  table td {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
 }
 .repair-section {
-    margin-top: 20px;
-    border: 1px solid #005ca5;
-    border-radius: 0px;
-    background: #fdfdfd;
-    padding: 15px;
+  margin-top: 20px;
+  border: 1px solid #005ca5;
+  border-radius: 0px;
+  background: #fdfdfd;
+  padding: 15px;
 }

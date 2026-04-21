@@ -7,6 +7,7 @@ $serial_code = $_GET['serial_code'] ?? '';
 
 $model_name = '';
 $assy_code = '';
+$prodlot = '';
 $batchlot = '';
 $batchlot_data = [];
 $process_data = [];
@@ -45,6 +46,10 @@ if ($serial_code != '') {
             break;
         }
     }
+
+    $stmt = $conn->prepare('SELECT kepi_lot FROM trace_process WHERE serial_code = :serial_code');
+    $stmt->execute(['serial_code' => $serial_code]);
+    $prodlot = $stmt->fetchColumn();
 
     // Batchlot check in repair_process
     $stmt2 = $conn->prepare('SELECT COUNT(*) AS count FROM fviss_process WHERE serial_code = ?');
@@ -377,17 +382,23 @@ if ($serial_code != '') {
         ];
     }
 
-    // FT
-    $sql = 'SELECT * FROM [192.168.1.138, 1433].[MachineLogsDb].[dbo].[FT] WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
-    $stmt = $conn->prepare($sql);
-    $stmt->execute(['BoardSerial' => $serial_code]);
-    $ft_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // // FT
+    // $sql = 'SELECT * FROM [192.168.1.138, 1433].[MachineLogsDb].[dbo].[FT] WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    // $stmt = $conn->prepare($sql);
+    // $stmt->execute(['BoardSerial' => $serial_code]);
+    // $ft_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // ICT
-    $sql = 'SELECT * FROM [192.168.1.138, 1433].[MachineLogsDb].[dbo].[ICT] WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    // // ICT
+    // $sql = 'SELECT * FROM [192.168.1.138, 1433].[MachineLogsDb].[dbo].[ICT] WHERE BoardSerial = :BoardSerial ORDER BY DateTime DESC';
+    // $stmt = $conn->prepare($sql);
+    // $stmt->execute(['BoardSerial' => $serial_code]);
+    // $ict_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // POKANON
+    $sql = 'SELECT * FROM pokanon_view WHERE ProdLot = :ProdLot';
     $stmt = $conn->prepare($sql);
-    $stmt->execute(['BoardSerial' => $serial_code]);
-    $ict_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->execute(['ProdLot' => $prodlot]);
+    $pokanon_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 
@@ -398,6 +409,9 @@ if ($serial_code != '') {
     <meta charset="UTF-8">
     <title>Board History</title>
     <link rel="stylesheet" href="css/board_history.css">
+     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 </head>
 
 <body>
@@ -406,11 +420,12 @@ if ($serial_code != '') {
         <div class="board-section">
             <form method="get">
                 <label><b>LOT / SERIAL NO.:</b></label>
-                <input type="text" name="serial_code" value="<?php echo htmlspecialchars($serial_code); ?>" required autocomplete="off" minlength="13" maxlength="13">
+                <input type="text" name="serial_code" value="<?php echo htmlspecialchars($serial_code); ?>" required autocomplete="off" minlength="3" maxlength="15">
                 <button type="submit">Search</button>
             </form>
             <p><b>MODEL:</b> <?php echo htmlspecialchars($model_name); ?></p>
             <p><b>ASSYCODE:</b> <?php echo htmlspecialchars($assy_code); ?></p>
+            <p><b>PRODUCTION LOT:</b> <?php echo htmlspecialchars($prodlot); ?></p>
           
         </div>
         <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
@@ -555,6 +570,36 @@ foreach ($rows as $row) { ?>
                     </table>
                  </div>
 
+                 <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
+                    <div class="header">POKANON HISTORY</div>
+                    <table id="pokanontable" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Production Lot</th>
+                                <th>Main code</th>
+                                <th>Lot No</th>
+                                <th>Serial</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($pokanon_data)) { ?>
+                                <?php foreach ($pokanon_data as $row) { ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($row['ProdLot']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['Maincode']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['LotNo']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['Serial']); ?></td>
+                                        <td><?php echo htmlspecialchars(date('M d Y', strtotime($row['DateTime']))); ?></td>
+                                        <td><?php echo htmlspecialchars(date('g:i A', strtotime($row['DateTime']))); ?></td>
+                                    </tr>
+                                <?php } ?>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                 </div>
+
             <!--BATCHLOT HISTORY TABLE ONGOING DEVELOPEMENT-->
             <div class="board-section" style="margin-top: 20px; margin-bottom: 20px">
                 <div class="header">BATCH LOT HISTORY</div>
@@ -673,6 +718,17 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                         </tbody>
                     </table>
             </div>
+
+                <script>
+                    $(document).ready(function() {
+                        $('#pokanontable').DataTable({
+                        'pagelength': 10,
+                        "searching": true,
+                        "lengthChange": false,
+                        "info": false
+                        })
+                    })
+                </script>
 
 </body>
 
