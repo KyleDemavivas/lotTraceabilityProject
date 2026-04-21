@@ -15,7 +15,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/jpg" href="/traceability/img/icon.jpg">
+    <link rel="icon" type="image/jpg" href="/traceabilitydev/img/icon.jpg">
     <title>Production Traceability</title>
     <link rel="stylesheet" href="/traceability/css/sidebar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -29,74 +29,74 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <br>
         <?php if ($_SESSION['user_process'] === 'ADMIN') { ?>
             <ul class="menu">
-                <li class="dropdown <?php echo in_array($current_page, ['/traceability/register.php', '/traceability/useraccounts.php']) ? 'active open' : ''; ?>">
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/register.php', '/traceabilitydev/useraccounts.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-user-cog"></i> <span>Admin Panel ▾</span></a>
                     <ul class="submenu">
-                        <li class="<?php echo ($current_page == '/traceability/register.php') ? 'active' : ''; ?>"><a href="/traceability/register.php">Register User</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/useraccounts.php') ? 'active' : ''; ?>"><a href="/traceability/useraccounts.php">Users</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/register.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/register.php">Register User</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/useraccounts.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/useraccounts.php">Users</a></li>
                     </ul>
                 </li>
 
-                <li class="dropdown <?php echo in_array($current_page, ['/traceability/add_model.php', '/traceability/view_model.php']) ? 'active open' : ''; ?>">
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/add_model.php', '/traceabilitydev/view_model.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-cube"></i> <span>Model Master ▾</span></a>
                     <ul class="submenu">
-                        <li class="<?php echo ($current_page == '/traceability/add_model.php') ? 'active' : ''; ?>"><a href="/traceability/add_model.php">Add Model</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/view_model.php') ? 'active' : ''; ?>"><a href="/traceability/view_model.php">View Model</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/add_model.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/add_model.php">Add Model</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/view_model.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/view_model.php">View Model</a></li>
                     </ul>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/label_registration.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/label_registration.php"><i class="fas fa-tag"></i> <span>Label Registration</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/label_registration.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/label_registration.php"><i class="fas fa-tag"></i> <span>Label Registration</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/viewlabel_registration.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/viewlabel_registration.php"><i class="fas fa-tags"></i> <span>View Label Registration</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/viewlabel_registration.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/viewlabel_registration.php"><i class="fas fa-tags"></i> <span>View Label Registration</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/spa_process.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/spa_process.php"><i class="fas fa-spa"></i> <span>SPA</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/spa_process.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/spa_process.php"><i class="fas fa-spa"></i> <span>SPA</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/mounter.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/mounter.php"><i class="fas fa-microchip"></i> <span>Mounter</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/mounter.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/mounter.php"><i class="fas fa-microchip"></i> <span>Mounter</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/hourly_output.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/hourly_output.php"><i class="fas fa-clock"></i> <span>Hourly Output</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/hourly_output.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/hourly_output.php"><i class="fas fa-clock"></i> <span>Hourly Output</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/processed_lot.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/processed_lot.php"><i class="fas fa-layer-group"></i> <span>Processed Lot</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/processed_lot.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/processed_lot.php"><i class="fas fa-layer-group"></i> <span>Processed Lot</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/vi_process.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/vi_process.php"><i class="fas fa-eye"></i> <span>Visual Inspection</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/vi_process.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/vi_process.php"><i class="fas fa-eye"></i> <span>Visual Inspection</span></a>
                 </li>
 
-                <?php /* <li class="<?= ($current_page == '/traceability/repair_process.php') ? 'active' : '' ?>">
-                <a href="/traceability/repair_process.php"><i class="fas fa-wrench"></i> <span>SMT Repair</span></a>
+                <?php /* <li class="<?= ($current_page == '/traceabilitydev/repair_process.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/repair_process.php"><i class="fas fa-wrench"></i> <span>SMT Repair</span></a>
             </li> */ ?>
 
-                <?php /* <li class="<?= ($current_page == '/traceability/ng_verification.php') ? 'active' : '' ?>">
-                <a href="/traceability/ng_verification.php"><i class="fas fa-wrench"></i> <span>NG Verification</span></a>
+                <?php /* <li class="<?= ($current_page == '/traceabilitydev/ng_verification.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/ng_verification.php"><i class="fas fa-wrench"></i> <span>NG Verification</span></a>
             </li> */ ?>
 
-                <?php /* <li class="<?= ($current_page == '/traceability/hwrepair_process.php') ? 'active' : '' ?>">
-                <a href="/traceability/hwrepair_process.php"><i class="fas fa-wrench"></i> <span>HW Repair</span></a>
+                <?php /* <li class="<?= ($current_page == '/traceabilitydev/hwrepair_process.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/hwrepair_process.php"><i class="fas fa-wrench"></i> <span>HW Repair</span></a>
             </li> */ ?>
 
-                <li class="dropdown <?php echo in_array($current_page, ['/traceability/repair_table.php', '/traceability/verify_repairLL.php', '/traceability/batchlot_repair.php', '/traceability/verify_processleader.php']) ? 'active open' : ''; ?>">
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/repair_table.php', '/traceabilitydev/verify_repairLL.php', '/traceabilitydev/batchlot_repair.php', '/traceabilitydev/verify_processleader.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>Repair Process ▾</span></a>
                     <ul class="submenu">
-                        <li class="<?php echo ($current_page == '/traceability/repair_table.php') ? 'active' : ''; ?>"><a href="/traceability/repair_table.php">Repair Table</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/verify_repairLL.php') ? 'active' : ''; ?>"><a href="/traceability/verify_repairLL.php">Line Leader</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/batchlot_repair.php') ? 'active' : ''; ?>"><a href="/traceability/batchlot_repair.php">Batch Lot Verification</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/verify_processleader.php') ? 'active' : ''; ?>"><a href="/traceability/verify_processleader.php">Process Verification</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/repair_table.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/repair_table.php">Repair Table</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/verify_repairLL.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/verify_repairLL.php">Line Leader</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/batchlot_repair.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/batchlot_repair.php">Batch Lot Verification</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/verify_processleader.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/verify_processleader.php">Process Verification</a></li>
                     </ul>
                 </li>
 
                 <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/BoardAnalysis.php', '/traceabilitydev/repair_boardanalysis.php', '/traceabilitydev/ll_boardanalysis.php', '/traceabilitydev/mod_boardanalysis.php']) ? 'active open' : ''; ?>">
-                    <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>ICT Repair ▾</span></a>
+                    <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>ICT/WI/FT Repair ▾</span></a>
                     <ul class="submenu">
                         <li class="<?php echo ($current_page == '/traceabilitydev/BoardAnalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/BoardAnalysis.php">Board Analysis</a></li>
                         <li class="<?php echo ($current_page == '/traceabilitydev/repair_boardanalysis.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/repair_boardanalysis.php">Repair Table</a></li>
@@ -105,104 +105,104 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
-                <?php /*  <li class="<?= ($current_page == '/traceability/vi_repair.php') ? 'active' : '' ?>">
-                <a href="/traceability/vi_repair.php"><i class="fas fa-gavel"></i> <span>SMT VI Repair</span></a>
+                <?php /*  <li class="<?= ($current_page == '/traceabilitydev/vi_repair.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/vi_repair.php"><i class="fas fa-gavel"></i> <span>SMT VI Repair</span></a>
             </li> */ ?>
 
-                <li class="<?php echo ($current_page == '/traceability/ai_process.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/ai_process.php"><i class="fas fa-robot"></i> <span>Automatic Insertion</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/ai_process.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/ai_process.php"><i class="fas fa-robot"></i> <span>Automatic Insertion</span></a>
                 </li>
 
-                <?php /* <li class="<?= ($current_page == '/traceability/ai_repair_process.php') ? 'active' : '' ?>">
-                <a href="/traceability/ai_repair_process.php"><i class="fas fa-wrench"></i> <span>AI Repair</span></a>
+                <?php /* <li class="<?= ($current_page == '/traceabilitydev/ai_repair_process.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/ai_repair_process.php"><i class="fas fa-wrench"></i> <span>AI Repair</span></a>
             </li> */ ?>
 
-                <?php /* <li class="<?= ($current_page == '/traceability/ai_ngverification.php') ? 'active' : '' ?>">
-                <a href="/traceability/ai_ngverification.php"><i class="fas fa-wrench"></i> <span>AI NG Verification</span></a>
+                <?php /* <li class="<?= ($current_page == '/traceabilitydev/ai_ngverification.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/ai_ngverification.php"><i class="fas fa-wrench"></i> <span>AI NG Verification</span></a>
             </li> */ ?>
 
-                <?php /*  <li class="<?= ($current_page == '/traceability/ai_verify_repairLL.php') ? 'active' : '' ?>">
-                <a href="/traceability/ai_verify_repairLL.php"><i class="fas fa-gavel"></i> <span>AI LL Verify Repair</span></a>
+                <?php /*  <li class="<?= ($current_page == '/traceabilitydev/ai_verify_repairLL.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/ai_verify_repairLL.php"><i class="fas fa-gavel"></i> <span>AI LL Verify Repair</span></a>
             </li> */ ?>
 
-                <?php /*  <li class="<?= ($current_page == '/traceability/ai_repair.php') ? 'active' : '' ?>">
-                <a href="/traceability/ai_repair.php"><i class="fas fa-gavel"></i> <span>SMT AI Repair</span></a>
+                <?php /*  <li class="<?= ($current_page == '/traceabilitydev/ai_repair.php') ? 'active' : '' ?>">
+                <a href="/traceabilitydev/ai_repair.php"><i class="fas fa-gavel"></i> <span>SMT AI Repair</span></a>
             </li> */ ?>
 
-                <li class="<?php echo ($current_page == '/traceability/manual_insertion.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/manual_insertion.php"><i class="fas fa-handshake-angle"></i> <span>Manual Insertion</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/manual_insertion.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/manual_insertion.php"><i class="fas fa-handshake-angle"></i> <span>Manual Insertion</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/mod1.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/mod1.php"><i class="fas fa-handshake-angle"></i> <span>MOD 1</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/mod1.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/mod1.php"><i class="fas fa-handshake-angle"></i> <span>MOD 1</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/mod2.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/mod2.php"><i class="fas fa-handshake-angle"></i> <span>MOD 2</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/mod2.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/mod2.php"><i class="fas fa-handshake-angle"></i> <span>MOD 2</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceability/fviss.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/fviss.php"><i class="fas fa-map-signs"></i> <span>FVISS</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/fviss.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/fviss.php"><i class="fas fa-map-signs"></i> <span>FVISS</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/partside.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/partside.php"><i class="fas fa-map-signs"></i> <span>Part Side 1</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/partside.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/partside.php"><i class="fas fa-map-signs"></i> <span>Part Side 1</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/partside2.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/partside2.php"><i class="fas fa-map-signs"></i> <span>Part Side 2</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/partside2.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/partside2.php"><i class="fas fa-map-signs"></i> <span>Part Side 2</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/micro.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/micro.php"><i class="fas fa-map-signs"></i> <span>Micro</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/micro.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/micro.php"><i class="fas fa-map-signs"></i> <span>Micro</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/wi.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/wi.php"><i class="fas fa-map-signs"></i> <span>WI</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/wi.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/wi.php"><i class="fas fa-map-signs"></i> <span>WI</span></a>
                 </li>
 
-                <li class="dropdown <?php echo in_array($current_page, ['/traceability/stencil_master.php', '/traceability/squeegee_master.php']) ? 'active open' : ''; ?>">
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/stencil_master.php', '/traceabilitydev/squeegee_master.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>Stencil/Squeegee ▾</span></a>
                     <ul class="submenu">
-                        <li class="<?php echo ($current_page == '/traceability/stencil_master.php') ? 'active' : ''; ?>"><a href="/traceability/stencil_master.php">Stencil</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/squeegee_master.php') ? 'active' : ''; ?>"><a href="/traceability/squeegee_master.php">Squeegee</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/stencil_master.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/stencil_master.php">Stencil</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/squeegee_master.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/squeegee_master.php">Squeegee</a></li>
                     </ul>
                 </li>
 
-                <li class="dropdown <?php echo in_array($current_page, ['/traceability/add_solderpaste.php', '/traceability/ad_bonding.php']) ? 'active open' : ''; ?>">
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/add_solderpaste.php', '/traceabilitydev/ad_bonding.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-thermometer-0"></i> <span>Adhesive ▾</span></a>
                     <ul class="submenu">
-                        <li class="<?php echo ($current_page == '/traceability/add_solderpaste.php') ? 'active' : ''; ?>"><a href="/traceability/ad_solderpaste.php">Solder Paste</a></li>
-                        <li class="<?php echo ($current_page == '/traceability/ad_bonding.php') ? 'active' : ''; ?>"><a href="/traceability/ad_bonding.php">Bonding</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/add_solderpaste.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/ad_solderpaste.php">Solder Paste</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/ad_bonding.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/ad_bonding.php">Bonding</a></li>
                     </ul>
                 </li>
 
-                <?php /* <li class="dropdown <?= in_array($current_page, ['/traceability/report_repair.php', '/traceability/report_batchlot.php']) ? 'active open' : '' ?>">
+                <?php /* <li class="dropdown <?= in_array($current_page, ['/traceabilitydev/report_repair.php', '/traceabilitydev/report_batchlot.php']) ? 'active open' : '' ?>">
                 <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-folder-open"></i> <span>Report ▾</span></a>
                 <ul class="submenu">
-                    <li class="<?= ($current_page == '/traceability/report_repair.php') ? 'active' : '' ?>"><a href="/traceability/report_repair.php">SMT Repair Report</a></li>
-                    <li class="<?= ($current_page == '/traceability/report_batchlot.php') ? 'active' : '' ?>"><a href="/traceability/report_batchlot.php">Batch Lot Report</a></li>
+                    <li class="<?= ($current_page == '/traceabilitydev/report_repair.php') ? 'active' : '' ?>"><a href="/traceabilitydev/report_repair.php">SMT Repair Report</a></li>
+                    <li class="<?= ($current_page == '/traceabilitydev/report_batchlot.php') ? 'active' : '' ?>"><a href="/traceabilitydev/report_batchlot.php">Batch Lot Report</a></li>
                 </ul>
             </li> */ ?>
 
-                <li class="<?php echo ($current_page == '/traceability/report_batchlot.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/report_batchlot.php"><i class="fas fa-folder-open"></i> <span>History</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/report_batchlot.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/report_batchlot.php"><i class="fas fa-folder-open"></i> <span>History</span></a>
                 </li>
 
-                 <li class="<?php echo ($current_page == '/traceability/scrap_history.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/scrap_history.php"><i class="fas fa-folder-open"></i> <span>Scrapped Boards</span></a>
+                 <li class="<?php echo ($current_page == '/traceabilitydev/scrap_history.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/scrap_history.php"><i class="fas fa-folder-open"></i> <span>Scrapped Boards</span></a>
                 </li>
 
-                 <li class="<?php echo ($current_page == '/traceability/fvissBatchlot.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/fvissBatchlot.php"><i class="fas fa-map-signs"></i> <span>FVISS Batchlot</span></a>
+                 <li class="<?php echo ($current_page == '/traceabilitydev/fvissBatchlot.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/fvissBatchlot.php"><i class="fas fa-map-signs"></i> <span>FVISS Batchlot</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/partside1Batchlot.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/partside1Batchlot.php"><i class="fas fa-map-signs"></i> <span>Part Side 1 Batchlot</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/partside1Batchlot.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/partside1Batchlot.php"><i class="fas fa-map-signs"></i> <span>Part Side 1 Batchlot</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/partside2Batchlot.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/partside2Batchlot.php"><i class="fas fa-map-signs"></i> <span>Part Side 2 Batchlot</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/partside2Batchlot.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/partside2Batchlot.php"><i class="fas fa-map-signs"></i> <span>Part Side 2 Batchlot</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/microBatchlot.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/microBatchlot.php"><i class="fas fa-map-signs"></i> <span>Micro Batchlot</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/microBatchlot.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/microBatchlot.php"><i class="fas fa-map-signs"></i> <span>Micro Batchlot</span></a>
                 </li>
-                <li class="<?php echo ($current_page == '/traceability/wiBatchlot.php') ? 'active' : ''; ?>">
-                    <a href="/traceability/wiBatchlot.php"><i class="fas fa-map-signs"></i> <span>WI Batchlot</span></a>
+                <li class="<?php echo ($current_page == '/traceabilitydev/wiBatchlot.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/wiBatchlot.php"><i class="fas fa-map-signs"></i> <span>WI Batchlot</span></a>
                 </li>
 
                 <li class="<?php echo ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
@@ -218,95 +218,95 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <ul class="menu">
                 <!--REPAIR MENUS-->
                 <?php if ($_SESSION['user_process'] === 'REPAIRER') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/repair_table.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/repair_table.php"><i class="fas fa-wrench"></i> <span>Repair Table</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/repair_table.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/repair_table.php"><i class="fas fa-wrench"></i> <span>Repair Table</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/verify_repairLL.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/verify_repairLL.php"><i class="fas fa-wrench"></i> <span>Line Leader</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/verify_repairLL.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/verify_repairLL.php"><i class="fas fa-wrench"></i> <span>Line Leader</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/batchlot_repair.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/batchlot_repair.php"><i class="fas fa-wrench"></i> <span>Batch Lot Verify</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/batchlot_repair.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/batchlot_repair.php"><i class="fas fa-wrench"></i> <span>Batch Lot Verify</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/verify_processleader.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/verify_processleader.php"><i class="fas fa-wrench"></i> <span>Process Lead Verify</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/verify_processleader.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/verify_processleader.php"><i class="fas fa-wrench"></i> <span>Process Lead Verify</span></a>
                     </li>
                 <?php } ?>
 
                 <!--LABELLER MENUS-->
                 <?php if ($_SESSION['user_process'] === 'LABELLER') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/label_registration.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/label_registration.php"><i class="fas fa-tag"></i> <span>Label Registration</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/label_registration.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/label_registration.php"><i class="fas fa-tag"></i> <span>Label Registration</span></a>
                     </li>
 
-                    <li class="<?php echo ($current_page == '/traceability/viewlabel_registration.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/viewlabel_registration.php"><i class="fas fa-tags"></i> <span>View Label Registration</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/viewlabel_registration.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/viewlabel_registration.php"><i class="fas fa-tags"></i> <span>View Label Registration</span></a>
                     </li>
                 <?php } ?>
 
                 <!--ENGINEERING MENUS-->
                 <?php if ($_SESSION['user_process'] === 'ENGINEERING') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/report_batchlot.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/report_batchlot.php"><i class="fas fa-microchip"></i> <span>Status Report</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/report_batchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/report_batchlot.php"><i class="fas fa-microchip"></i> <span>Status Report</span></a>
                     </li>
 
-                    <li class="<?php echo ($current_page == '/traceability/viewlabel_registration.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/viewlabel_registration.php"><i class="fas fa-tags"></i> <span>View Label Registration</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/viewlabel_registration.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/viewlabel_registration.php"><i class="fas fa-tags"></i> <span>View Label Registration</span></a>
                     </li>
                 <?php } ?>
 
                 <!-- VI PROCESS MENUS -->
                  <?php if ($_SESSION['user_process'] === 'VISUAL INSPECTION') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/vi_process.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/vi_process.php"><i class="fas fa-window-wrench"></i> <span>Visual Inspection</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/vi_process.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/vi_process.php"><i class="fas fa-window-wrench"></i> <span>Visual Inspection</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/mounter.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/mounter.php"><i class="fas fa-wrench"></i> <span>Mounter</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/mounter.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/mounter.php"><i class="fas fa-wrench"></i> <span>Mounter</span></a>
                     </li>
                 <?php } ?>
                     
                 <!--FVISS MENUS -->
                 <?php if ($_SESSION['user_process'] === 'FVI SOLDERSIDE') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/fviss.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/fviss.php"><i class="fas fa-window-wrench"></i> <span>FVI Solderside</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/fviss.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/fviss.php"><i class="fas fa-window-wrench"></i> <span>FVI Solderside</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/fvissBatchlot.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/fvissBatchlot.php"><i class="fas fa-wrench"></i> <span>FVISS Batchlot</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/fvissBatchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/fvissBatchlot.php"><i class="fas fa-wrench"></i> <span>FVISS Batchlot</span></a>
                     </li>
                 <?php } ?>
 
                 <!--PARTSIDE MENUS -->
                 <?php if ($_SESSION['user_process'] === 'PARTSIDE 1' || $_SESSION['user_process'] === 'PARTSIDE 2') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/partside.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/partside.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 1</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/partside.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/partside.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 1</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/partside2.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/partside2.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 2</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/partside2.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/partside2.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 2</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/partside1Batchlot.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/partside1Batchlot.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 1 BATCHLOT</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/partside1Batchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/partside1Batchlot.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 1 BATCHLOT</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/partside2Batchlot.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/partside2Batchlot.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 2 BATCHLOT</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/partside2Batchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/partside2Batchlot.php"><i class="fas fa-window-wrench"></i> <span>PARTSIDE 2 BATCHLOT</span></a>
                     </li>
                 <?php } ?>
 
                  <!--MICRO MENUS -->
                 <?php if ($_SESSION['user_process'] === 'MICROSCOPE INSPECTION') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/micro.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/micro.php"><i class="fas fa-window-wrench"></i> <span>Micro</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/micro.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/micro.php"><i class="fas fa-window-wrench"></i> <span>Micro</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/microBatchlot.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/microBatchlot.php"><i class="fas fa-wrench"></i> <span>Micro Batchlot</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/microBatchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/microBatchlot.php"><i class="fas fa-wrench"></i> <span>Micro Batchlot</span></a>
                     </li>
                 <?php } ?>
 
                  <!--FVISS MENUS -->
                 <?php if ($_SESSION['user_process'] === 'WITHSTAND INSULATION TEST') { ?>
-                    <li class="<?php echo ($current_page == '/traceability/wi.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/wi.php"><i class="fas fa-window-wrench"></i> <span>WI</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/wi.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/wi.php"><i class="fas fa-window-wrench"></i> <span>WI</span></a>
                     </li>
-                    <li class="<?php echo ($current_page == '/traceability/wiBatchlot.php') ? 'active' : ''; ?>">
-                        <a href="/traceability/wiBatchlot.php"><i class="fas fa-wrench"></i> <span>WI Batchlot</span></a>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/wiBatchlot.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/wiBatchlot.php"><i class="fas fa-wrench"></i> <span>WI Batchlot</span></a>
                     </li>
                 <?php } ?>
 
