@@ -74,7 +74,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         data-ft_step="<?php echo $row['ft_step']; ?>"
                         data-ft_ref="<?php echo $row['ft_ref']; ?>"
                         data-ft_result="<?php echo $row['ft_result']; ?>"
-                        >Repair</button>
+                        >Verify</button>
                     </td>
                 </tr>
             <?php } ?>
@@ -167,8 +167,8 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="form-section">
                 <div class="btn-selection">
-                    <button type="submit" class="btn-close" id="scrap-btn" data-btn="scrap">Scrap</button>
-                    <button type="submit" class="btn-save" id="repair-btn" data-btn="repair">Repair</button>
+                    <button type="submit" class="btn-close" id="scrap-btn" data-btn="scrap">No Good</button>
+                    <button type="submit" class="btn-save" id="repair-btn" data-btn="repair">Good</button>
                 </div>
                 </form>
             </div>
