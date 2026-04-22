@@ -244,9 +244,9 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $('#modalSubmit').on('submit', function(e){
                 e.preventDefault();
                 const formdata = new FormData(this);
-                formdata.append('process','repair');
 
                 if(btn==='repair'){
+                    formdata.append('process','repair');
                     $.ajax({
                         url: 'repair_boardanalysis_submit.php',
                         type: 'POST',
@@ -273,7 +273,40 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
 
                 if(btn==='scrap'){
-                    Swal.fire('Scrap button')
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Delete',
+                        text: 'Are you sure?',
+                        showDenyButton: true,
+                        confirmButtonText: 'Yes',
+                        denyButtonText: 'No'
+                    }).then(function(result){
+
+                            $.ajax({
+                            url: 'repair_boardanalysis_submit.php',
+                            type: 'POST',
+                            data: formdata,
+                            processData: false,
+                            contentType: false,
+                            success: function(response){
+                                if(response.success){
+                                    Swal.fire({
+                                        icon:'success',
+                                        title:'Deleted.',
+                                        text:response.message,
+                                        showConfirmButton: false,
+                                        toast: true,
+                                        position: 'top-right',
+                                        timer: 1500,
+                                    }).then(function(){
+                                        hideModal();
+                                        location.reload();
+                                    })
+                                }
+                            }
+                        })
+
+                    })
                 }
             })
 

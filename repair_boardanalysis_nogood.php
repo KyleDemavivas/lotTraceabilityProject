@@ -6,26 +6,24 @@ require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 $response = [
     'success' => false,
     'status' => 500,
-    'message' => 'Database Error.',
+    'message' => 'Database error.',
     'data' => null,
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $status = $_POST['process'] === 'repair' ? 'll' : 'mod';
-    $message = $status === 'll' ? 'Line Leader' : 'Modificator';
+    $Serial = $_POST['serialcode'];
 
     try {
-        $serialcode = $_POST['serialcode'];
-
-        $query = "UPDATE repair_boardanalysis SET status = '".$status."' WHERE serialcode = :serialcode";
+        $query = 'UPDATE repair_boardanalysis SET status = NULL WHERE serialcode = ?';
         $stmt = $conn->prepare($query);
-        $stmt->bindParam(':serialcode', $serialcode);
+        $stmt->bindValue(1, $Serial);
         $stmt->execute();
+
         $response = [
             'success' => true,
             'status' => 200,
-            'message' => 'Board successfully sent for '.$message.' Verification.',
-            'data' => null,
+            'message' => 'Success!',
+            'data' => $Serial,
         ];
     } catch (Exception $e) {
         $response = [

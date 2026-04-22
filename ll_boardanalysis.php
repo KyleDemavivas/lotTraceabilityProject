@@ -289,7 +289,47 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
             if(btn==='scrap'){
-                Swal.fire('scrap')
+                Swal.fire({
+                        icon: 'warning',
+                        title: 'Delete',
+                        text: 'Are you sure?',
+                        showDenyButton: true,
+                        confirmButtonText: 'Yes',
+                        denyButtonText: 'No'
+                    }).then(function(result){
+                        if(result.isConfirmed){
+                                $.ajax({
+                                url: 'repair_boardanalysis_nogood.php',
+                                type: 'POST',
+                                data: formdata,
+                                processData: false,
+                                contentType: false,
+                                success: function(response){
+                                    if(response.success === true){
+                                        Swal.fire({
+                                            icon:'success',
+                                            title:'Deleted.',
+                                            text:response.message,
+                                            showConfirmButton: false,
+                                            toast: true,
+                                            position: 'top-right',
+                                            timer: 1500,
+                                        }).then(function(){
+                                            hideModal();
+                                            location.reload();
+                                        })
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: response.message || 'Unexpected error.',
+                                            confirmButtonText: 'Ok'
+                                        });
+                                    }
+                                }
+                            })
+                        }
+                    })
             }
         })
     })
