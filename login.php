@@ -17,6 +17,23 @@ try {
 
 $error_message = '';
 
+function getCurrentShift()
+{
+    $hour = (int) date('H');
+
+    return ($hour >= 6 && $hour < 18) ? 'dayshift' : 'nightshift';
+}
+
+function getCurrentDate()
+{
+    $hour = (int) date('H');
+    if ($hour >= 0 && $hour < 6) {
+        return date('Y-m-d', strtotime('-1 day'));
+    }
+
+    return date('Y-m-d');
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_username = trim($_POST['user_username']);
     $user_password = $_POST['user_password'];
@@ -27,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // TODO:LOGIC FOR CHECKING ESD DATABASE FOR ESD LOGS FOR THE CURRENT SHIFT
     if ($user && password_verify($user_password, $user['user_password'])) {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['user_username'] = $user_username;
