@@ -26,14 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_type = $_POST['user_type'];
         $user_line = strval($_POST['user_line']);
         $user_section = $_POST['user_section'];
+        $emp_id = $_POST['emp_id'];
 
         if (isset($_POST['new_password']) && !empty($_POST['new_password'])) {
             $user_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
 
             $query = 'UPDATE user_account 
-SET user_namefl = :user_namefl, user_process = :user_process, 
-user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, user_password = :user_password, updated_at = GETDATE()
-WHERE user_id = :user_id';
+                        SET user_namefl = :user_namefl, user_process = :user_process, 
+                        user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, user_password = :user_password, updated_at = GETDATE(), emp_id = :emp_id
+                        WHERE user_id = :user_id';
 
             $stmt = $conn->prepare($query);
             $stmt->execute([
@@ -45,11 +46,12 @@ WHERE user_id = :user_id';
                 ':user_section' => $user_section,
                 ':user_password' => $user_password,
                 ':user_id' => $user_id,
+                ':emp_id' => $emp_id,
             ]);
         } else {
             $query = 'UPDATE user_account 
 SET user_namefl = :user_namefl, user_process = :user_process, 
-user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, updated_at = GETDATE()
+user_username = :user_username, user_type = :user_type, user_line = :user_line, user_section = :user_section, updated_at = GETDATE(), emp_id = :emp_id
 WHERE user_id = :user_id';
 
             $stmt = $conn->prepare($query);
@@ -61,6 +63,7 @@ WHERE user_id = :user_id';
                 ':user_line' => $user_line,
                 ':user_section' => $user_section,
                 ':user_id' => $user_id,
+                ':emp_id' => $emp_id,
             ]);
         }
 

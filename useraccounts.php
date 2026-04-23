@@ -43,6 +43,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="table-container">
             <table id="userTable" class="display">
                 <thead>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Process</th>
                     <th>Username</th>
@@ -57,6 +58,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach ($users as $row) { ?>
                         <tr>
+                            <td id="emp_id"><?php echo $row['emp_id']; ?></td>
                             <td id="user_namefl"><?php echo $row['user_namefl']; ?></td>
                             <td id="user_process"><?php echo $row['user_process']; ?></td>
                             <td id="user_username"><?php echo $row['user_username']; ?></td>
@@ -89,6 +91,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <span class="close" onclick="closeModal()" style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;">&times;</span>
             <form id="modalEditForm">
                 <input type="hidden" name="user_id" id="modal_user_id">
+                <div class="form-group" style="margin-top:15px;">
+                    <label class="form-label">ID:</label>
+                    <input type="text" name="emp_id" id="modal_emp_id" class="form-input" required>
+                </div>
                 <div class="form-group" style="margin-top:15px;">
                     <label class="form-label">Name:</label>
                     <input type="text" name="user_namefl" id="modal_user_namefl" class="form-input" required>
@@ -261,6 +267,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     };
 
     function openEditModal(data) {
+        document.getElementById('modal_emp_id').value = data.emp_id || '';
         document.getElementById('modal_user_id').value = data.user_id || '';
         document.getElementById('modal_user_namefl').value = data.user_namefl || '';
         document.getElementById('modal_user_process').value = data.user_process || '';
