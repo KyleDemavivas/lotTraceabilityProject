@@ -114,6 +114,9 @@ include 'sidebar.php';
             <label>Name:</label>
             <input type="text" id="user_namefl" name="user_namefl" required value="<?php echo isset($_POST['user_namefl']) ? htmlspecialchars($_POST['user_namefl']) : ''; ?>" autocomplete="off">
 
+            <label>Employee ID: </label>
+            <input type="text" id="emp_id" name="emp_id" required value="<?php echo isset($_POST['emp_id']) ? htmlspecialchars($_POST['emp_id']) : ''; ?>" autocomplete="off">
+
             <label>Section:</label>
             <select name="user_section" id="user_section" required>
                 <option value="" disabled selected>Select Section</option>

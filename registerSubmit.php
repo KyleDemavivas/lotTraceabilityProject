@@ -13,11 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_type = trim($_POST['user_type'] ?? '');
     $user_line = trim($_POST['user_line'] ?? '');
     $user_section = trim($_POST['user_section'] ?? '');
+    $emp_id = trim($_POST['emp_id'] ?? '');
 
     try {
         if (
             empty($user_namefl) || empty($user_process) || empty($user_username)
-            || empty($user_password) || empty($user_type) || empty($user_line) || empty($user_section)
+            || empty($user_password) || empty($user_type) || empty($user_line) || empty($user_section) || empty($emp_id)
         ) {
             $response['success'] = false;
             $response['message'] = 'All fields are required.';
@@ -47,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $hashed_password = password_hash($user_password, PASSWORD_DEFAULT);
-        $sql = 'INSERT INTO user_account (user_namefl, user_process, user_username, user_password, user_type, user_line, user_section)
-VALUES (:user_namefl, :user_process, :user_username, :user_password, :user_type, :user_line, :user_section)';
+        $sql = 'INSERT INTO user_account (user_namefl, user_process, user_username, user_password, user_type, user_line, user_section, emp_id)
+VALUES (:user_namefl, :user_process, :user_username, :user_password, :user_type, :user_line, :user_section, :emp_id)';
         $stmt = $conn->prepare($sql);
 
         $stmt->execute([
@@ -59,6 +60,7 @@ VALUES (:user_namefl, :user_process, :user_username, :user_password, :user_type,
             ':user_type' => $user_type,
             ':user_line' => $user_line,
             ':user_section' => $user_section,
+            ':emp_id' => $emp_id,
         ]);
 
         $response['success'] = true;
@@ -68,7 +70,7 @@ VALUES (:user_namefl, :user_process, :user_username, :user_password, :user_type,
     } catch (PDOException $e) {
         $response['success'] = false;
         $response['message'] = 'An error has occured';
-        $response['data'] = 'Database Error';
+        $response['data'] = $e->getMessage();
         echo json_encode($response);
         exit;
     }
