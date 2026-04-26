@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindValue(1, $serial_code);
         $serialICT = $stmt->fetch();
 
-        if ($serialICT['serialcode'] && $serialICT['status'] !== 'done') {
+        if ($serialICT && $serialICT['serialcode'] && $serialICT['status'] !== 'done') {
             throw new Exception('Board is currently marked as No Good.');
         }
 
