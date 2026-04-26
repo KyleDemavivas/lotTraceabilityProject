@@ -388,7 +388,7 @@ try {
                                 position: 'top-right',
                                 timer: 1500,
                                 didOpen: () => {
-                                    $("#qr_code").select().focus();
+                                    $("#serial_code").select().focus();
                                     $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput));
                                 }
                             })
