@@ -48,13 +48,13 @@ function getCurrentDate()
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $user_username = trim($_POST['user_username']);
+    $emp_id = trim($_POST['emp_id']);
     $user_password = $_POST['user_password'];
     $getCurrentDate = getCurrentDate();
 
     // Fetch user data including user_namefl
-    $stmt = $conn->prepare('SELECT user_id, user_namefl, user_password, user_process, emp_id FROM user_account WHERE user_username = :user_username');
-    $stmt->bindParam(':user_username', $user_username, PDO::PARAM_STR);
+    $stmt = $conn->prepare('SELECT user_id, user_namefl, user_password, user_process, emp_id FROM user_account WHERE emp_id = :emp_id');
+    $stmt->bindParam(':emp_id', $emp_id, PDO::PARAM_STR);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -67,14 +67,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
     $esd_logs = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // TODO:LOGIC FOR CHECKING ESD DATABASE FOR ESD LOGS FOR THE CURRENT SHIFT
     if ($user && password_verify($user_password, $user['user_password'])) {
         $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['user_username'] = $user_username;
+        $_SESSION['emp_id'] = $user['emp_id'];
         $_SESSION['user_namefl'] = $user['user_namefl'];
         $_SESSION['user_process'] = $user['user_process'];
 
-        if ((empty($esd_logs) || $esd_logs['result_com'] === 'NO GOOD') && ($user_username === 'admin' || $user_username === 'kcdemavivas')) {
+        // Todo: Temporary code for access for testers, will remove once testing is done.
+        $isBypassUser = in_array($emp_id, ['7327', '0000']);
+
+        if ((empty($esd_logs) || $esd_logs['result_com'] === 'NO GOOD') && !$isBypassUser) {
             $error_message = 'ESD logs for the current shift are either missing or indicate a NO GOOD result. Please check the ESD logs before proceeding.';
         } else {
             header('Location: index.php');
@@ -175,8 +177,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </script>
         <?php } ?>
         <form action="" method="POST">
-            <label>Username:</label>
-            <input type="text" name="user_username" required autocomplete="off">
+            <label>ID:</label>
+            <input type="text" name="emp_id" required autocomplete="off">
 
             <label>Password:</label>
             <input type="password" name="user_password" required autocomplete="current-password">
