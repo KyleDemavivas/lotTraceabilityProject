@@ -23,6 +23,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="form-container">
+        <h2>Repair Table</h2>
         <table id="table_main" name="table_main" class="display">
         <thead>
             <tr>
@@ -281,9 +282,8 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         confirmButtonText: 'Yes',
                         denyButtonText: 'No'
                     }).then(function(result){
-
                             $.ajax({
-                            url: 'repair_boardanalysis_submit.php',
+                            url: 'boardanalysis_scrap.php',
                             type: 'POST',
                             data: formdata,
                             processData: false,
@@ -292,7 +292,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 if(response.success){
                                     Swal.fire({
                                         icon:'success',
-                                        title:'Deleted.',
+                                        title:'Scrapped.',
                                         text:response.message,
                                         showConfirmButton: false,
                                         toast: true,
