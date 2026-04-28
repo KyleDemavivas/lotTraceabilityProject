@@ -1,12 +1,16 @@
 <?php
 
 // This file handles logins,logic for database lookup is on top of page.
-
+date_default_timezone_set('Asia/Manila');
 session_start();
 
 $dsn = 'sqlsrv:Server=localhost;Database=prod_traceability';
 $username = 'sa';
 $password = 'Kepi-123';
+
+$dsn2 = 'mysql:host=192.168.1.138;port=3306;dbname=esd_logs;charset=utf8mb4';
+$username2 = 'admin';
+$password2 = 'Kepi-123';
 
 try {
     $conn = new PDO($dsn, $username, $password);
@@ -15,7 +19,16 @@ try {
     exit('Connection failed: '.$e->getMessage());
 }
 
+try {
+    $conn2 = new PDO($dsn2, $username2, $password2);
+    $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    exit('Connection failed: '.$e->getMessage());
+}
+include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+
 $error_message = '';
+$empid = '';
 
 function getCurrentShift()
 {
@@ -37,12 +50,22 @@ function getCurrentDate()
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_username = trim($_POST['user_username']);
     $user_password = $_POST['user_password'];
+    $getCurrentDate = getCurrentDate();
 
     // Fetch user data including user_namefl
-    $stmt = $conn->prepare('SELECT user_id, user_namefl, user_password, user_process FROM user_account WHERE user_username = :user_username');
+    $stmt = $conn->prepare('SELECT user_id, user_namefl, user_password, user_process, emp_id FROM user_account WHERE user_username = :user_username');
     $stmt->bindParam(':user_username', $user_username, PDO::PARAM_STR);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $empid = $user['emp_id'];
+
+    // fetch esd logs for current shift and date
+    $stmt = $conn2->prepare('SELECT result_com, datelogs FROM esd_logs WHERE datelogs = :shift AND empid = :empid');
+    $stmt->bindParam(':shift', $getCurrentDate, PDO::PARAM_STR);
+    $stmt->bindParam(':empid', $empid, PDO::PARAM_STR);
+    $stmt->execute();
+    $esd_logs = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // TODO:LOGIC FOR CHECKING ESD DATABASE FOR ESD LOGS FOR THE CURRENT SHIFT
     if ($user && password_verify($user_password, $user['user_password'])) {
@@ -51,8 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_namefl'] = $user['user_namefl'];
         $_SESSION['user_process'] = $user['user_process'];
 
-        header('Location: index.php');
-        exit;
+        if ((empty($esd_logs) || $esd_logs['result_com'] === 'NO GOOD') && ($user_username === 'admin' || $user_username === 'kcdemavivas')) {
+            $error_message = 'ESD logs for the current shift are either missing or indicate a NO GOOD result. Please check the ESD logs before proceeding.';
+        } else {
+            header('Location: index.php');
+            exit;
+        }
     } else {
         $error_message = 'Invalid username or password!';
     }
