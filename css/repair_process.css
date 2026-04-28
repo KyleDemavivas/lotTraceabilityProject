@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-  margin-left: 25vh;
+  margin-left: 30vh;
   width: calc(100% - 25vh);
   padding: 15px;
   box-sizing: border-box;
