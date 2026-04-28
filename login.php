@@ -58,14 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $empid = $user['emp_id'];
+    if ($user === true) {
+        $empid = $user['emp_id'];
+    }
 
     // fetch esd logs for current shift and date
-    $stmt = $conn2->prepare('SELECT result_com, datelogs FROM esd_logs WHERE datelogs = :shift AND empid = :empid');
+    $stmt = $conn2->prepare("SELECT empid FROM esd_logs WHERE empid=:empid AND result_com='GOOD' AND datelogs=:shift ORDER BY timelogs DESC LIMIT 1");
     $stmt->bindParam(':shift', $getCurrentDate, PDO::PARAM_STR);
     $stmt->bindParam(':empid', $empid, PDO::PARAM_STR);
     $stmt->execute();
-    $esd_logs = $stmt->fetch(PDO::FETCH_ASSOC);
+    $esd_logs = $stmt->fetchColumn();
 
     if ($user && password_verify($user_password, $user['user_password'])) {
         $_SESSION['user_id'] = $user['user_id'];
@@ -76,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Todo: Temporary code for access for testers, will remove once testing is done.
         $isBypassUser = in_array($emp_id, ['7327', '0000']);
 
-        if ((empty($esd_logs) || $esd_logs['result_com'] === 'NO GOOD') && !$isBypassUser) {
+        if (($esd_logs === false) && !$isBypassUser) {
             $error_message = 'ESD logs for the current shift are either missing or indicate a NO GOOD result. Please check the ESD logs before proceeding.';
         } else {
             header('Location: index.php');
