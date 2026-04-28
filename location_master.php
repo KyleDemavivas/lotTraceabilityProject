@@ -1,6 +1,6 @@
 <?php
 include 'sidebar.php';
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 if (!isset($_SESSION['user_namefl'])) {
     echo "<script>alert('Please login first!'); window.location.href='login.php';</script>";

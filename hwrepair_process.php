@@ -1,6 +1,6 @@
 <?php
 include 'sidebar.php';
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 try {
     $sql = "SELECT ng.qr_code, ng.serial_code, ng.defect, ng.location, ng.board_number, ai.operator_name, ai.serial_status, ai.board_status, ai.line, ai.shift, ai.model_name, ai.assy_code, ai.kepi_lot

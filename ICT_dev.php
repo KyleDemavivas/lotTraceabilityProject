@@ -1,5 +1,5 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'].'/traceability/sidebar.php';
+require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
 
 ?>
 

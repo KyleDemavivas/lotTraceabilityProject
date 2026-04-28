@@ -1,6 +1,6 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assy_code'])) {
     $assy_code = $_POST['assy_code'];

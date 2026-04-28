@@ -1,6 +1,6 @@
 <?php
 
-require $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+require $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 header('Content-Type: application/json');
 

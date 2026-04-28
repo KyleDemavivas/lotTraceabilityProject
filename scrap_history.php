@@ -1,6 +1,6 @@
 <?php
 include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/sidebar.php';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/sidebar.php';
 assert(isset($conn));
 
 $serial_code = isset($_GET['serial_code']) ? strtoupper($_GET['serial_code']) : '';

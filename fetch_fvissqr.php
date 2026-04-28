@@ -1,6 +1,6 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 header('Content-Type: application/json');
 error_reporting(E_ALL);
@@ -59,8 +59,7 @@ try {
     }
 
     if ($source === 'main') {
-        
-//TODO: REMOVED FOR TESTING THIS CODE BLOCK IS FOR CHECKING IF BOARD IS NO GOOD ON PREVIOUS AND CURRENT PROCESS
+        // TODO: REMOVED FOR TESTING THIS CODE BLOCK IS FOR CHECKING IF BOARD IS NO GOOD ON PREVIOUS AND CURRENT PROCESS
         /*$query2 = "SELECT COUNT(*) FROM mod2_process WHERE TRIM(UPPER(qr_code)) = :qr_code AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')
                             UNION ALL
                              SELECT COUNT(*) FROM fviss_process WHERE TRIM(UPPER(qr_code)) = :qr_code2 AND (board_status = 'HOLD' OR serial_status = 'NO GOOD')";

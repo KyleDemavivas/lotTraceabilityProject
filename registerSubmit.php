@@ -3,7 +3,7 @@
 header('content-type: application/json');
 
 $success = false;
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_namefl = trim($_POST['user_namefl'] ?? '');
     $user_process = trim($_POST['user_process'] ?? '');

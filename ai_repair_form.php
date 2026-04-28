@@ -1,6 +1,6 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qr_code']) && isset($_POST['serial_code']) && isset($_POST['defect']) && isset($_POST['location']) && isset($_POST['process_origin']) && isset($_POST['board_number']) && isset($_POST['operator_name']) && isset($_POST['serial_status']) && isset($_POST['board_status']) && isset($_POST['line']) && isset($_POST['shift']) && isset($_POST['model_name']) && isset($_POST['assy_code']) && isset($_POST['kepi_lot'])) {
     $sql = 'INSERT INTO repair_data (qr_code, serial_code, defect, location, process_origin, board_number, operator_name, serial_status, board_status, line, shift, model_name, assy_code, kepi_lot, created_at) 

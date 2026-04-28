@@ -1,6 +1,6 @@
 <?php
 include 'sidebar.php';
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 

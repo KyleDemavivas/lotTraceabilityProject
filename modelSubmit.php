@@ -2,7 +2,7 @@
 
 session_start();
 header('content-type: application/json');
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 date_default_timezone_set('Asia/Manila');
 $success = false;
 

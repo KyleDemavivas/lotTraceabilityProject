@@ -4,7 +4,7 @@ if (!isset($_SESSION['user_namefl'])) {
     header('Location: login.php');
     exit;
 }
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 $defects = [];
 try {

@@ -2,7 +2,7 @@
 
 session_start();
 header('Content-Type: application/json');
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 try {
     if (!isset($_SESSION['user_namefl'])) {

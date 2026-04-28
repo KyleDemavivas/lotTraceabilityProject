@@ -1,6 +1,6 @@
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 header('Content-Type: application/json');
 error_reporting(0);
@@ -32,7 +32,7 @@ try {
         echo json_encode(['success' => false, 'message' => 'This QR Code is already marked as SCRAP and cannot be processed.', 'title' => 'QR Marked as SCRAP']);
         exit;
     }
-    
+
     $finalQtyStmt = $conn->prepare('SELECT final_qtyinput FROM mi_process WHERE kepi_lot = :kepi_lot ORDER BY created_at DESC');
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = $finalQtyStmt->fetchColumn() ?: 0;

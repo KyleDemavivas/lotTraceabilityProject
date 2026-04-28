@@ -1,6 +1,6 @@
 <?php
 include 'sidebar.php';
-include $_SERVER['DOCUMENT_ROOT'].'/traceability/db_connect.ini';
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 try {
     $sql = 'SELECT TOP 100 * FROM label_code ORDER BY created_date DESC';
