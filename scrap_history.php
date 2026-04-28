@@ -10,6 +10,11 @@ $stmt = $conn->prepare($qry);
 $stmt->execute();
 $scrapRecord = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$qry = "SELECT * FROM repair_boardanalysis WHERE status = 'scrap' ORDER BY DateTime DESC";
+$stmt = $conn->prepare($qry);
+$stmt->execute();
+$ictScrap = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +32,7 @@ $scrapRecord = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container">
     <div class="board-section">
         <div class="header"><h2>Scrap History</h2></div>
-    <table id="scrapHistoryTable">
+    <table id="ictScrapTable">
         <thead>
             <tr>
                 <th>QR Code</th>
@@ -61,6 +66,39 @@ $scrapRecord = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php } ?>
         </tbody>
     </table>
+
+    <table id="scrapHistoryTable">
+        <thead>
+            <tr>
+                <th>Serial Code</th>
+                <th>Defect</th>
+                <th>Process</th>
+                <th>ICT Jig</th>
+                <th>WI Jig</th>
+                <th>FT Jig</th>
+                <th>Analysis</th>
+                <th>Action</th>
+                <th>Result</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($ictScrap as $rows) { ?>
+            <tr>
+                <td><?php echo $rows['serialcode']; ?></td>
+                <td><?php echo $rows['defect']; ?></td>
+                <td><?php echo $rows['process']; ?></td>
+                <td><?php echo $rows['ict_jig']; ?></td>
+                <td><?php echo $rows['wi_jig']; ?></td>
+                <td><?php echo $rows['ft_jig']; ?></td>
+                <td><?php echo $rows['analysis']; ?></td>
+                <td><?php echo $rows['action']; ?></td>
+                <td><?php echo $rows['result']; ?></td>
+                <td><?php echo date('M d, Y', strtotime($rows['DateTime'])); ?></td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
 </div>
 </div>
 </body>
@@ -69,6 +107,14 @@ $scrapRecord = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script>
     $(document).ready(function() {
         $('#scrapHistoryTable').DataTable({
+            pageLength: 25,
+            lengthChange: false,
+            info: false,
+            autoWidth: true,
+            scrollX: true,
+        });
+
+        $('#ictScrapTable').DataTable({
             pageLength: 25,
             lengthChange: false,
             info: false,
