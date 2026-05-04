@@ -217,10 +217,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             searching: true,
             lengthChange: false,
             info: false,
-            columnDefs: [{
-                orderable: false,
-                targets: 9
-            }],
+            columnDefs: [
+                {orderable: false, targets: 9},
+                {className: 'dt-head-center', targets: '_all'}
+            ],
             order: [7,'desc']
         });
     });
