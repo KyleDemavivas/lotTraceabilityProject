@@ -190,6 +190,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <option value="IT">IT</option>
                         <option value="QA ENGR">QA ENGR</option>
                         <option value="SMT">SMT</option>
+                        <option value="AI">AI</option>
                         <option value="HANDWORK">HANDWORK</option>
                     </select>
                 </div>
@@ -213,7 +214,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $('#userTable').DataTable({
             pageLength: 10,
             ordering: true,
-            searching: false,
+            searching: true,
             lengthChange: false,
             info: false,
             columnDefs: [{
