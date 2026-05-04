@@ -219,9 +219,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             info: false,
             columnDefs: [{
                 orderable: false,
-                targets: 8
+                targets: 9
             }],
-            order: [6,'desc']
+            order: [7,'desc']
         });
     });
 
