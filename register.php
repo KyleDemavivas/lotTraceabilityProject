@@ -116,6 +116,7 @@ include 'sidebar.php';
 
             <label>Employee ID: </label>
             <input type="text" id="emp_id" name="emp_id" required value="<?php echo isset($_POST['emp_id']) ? htmlspecialchars($_POST['emp_id']) : ''; ?>" autocomplete="off">
+            <small id="empid_message" style="color: red;"></small>
 
             <label>Section:</label>
             <select name="user_section" id="user_section" required>
@@ -123,6 +124,7 @@ include 'sidebar.php';
                 <option value="IT" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'IT') ? 'selected' : ''; ?>>IT</option>
                 <option value="QA Engr" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'QA Engr') ? 'selected' : ''; ?>>QA</option>
                 <option value="SMT" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'SMT') ? 'selected' : ''; ?>>SMT</option>
+                <option value="AI" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'AI') ? 'selected' : ''; ?>>AI</option>
                 <option value="HANDWORK" <?php echo (isset($_POST['user_section']) && $_POST['user_section'] == 'HANDWORK') ? 'selected' : ''; ?>>HANDWORK</option>
             </select>
 
@@ -249,6 +251,28 @@ include 'sidebar.php';
                 }
             });
         });
+
+        $('#emp_id').on('input', function(){
+            let empid = $(this).val();
+
+            if(empid.length < 3){
+                $('#empid_message').text('Employee ID must be at least 3 characters.').css('color', 'red');
+            }
+            
+            $.ajax({
+                url: 'check_empid.php',
+                type: 'POST',
+                data: { empid: empid },
+                dataType: 'json',
+                success: function(response){
+                    if(response.status === 300){
+                        $('#empid_message').text(response.message).css('color', 'red');
+                    } else if(response.status === 200){
+                        $('#empid_message').text(response.message).css('color', 'green');
+                    }
+                }
+            })
+        })
 
         $("#show_password").on("click", function() {
             let type = $(this).is(':checked') ? 'text' : 'password';
