@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception('Serial code is required.');
         }
 
+        // TODO: change process map after meeting.
         if ($judgement === 'GOOD') {
             // Map process_location to their corresponding process table column and table
             $processMap = [

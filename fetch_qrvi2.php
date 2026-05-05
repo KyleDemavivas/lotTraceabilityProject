@@ -23,6 +23,15 @@ if (isset($_POST['qr_code'])) {
         } else {
             echo json_encode(['success' => false, 'message' => 'QR Code not found']);
         }
+
+        $query2 = "SELECT COUNT(*) FROM repair_master WHERE TRIM(UPPER(qr_code)) = :qr_code AND status = 'SCRAP'";
+        $stmt2 = $conn->prepare($query2);
+        $stmt2->execute([':qr_code' => $qr_code]);
+        $scrapCount = $stmt2->fetchColumn();
+        if ($scrapCount > 0) {
+            echo json_encode(['success' => false, 'message' => 'This QR Code is already marked as SCRAP and cannot be processed.', 'title' => 'QR Marked as SCRAP']);
+            exit;
+        }
     } catch (PDOException $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
