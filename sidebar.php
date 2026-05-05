@@ -243,6 +243,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                 <?php } ?>
 
+                <!-- Modificator menus -->
+                 <?php if ($_SESSION['user_process'] === 'MODIFICATOR 1' || $_SESSION['user_process'] === 'MODIFICATOR 2') { ?>
+                   <li class="<?php echo ($current_page == '/traceabilitydev/mod1.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/mod1.php"><i class="fas fa-handshake-angle"></i> <span>MOD 1</span></a>
+                    </li>
+
+                    <li class="<?php echo ($current_page == '/traceabilitydev/mod2.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/mod2.php"><i class="fas fa-handshake-angle"></i> <span>MOD 2</span></a>
+                    </li>
+
+                     <li class="<?php echo ($current_page == '/traceabilitydev/verify_processleader.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/verify_processleader.php"><i class="fas fa-handshake-angle"></i> <span>Process Verification</span></a>
+                    </li>
+                <?php } ?>
+
                 <!--ENGINEERING MENUS-->
                 <?php if ($_SESSION['user_process'] === 'ENGINEERING') { ?>
                     <li class="<?php echo ($current_page == '/traceabilitydev/report_batchlot.php') ? 'active' : ''; ?>">

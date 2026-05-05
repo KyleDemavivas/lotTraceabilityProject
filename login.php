@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_process'] = $user['user_process'];
 
         // Todo: Temporary code for access for testers, will remove once testing is done.
-        $isBypassUser = in_array($emp_id, ['7327', '0000']);
+        $isBypassUser = in_array($emp_id, ['7327', '0000', 'CGSILAG004272']);
 
         if (($esd_logs === false) && !$isBypassUser) {
             $error_message = 'ESD logs for the current shift are either missing or indicate a NO GOOD result. Please check the ESD logs before proceeding.';
