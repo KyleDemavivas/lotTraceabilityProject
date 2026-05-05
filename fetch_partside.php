@@ -24,31 +24,19 @@ try {
     $stmt->execute([':code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // if (!$row) {
-    //     echo json_encode(['success' => false, 'message' => 'This Serial Code is not found in the system.', 'title' => 'Serial Not Found']);
-    //     exit;
-    // }
+    if (!$row) {
+        echo json_encode(['success' => false, 'message' => 'This Serial Code is not found in the system.', 'title' => 'Serial Not Found']);
+        exit;
+    }
 
-    // $stmt2 = $conn->prepare("SELECT serial_status FROM $main_table WHERE serial_code = :serial_code
-    //                         UNION ALL
-    //                         SELECT serial_status FROM $main_table2 WHERE serial_code = :serial_code2");
-    // $stmt2->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
-    // $serialStatus = $stmt2->fetchAll(PDO::FETCH_COLUMN);
+    $stmt2 = $conn->prepare("SELECT serial_status FROM $main_table WHERE serial_code = :serial_code
+                             UNION ALL
+                           SELECT serial_status FROM $main_table2 WHERE serial_code = :serial_code2");
+    $stmt2->execute([':serial_code' => $serial_code, ':serial_code2' => $serial_code]);
+    $serialStatus = $stmt2->fetchAll(PDO::FETCH_COLUMN);
 
-    // if (in_array('NO GOOD', $serialStatus, true)) {
-    //     echo json_encode(['success' => false, 'message' => 'This serial is already tagged as NO GOOD and cannot be processed.', 'title' => 'Serial Code No Good']);
-    //     exit;
-    // }
-
-    // todo: temporarily removed
-
-    $query = 'SELECT COUNT(*) FROM trace_process WHERE serial_code = :code AND (mod1_process IS NOT NULL OR mod2_process IS NOT NULL OR fviss_process IS NOT NULL)';
-    $stmt = $conn->prepare($query);
-    $stmt->execute([':code' => $serial_code]);
-    $traceCount = (int) $stmt->fetchColumn();
-
-    if ($traceCount === 0) {
-        echo json_encode(['success' => false, 'message' => 'This serial does exist in the system.', 'title' => 'Serial Code not found']);
+    if (in_array('NO GOOD', $serialStatus, true)) {
+        echo json_encode(['success' => false, 'message' => 'This serial is already tagged as NO GOOD and cannot be processed.', 'title' => 'Serial Code No Good']);
         exit;
     }
 
