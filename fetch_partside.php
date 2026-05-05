@@ -24,10 +24,11 @@ try {
     $stmt->execute([':code' => $serial_code]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$row) {
-        echo json_encode(['success' => false, 'message' => 'This Serial Code is not found in the system.', 'title' => 'Serial Not Found']);
-        exit;
-    }
+    // if (!$row) {
+    //     echo json_encode(['success' => false, 'message' => 'This Serial Code is not found in the system.', 'title' => 'Serial Not Found']);
+    //     exit;
+    // }
+    // todo: temporarily removed
 
     $stmt2 = $conn->prepare("SELECT serial_status FROM $main_table WHERE serial_code = :serial_code
                             UNION ALL
