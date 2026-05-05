@@ -49,6 +49,15 @@ try {
         exit;
     }
 
+    $query2 = "SELECT COUNT(*) FROM repair_master WHERE TRIM(UPPER(serial_code)) = :code AND status <> 'REPAIRED' AND (process_location = 'MOD1' OR process_location = 'MOD2')";
+    $stmt2 = $conn->prepare($query2);
+    $stmt2->execute([':code' => $serial_code]);
+    $scrapCount = (int) $stmt2->fetchColumn();
+    if ($scrapCount !== 0) {
+        echo json_encode(['success' => false, 'message' => 'This serial is still under repairs and cannot be processed.', 'title' => 'Serial Code Under Repair']);
+        exit;
+    }
+
     $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
     $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
     $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
