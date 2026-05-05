@@ -20,9 +20,17 @@ $main_table = $source === 'main' ? 'fviss_process' : 'fviss_batchlot';
 $main_table2 = $source === 'main' ? 'partside_process' : 'partside_batchlot';
 
 try {
-    $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :code");
-    $stmt->execute([':code' => $serial_code]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $tables = [$main_table, 'mod1_process', 'mod2_process'];
+
+    foreach ($tables as $table) {
+        $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $table WHERE TRIM(UPPER(serial_code)) = :code");
+        $stmt->execute([':code' => $serial_code]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            break;
+        }
+    }
 
     if (!$row) {
         echo json_encode(['success' => false, 'message' => 'This Serial Code is not found in the system.', 'title' => 'Serial Not Found']);
