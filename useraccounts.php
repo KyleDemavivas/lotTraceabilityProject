@@ -13,6 +13,8 @@
 include 'sidebar.php';
 include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
+date_default_timezone_set('Asia/Manila');
+
 $stmt = $conn->prepare('SELECT * FROM user_account');
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
