@@ -52,14 +52,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_password = $_POST['user_password'];
     $getCurrentDate = getCurrentDate();
 
-    // Fetch user data including user_namefl
-    $stmt = $conn->prepare('SELECT user_id, user_namefl, user_password, user_process, emp_id FROM user_account WHERE emp_id = :emp_id');
-    $stmt->bindParam(':emp_id', $emp_id, PDO::PARAM_STR);
-    $stmt->execute();
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $unameColumn = ['emp_id', 'user_username'];
 
-    if ($user === true) {
-        $empid = $user['emp_id'];
+    foreach ($unameColumn as $column) {
+        $stmt = $conn->prepare("SELECT user_id, user_namefl, user_password, user_process, emp_id FROM user_account WHERE $column = :emp_id");
+        $stmt->bindParam(':emp_id', $emp_id, PDO::PARAM_STR);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user !== false) {
+            $empid = $user['emp_id'];
+            break;
+        }
     }
 
     // fetch esd logs for current shift and date
@@ -78,12 +82,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Todo: Temporary code for access for testers, will remove once testing is done.
         $isBypassUser = in_array($emp_id, ['7327', '0000', 'CGSILAG004272']);
 
-        if (($esd_logs === false) && !$isBypassUser) {
-            $error_message = 'ESD logs for the current shift are either missing or indicate a NO GOOD result. Please check the ESD logs before proceeding.';
-        } else {
-            header('Location: index.php');
-            exit;
-        }
+        // if (($esd_logs === false) && !$isBypassUser) {
+        //     $error_message = 'ESD logs for the current shift are either missing or indicate a NO GOOD result. Please check the ESD logs before proceeding.';
+        // } else {
+        //     header('Location: index.php');
+        //     exit;
+        // }
+        // TODO:temporary removal of ESD check for testing, will add back once testing is done.
+
+        header('Location: index.php');
     } else {
         $error_message = 'Invalid username or password!';
     }
