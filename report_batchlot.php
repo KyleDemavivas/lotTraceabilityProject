@@ -717,19 +717,22 @@ $handwork_repair = $stmt->fetch(PDO::FETCH_ASSOC);
                             <?php } ?>
                         </tbody>
                     </table>
-            </div>
+          </div>
+            <!-- END REPAIR HISTORY -->
 
-                <script>
-                    $(document).ready(function() {
-                        $('#pokanontable').DataTable({
-                        'pagelength': 10,
-                        "searching": true,
-                        "lengthChange": false,
-                        "info": false
-                        })
-                    })
-                </script>
+        </div>
+        <!-- END CONTAINER -->
+
+        <script>
+            $(document).ready(function() {
+                $('#pokanontable').DataTable({
+                    'pageLength': 10,
+                    "searching": true,
+                    "lengthChange": false,
+                    "info": false
+                });
+            });
+        </script>
 
 </body>
-
 </html>

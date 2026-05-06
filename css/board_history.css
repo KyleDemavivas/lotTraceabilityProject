@@ -15,8 +15,8 @@ body {
 }
 
 .container {
-  margin-left: 25vh;
-  width: calc(100% - 25vh);
+  margin-left: 30vh;
+  width: calc(100% - 30vh);
   padding: 15px;
   box-sizing: border-box;
 }
@@ -29,6 +29,7 @@ body {
   background: #fdfdfd;
   width: 100%;
   overflow-x: auto;
+  box-sizing: border-box;
 }
 
 .board-section label {
