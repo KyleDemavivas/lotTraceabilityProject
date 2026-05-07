@@ -200,6 +200,8 @@ try {
 
         const form = document.getElementById('nogoodForm');
 
+        const operatorName = "<?php echo $_SESSION['user_namefl'] ?? ''; ?>";
+
         let isSubmitting = false;
         let qrCounts = {};
         let isSerialValid = false;
@@ -295,7 +297,7 @@ try {
                                     $('input[name="asmline"]').val(response.asmline);
                                     $('input[name="line"]').val(response.line);
                                     $('input[name="shift"]').val(response.shift);
-                                    $('input[name="operator_name"]').val(response.operator_name);
+                                    $('input[name="operator_name"]').val(operatorName);
                                     $('input[name="qty_input"]').val(response.qty_input);
                                     $('input[name="final_qtyinput"]').val('LOADING...');
 

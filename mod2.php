@@ -203,6 +203,7 @@ try {
     <script>
         const defectOptions = `<?php foreach ($defects as $defect) { ?><option value="<?php echo htmlspecialchars($defect); ?>"><?php echo htmlspecialchars($defect); ?></option><?php } ?>`;
         const locationOptions = `<?php foreach ($locations as $location) { ?><option value="<?php echo htmlspecialchars($location); ?>"><?php echo htmlspecialchars($location); ?></option><?php } ?>`;
+        const operatorName = "<?php echo $_SESSION['user_namefl'] ?? ''; ?>";
 
         let isSubmitting = false;
         let qrCounts = {};
@@ -301,11 +302,10 @@ try {
                                         window.lastKepiLot = response.kepi_lot;
                                         showCounter();
                                     }
-                                    console.log(response.serial_qty);
                                     $('input[name="asmline"]').val(response.asmline);
                                     $('input[name="line"]').val(response.line);
                                     $('input[name="shift"]').val(response.shift);
-                                    $('input[name="operator_name"]').val(response.operator_name);
+                                    $('input[name="operator_name"]').val(operatorName);
                                     $('input[name="qty_input"]').val(response.qty_input);
                                     $('input[name="final_qtyinput"]').val('LOADING...');
 
