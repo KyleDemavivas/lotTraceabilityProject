@@ -66,9 +66,13 @@ try {
         exit;
     }
 
-    $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
-    $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
-    $final_qtyinput = (int) ($finalQtyStmt->fetchColumn() ?: 0);
+    // $finalQtyStmt = $conn->prepare("SELECT final_qtyinput FROM $main_table WHERE kepi_lot = :kepi_lot ORDER BY id DESC");
+    // $finalQtyStmt->execute([':kepi_lot' => $row['kepi_lot']]);
+    // $final_qtyinput = (int) $finalQtyStmt->fetchColumn();
+
+    // $qty_input = $final_qtyinput === 0 ? 1 : $row['qty_input'];
+
+    $qty_input = 1;
 
     echo json_encode([
         'success' => true,
@@ -80,7 +84,7 @@ try {
         'shift' => $row['shift'],
         'asmline' => $row['asmline'],
         'line' => $row['line'],
-        'qty_input' => $row['qty_input'],
+        'qty_input' => $qty_input,
         'final_qtyinput' => $final_qtyinput,
     ]);
 } catch (PDOException $e) {
