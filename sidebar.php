@@ -325,6 +325,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                 <?php } ?>
 
+                <!-- MOUNTER MENUS -->
+                 <?php if ($_SESSION['user_process'] === 'MOUNTER') { ?>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/mounter.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/mounter.php"><i class="fas fa-wrench"></i> <span>Mounter</span></a>
+                    </li>
+                     <li class="<?php echo ($current_page == '/traceabilitydev/spa_process.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/spa_process.php"><i class="fas fa-spa"></i> <span>SPA</span></a>
+                    </li>
+                <?php } ?>
+
                 <li class="<?php echo ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
                     <a href="account_settings.php"><i class="fas fa-user-cog"></i> <span>Account Settings</span></a>
                 </li>
