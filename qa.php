@@ -217,6 +217,9 @@ try {
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+var Model = 'Test';
+
 // ── AQL DATA ──────────────────────────────────────────────────────────────────
 const LEVEL3_TABLE = [
     [1,       8,       'B'],
@@ -525,6 +528,46 @@ $('#finalizeBtn').on('click', function() {
 });
 
 //TODO: ADD AJAX FOR FETCHING BATCH SIZE USING KEPILOT AND SUBMITION TO QA INSPECTION TABLE
+
+//Handler for fetching relevant data using Kepi Lot Numnber   
+var KepiLotTimer;
+
+$('#kepi_lot').on('change', function(){
+
+    clearTimeout(KepiLotTimer);
+
+    KepiLotTimer = setTimeout(function() {
+        $.ajax({
+            url: 'fetch_model.php',
+            type: 'POST',
+            data: { kepi_lot: $('#kepi_lot').val().trim() },
+            success: function(response) {
+                try {
+                    const data = JSON.parse(response);
+                    if (data.success) {
+                        $('#model_name').val(data.model);
+                        $('#lot_qty').val(data.lot_qty).trigger('change');
+                    } else {
+                        console.error('Error fetching data:', data.message);
+                    }
+                } catch (e) {
+                    console.error('Invalid JSON response:', response);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error);
+            }
+        })
+    }, 500)
+})
+
+window.addEventListener('beforeunload', function (e) {
+    // Only block them if an inspection is actually running
+    if (state && state.active) {
+        e.preventDefault();
+        e.returnValue = ''; // This triggers the standard browser warning popup
+    }
+});
 </script>
 </body>
 </html>
