@@ -70,6 +70,10 @@ try {
                     </select>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">Sample Size:</label>
+                    <input type="text" class="form-input" id="sample_size" readonly placeholder="—">
+                </div>
+                <div class="form-group">
                     <label class="form-label">Shift:</label>
                     <select class="form-input" id="shift">
                         <option value="">— Select Shift —</option>
@@ -264,6 +268,7 @@ function getCodeLetter(qty) {
     }
     return null;
 }
+
 function fmtAcRe(val) { return val === null ? '↑↓' : val; }
 
 function updateJudgement() {
@@ -313,10 +318,19 @@ function updateCounts() {
 // ── SETUP ─────────────────────────────────────────────────────────────────────
 function checkStartReady() {
     const qty  = parseInt($('#lot_qty').val());
-    const ok   = qty > 0 && $('#inspection_method').val() && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim();
+    const method = $('#inspection_method').val();
+    const ok   = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim();
+    const letterStr = qty > 0 ? getCodeLetter(qty) : null;
+    $('#code_letter').val(letterStr || '—');
+    if (letterStr && method && AQL_DATA[letterStr]) {
+        const sampleSizePreview = AQL_DATA[letterStr].sample[method];
+        $('#sample_size').val(sampleSizePreview);
+    } else {
+        $('#sample_size').val('—');
+    }
     $('#startBtn').prop('disabled', !ok);
-    $('#code_letter').val(qty > 0 ? (getCodeLetter(qty) || '—') : '—');
 }
+
 $('#lot_qty, #inspection_method, #shift, #line, #kepi_lot').on('input change', checkStartReady);
 
 $('#startBtn').on('click', function() {
