@@ -3,6 +3,8 @@
 include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 include 'sidebar.php';
 
+/* @var PDO $conn_pokanon */
+
 $serial_code = $_GET['serial_code'] ?? '';
 
 $model_name = '';
@@ -395,8 +397,8 @@ if ($serial_code != '') {
     // $ict_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // POKANON
-    $sql = 'SELECT * FROM pokanon_view WHERE ProdLot = :ProdLot';
-    $stmt = $conn->prepare($sql);
+    $sql = 'SELECT * FROM POKANON WHERE ProdLot = :ProdLot';
+    $stmt = $conn_pokanon->prepare($sql);
     $stmt->execute(['ProdLot' => $prodlot]);
     $pokanon_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
