@@ -122,13 +122,13 @@ try {
 
         <div class="aql-threshold-row">
             <div class="threshold-card">
-                <div class="tc-title"><span class="badge badge-015">AQL 0.15</span> Critical</div>
+                <div class="tc-title"><span class="badge badge-015">AQL 0.15</span> Major</div>
                 <div class="tc-row"><span>Accept ≤</span><span class="tc-val" id="ac_015">—</span></div>
                 <div class="tc-row"><span>Reject ≥</span><span class="tc-val" id="re_015">—</span></div>
                 <div class="tc-row"><span>Defects Found</span><span class="tc-count" id="count_015">0</span></div>
             </div>
             <div class="threshold-card">
-                <div class="tc-title"><span class="badge badge-10">AQL 1.0</span> Major</div>
+                <div class="tc-title"><span class="badge badge-10">AQL 1.0</span> Minor</div>
                 <div class="tc-row"><span>Accept ≤</span><span class="tc-val" id="ac_10">—</span></div>
                 <div class="tc-row"><span>Reject ≥</span><span class="tc-val" id="re_10">—</span></div>
                 <div class="tc-row"><span>Defects Found</span><span class="tc-count" id="count_10">0</span></div>
@@ -373,6 +373,7 @@ $('#serial_input').on('input', function() { this.value = this.value.toUpperCase(
 
 $('#serial_input').on('keydown', function(e) {
     if (e.key !== 'Enter') return;
+    if (e.key === 'Enter') e.preventDefault();
     const serial = $(this).val().trim().toUpperCase();
     const errEl  = document.getElementById('serial_error');
     errEl.style.display = 'none';
