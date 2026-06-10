@@ -52,7 +52,7 @@ try {
                 </div>
                 <div class="form-group">
                     <label class="form-label">Model / Assy:</label>
-                    <input type="text" class="form-input" id="model_name" placeholder="Enter model">
+                    <input type="text" class="form-input" id="model_name" placeholder="—" readonly>
                 </div>
             </div>
         </div>
@@ -318,12 +318,36 @@ function updateCounts() {
     document.getElementById('finalizeBtn').disabled = state.scanned.length < state.sampleSize;
 }
 
+function fetchModelName(data){
+    $.ajax({
+        url: 'fetch_model.php',
+        method: 'POST',
+        data: { kepi_lot: data },
+        success: function(response) {
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Model Found',
+                    text: `Model Name: ${response.data}`
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message
+                });
+            }
+        }
+    });
+}
+
 // ── SETUP ─────────────────────────────────────────────────────────────────────
 function checkStartReady() {
     const qty  = parseInt($('#lot_qty').val());
     const method = $('#inspection_method').val();
     const ok   = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim();
     const letterStr = qty > 0 ? getCodeLetter(qty) : null;
+
     $('#code_letter').val(letterStr || '—');
     if (letterStr && method && AQL_DATA[letterStr]) {
         const sampleSizePreview = AQL_DATA[letterStr].sample[method];
@@ -533,34 +557,30 @@ $('#finalizeBtn').on('click', function() {
 //Handler for fetching relevant data using Kepi Lot Numnber   
 var KepiLotTimer;
 
-$('#kepi_lot').on('change', function(){
-
+$('#kepi_lot').on('change input', function() {
     clearTimeout(KepiLotTimer);
-
+    const lot = $(this).val().trim();
+    if (!lot) return;
     KepiLotTimer = setTimeout(function() {
         $.ajax({
             url: 'fetch_model.php',
             type: 'POST',
-            data: { kepi_lot: $('#kepi_lot').val().trim() },
+            data: { kepi_lot: lot },
             success: function(response) {
-                try {
-                    const data = JSON.parse(response);
-                    if (data.success) {
-                        $('#model_name').val(data.model);
-                        $('#lot_qty').val(data.lot_qty).trigger('change');
-                    } else {
-                        console.error('Error fetching data:', data.message);
-                    }
-                } catch (e) {
-                    console.error('Invalid JSON response:', response);
+                if (response.success) {
+                    $('#model_name').val(response.data);
+                    checkStartReady();
+                } else {
+                    console.error('Error fetching data:', response.message);
+                    $('#model_name').val('');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('AJAX error:', status, error);
             }
-        })
-    }, 500)
-})
+        });
+    }, 500);
+});
 
 window.addEventListener('beforeunload', function (e) {
     // Only block them if an inspection is actually running
