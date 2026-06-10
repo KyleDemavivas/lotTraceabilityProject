@@ -73,6 +73,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="/traceabilitydev/vi_process.php"><i class="fas fa-eye"></i> <span>Visual Inspection</span></a>
                 </li>
 
+                <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/qa.php"><i class="fas fa-clipboard-check"></i> <span>QA</span></a>
+                </li>
+
                 <?php /* <li class="<?= ($current_page == '/traceabilitydev/repair_process.php') ? 'active' : '' ?>">
                 <a href="/traceabilitydev/repair_process.php"><i class="fas fa-wrench"></i> <span>SMT Repair</span></a>
             </li> */ ?>
