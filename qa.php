@@ -123,13 +123,11 @@ try {
         <div class="aql-threshold-row">
             <div class="threshold-card">
                 <div class="tc-title"><span class="badge badge-015">AQL 0.15</span> Major</div>
-                <div class="tc-row"><span>Accept ≤</span><span class="tc-val" id="ac_015">—</span></div>
                 <div class="tc-row"><span>Reject ≥</span><span class="tc-val" id="re_015">—</span></div>
                 <div class="tc-row"><span>Defects Found</span><span class="tc-count" id="count_015">0</span></div>
             </div>
             <div class="threshold-card">
                 <div class="tc-title"><span class="badge badge-10">AQL 1.0</span> Minor</div>
-                <div class="tc-row"><span>Accept ≤</span><span class="tc-val" id="ac_10">—</span></div>
                 <div class="tc-row"><span>Reject ≥</span><span class="tc-val" id="re_10">—</span></div>
                 <div class="tc-row"><span>Defects Found</span><span class="tc-count" id="count_10">0</span></div>
             </div>
@@ -183,24 +181,7 @@ try {
             <input type="text" class="form-input" id="ng_serial" readonly>
         </div>
 
-        <div id="ng_defect_rows">
-            <div class="ng-defect-row">
-                <div class="dual-inputs">
-                    <div class="half-group">
-                        <label>Defect</label>
-                        <input type="text" class="form-input defect-input" placeholder="Enter defect">
-                    </div>
-                    <div class="half-group">
-                        <label>Location</label>
-                        <select class="location-select" multiple="multiple" style="width:100%;">
-                            <?php foreach ($locations as $loc): ?>
-                                <option value="<?php echo htmlspecialchars($loc); ?>"><?php echo htmlspecialchars($loc); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="ng_defect_rows"></div>
 
         <div style="margin-top:12px;">
             <button class="add-defect" id="addNgDefectBtn">+ Add Defect</button>
@@ -217,8 +198,6 @@ try {
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
-var Model = 'Test';
 
 // ── AQL DATA ──────────────────────────────────────────────────────────────────
 const LEVEL3_TABLE = [
@@ -299,7 +278,7 @@ function renderSerialList() {
     }
     list.innerHTML = state.scanned.map((s, i) => {
         const detail = s.defects.length
-            ? s.defects.map(d => `${d.defect} @ ${d.locations.join(', ')}`).join(' | ')
+            ? s.defects.map(d => `[${d.severity.toUpperCase()}] ${d.defect} @ ${d.locations.join(', ')}`).join(' | ')
             : '';
         return `<div class="serial-row ${s.good ? '' : 'ng'}">
             <span class="serial-num">#${String(i+1).padStart(2,'0')}</span>
@@ -318,40 +297,43 @@ function updateCounts() {
     document.getElementById('finalizeBtn').disabled = state.scanned.length < state.sampleSize;
 }
 
-function fetchModelName(data){
-    $.ajax({
-        url: 'fetch_model.php',
-        method: 'POST',
-        data: { kepi_lot: data },
-        success: function(response) {
-            if (response.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Model Found',
-                    text: `Model Name: ${response.data}`
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: response.message
-                });
-            }
-        }
-    });
+// ── LOCATION OPTIONS (PHP-rendered) ──────────────────────────────────────────
+const locationOptions = `<?php foreach ($locations as $loc): ?><option value="<?php echo htmlspecialchars($loc); ?>"><?php echo htmlspecialchars($loc); ?></option><?php endforeach; ?>`;
+
+// ── DEFECT ROW TEMPLATE ───────────────────────────────────────────────────────
+function defectRowTemplate() {
+    const ts = Date.now();
+    return `<div class="ng-defect-row">
+        <div class="dual-inputs">
+            <div class="half-group">
+                <label>Defect</label>
+                <input type="text" class="form-input defect-input" placeholder="Enter defect">
+            </div>
+            <div class="half-group">
+                <label>Location</label>
+                <select class="location-select" multiple="multiple" style="width:100%;">${locationOptions}</select>
+            </div>
+        </div>
+        <div style="margin-top:8px;">
+            <label style="font-size:12px; font-weight:600; color:#555;">Severity</label>
+            <div class="severity-toggle">
+                <label><input type="radio" name="severity_${ts}" class="severity-radio" value="major" checked> Major (AQL 0.15)</label>
+                <label><input type="radio" name="severity_${ts}" class="severity-radio" value="minor"> Minor (AQL 1.0)</label>
+            </div>
+        </div>
+    </div>`;
 }
 
 // ── SETUP ─────────────────────────────────────────────────────────────────────
 function checkStartReady() {
-    const qty  = parseInt($('#lot_qty').val());
+    const qty    = parseInt($('#lot_qty').val());
     const method = $('#inspection_method').val();
-    const ok   = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim();
+    const ok     = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim();
     const letterStr = qty > 0 ? getCodeLetter(qty) : null;
 
     $('#code_letter').val(letterStr || '—');
     if (letterStr && method && AQL_DATA[letterStr]) {
-        const sampleSizePreview = AQL_DATA[letterStr].sample[method];
-        $('#sample_size').val(sampleSizePreview);
+        $('#sample_size').val(AQL_DATA[letterStr].sample[method]);
     } else {
         $('#sample_size').val('—');
     }
@@ -371,18 +353,23 @@ $('#startBtn').on('click', function() {
     const data   = AQL_DATA[letter];
     const params = data[method];
     const sample = data.sample[method];
-    state = { active:true, letter, method, sampleSize:sample, aqlParams:params, scanned:[], currentSerial:null, defects015:0, defects10:0 };
+
+    state = {
+        active: true, letter, method, sampleSize: sample,
+        aqlParams: params, scanned: [], currentSerial: null,
+        defects015: 0, defects10: 0,
+    };
 
     $('#disp_letter').text(letter);
     $('#disp_sample').text(sample);
     $('#disp_method').text(method.charAt(0).toUpperCase() + method.slice(1));
     $('#disp_lotqty').text(qty);
-    $('#ac_015').text(fmtAcRe(params.aql015.ac));
     $('#re_015').text(fmtAcRe(params.aql015.re));
-    $('#ac_10').text(fmtAcRe(params.aql10.ac));
     $('#re_10').text(fmtAcRe(params.aql10.re));
     $('#sample_total').text(sample);
     $('#scanned_count').text(0);
+    $('#count_015').text(0);
+    $('#count_10').text(0);
 
     $('#aqlPanel, #scanPanel').show();
     $('#serial_input').prop('disabled', false).focus();
@@ -397,7 +384,7 @@ $('#serial_input').on('input', function() { this.value = this.value.toUpperCase(
 
 $('#serial_input').on('keydown', function(e) {
     if (e.key !== 'Enter') return;
-    if (e.key === 'Enter') e.preventDefault();
+    e.preventDefault();
     const serial = $(this).val().trim().toUpperCase();
     const errEl  = document.getElementById('serial_error');
     errEl.style.display = 'none';
@@ -422,7 +409,7 @@ $('#serial_input').on('keydown', function(e) {
         allowOutsideClick: false,
     }).then(result => {
         if (result.isConfirmed) {
-            state.scanned.push({ serial, good:true, defects:[] });
+            state.scanned.push({ serial, good: true, defects: [] });
             renderSerialList(); updateCounts(); updateJudgement();
             $('#serial_input').val('').focus();
         } else {
@@ -433,8 +420,6 @@ $('#serial_input').on('keydown', function(e) {
 });
 
 // ── NO GOOD MODAL ─────────────────────────────────────────────────────────────
-const locationOptions = `<?php foreach ($locations as $loc): ?><option value="<?php echo htmlspecialchars($loc); ?>"><?php echo htmlspecialchars($loc); ?></option><?php endforeach; ?>`;
-
 function initSelect2InRow(row) {
     $(row).find('.location-select').select2({
         tags: true,
@@ -449,48 +434,27 @@ function initSelect2InRow(row) {
 
 function openNgModal(serial) {
     $('#ng_serial').val(serial);
-    $('#ng_defect_rows').html(`
-        <div class="ng-defect-row">
-            <div class="dual-inputs">
-                <div class="half-group">
-                    <label>Defect</label>
-                    <input type="text" class="form-input defect-input" placeholder="Enter defect">
-                </div>
-                <div class="half-group">
-                    <label>Location</label>
-                    <select class="location-select" multiple="multiple" style="width:100%;">${locationOptions}</select>
-                </div>
-            </div>
-        </div>`);
+    $('#ng_defect_rows').html(defectRowTemplate());
     initSelect2InRow($('#ng_defect_rows .ng-defect-row')[0]);
     $('#ngModal').addClass('active');
     setTimeout(() => $('#ng_defect_rows .defect-input').first().focus(), 100);
 }
 
-function closeNgModal(saveAsGood) {
+function closeNgModal() {
     $('#ngModal').removeClass('active');
-    if (saveAsGood) {
-        state.scanned.push({ serial: state.currentSerial, good:true, defects:[] });
-        renderSerialList(); updateCounts(); updateJudgement();
-    }
     $('#serial_input').val('').focus();
 }
 
-$('#closeNgModal, #ngCancelBtn').on('click', () => closeNgModal(true));
+$('#closeNgModal, #ngCancelBtn').on('click', function() {
+    // cancelled without saving — push as GOOD
+    state.scanned.push({ serial: state.currentSerial, good: true, defects: [] });
+    renderSerialList(); updateCounts(); updateJudgement();
+    closeNgModal();
+});
 
 $('#addNgDefectBtn').on('click', function() {
-    const newRow = $(`<div class="ng-defect-row" style="margin-top:14px;border-top:1px solid #eee;padding-top:14px;">
-        <div class="dual-inputs">
-            <div class="half-group">
-                <label>Defect</label>
-                <input type="text" class="form-input defect-input" placeholder="Enter defect">
-            </div>
-            <div class="half-group">
-                <label>Location</label>
-                <select class="location-select" multiple="multiple" style="width:100%;">${locationOptions}</select>
-            </div>
-        </div>
-    </div>`);
+    const newRow = $(defectRowTemplate());
+    newRow.css({ marginTop:'14px', borderTop:'1px solid #eee', paddingTop:'14px' });
     $('#ng_defect_rows').append(newRow);
     initSelect2InRow(newRow[0]);
 });
@@ -501,20 +465,24 @@ $('#ngSaveBtn').on('click', function() {
     $('#ng_defect_rows .ng-defect-row').each(function() {
         const defect    = $(this).find('.defect-input').val().trim().toUpperCase();
         const locations = $(this).find('.location-select').val() || [];
+        const severity  = $(this).find('.severity-radio:checked').val() || 'major';
         if (!defect && !locations.length) return;
         if (!defect || !locations.length) { valid = false; return; }
-        defects.push({ defect, locations });
+        defects.push({ defect, locations, severity });
     });
     if (!valid || !defects.length) {
         Swal.fire({ icon:'warning', title:'Incomplete', text:'Each defect row needs both a defect and location.',
             toast:true, position:'top-right', timer:3000, showConfirmButton:false });
         return;
     }
-    // TODO: split per AQL level once business rules confirmed — currently all count against both
-    state.defects015 += defects.length;
-    state.defects10  += defects.length;
-    state.scanned.push({ serial: state.currentSerial, good:false, defects });
-    closeNgModal(false);
+
+    defects.forEach(d => {
+        if (d.severity === 'major') state.defects015 += 1;
+        else                        state.defects10  += 1;
+    });
+
+    state.scanned.push({ serial: state.currentSerial, good: false, defects });
+    closeNgModal();
     renderSerialList(); updateCounts(); updateJudgement();
 });
 
@@ -532,9 +500,10 @@ $('#ngBtn').on('click', function() {
 // ── FINALIZE ──────────────────────────────────────────────────────────────────
 $('#finalizeBtn').on('click', function() {
     const { aqlParams, defects015, defects10, scanned, sampleSize, letter, method } = state;
-    const failed015  = aqlParams.aql015.re !== null && defects015 >= aqlParams.aql015.re;
-    const failed10   = aqlParams.aql10.re  !== null && defects10  >= aqlParams.aql10.re;
-    const judgement  = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
+    const failed015 = aqlParams.aql015.re !== null && defects015 >= aqlParams.aql015.re;
+    const failed10  = aqlParams.aql10.re  !== null && defects10  >= aqlParams.aql10.re;
+    const judgement = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
+
     Swal.fire({
         icon: judgement === 'ACCEPT' ? 'success' : 'error',
         title: `Lot ${judgement}`,
@@ -545,16 +514,67 @@ $('#finalizeBtn').on('click', function() {
             <b>Inspected:</b> ${scanned.length}<br>
             <b>NG Units:</b> ${scanned.filter(s=>!s.good).length}<br>
             <hr style="margin:8px 0;">
-            <b>AQL 0.15:</b> ${defects015} defects &nbsp;|&nbsp; Ac: ${fmtAcRe(aqlParams.aql015.ac)} &nbsp; Re: ${fmtAcRe(aqlParams.aql015.re)}<br>
-            <b>AQL 1.0:</b> ${defects10} defects &nbsp;|&nbsp; Ac: ${fmtAcRe(aqlParams.aql10.ac)} &nbsp; Re: ${fmtAcRe(aqlParams.aql10.re)}<br>
+            <b>AQL 0.15 (Major):</b> ${defects015} defects &nbsp;|&nbsp; Re: ${fmtAcRe(aqlParams.aql015.re)}<br>
+            <b>AQL 1.0 (Minor):</b> ${defects10} defects &nbsp;|&nbsp; Re: ${fmtAcRe(aqlParams.aql10.re)}<br>
         </div>`,
-        confirmButtonText: 'DONE',
+        confirmButtonText: 'CONFIRM & SUBMIT',
+        showCancelButton: true,
+        cancelButtonText: 'GO BACK',
+    }).then(result => {
+        if (result.isConfirmed) submitQAInspection();
     });
 });
 
-//TODO: ADD AJAX FOR FETCHING BATCH SIZE USING KEPILOT AND SUBMITION TO QA INSPECTION TABLE
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
+function submitQAInspection() {
+    const kepi_lot          = $('#kepi_lot').val().trim();
+    const operator_id       = '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>';
+    const shift             = $('#shift').val();
+    const line              = $('#line').val();
+    const inspection_method = $('#inspection_method').val();
+    const sample_size       = $('#sample_size').val();
+    const lot_qty           = $('#lot_qty').val();
+    const model             = $('#model_name').val();
 
-//Handler for fetching relevant data using Kepi Lot Numnber   
+    const inserts = state.scanned.map(serial => {
+        const formData = new FormData();
+        formData.append('kepi_lot',          kepi_lot);
+        formData.append('serial_code',       serial.serial);
+        formData.append('inspection_method', inspection_method);
+        formData.append('line',              line);
+        formData.append('shift',             shift);
+        formData.append('location',          '');
+        formData.append('operator_id',       operator_id);
+        formData.append('sample_size',       sample_size);
+        formData.append('lot_qty',           lot_qty);
+        formData.append('model',             model);
+        formData.append('status',            serial.good ? 'GOOD' : 'NO GOOD');
+        formData.append('defects',           JSON.stringify(serial.defects));
+
+        return fetch('qa_process.php', { method: 'POST', body: formData })
+            .then(r => r.json());
+    });
+
+    Promise.all(inserts)
+        .then(results => {
+            const failed = results.filter(r => r.status !== 'success');
+            if (failed.length) {
+                Swal.fire({ icon:'warning', title:'Partial Submit',
+                    text: `${failed.length} record(s) failed to insert.`,
+                    toast:true, position:'top-end', timer:4000, showConfirmButton:false });
+            } else {
+                Swal.fire({ icon:'success', title:'Submitted',
+                    text:'QA inspection records submitted successfully.',
+                    toast:true, position:'top-end', timer:3000, showConfirmButton:false })
+                .then(() => location.reload());
+            }
+        })
+        .catch(() => {
+            Swal.fire({ icon:'error', title:'Network Error', text:'Failed to submit inspection data.' });
+        });
+}
+
+// ── KEPI LOT FETCH ────────────────────────────────────────────────────────────
 var KepiLotTimer;
 
 $('#kepi_lot').on('change input', function() {
@@ -571,7 +591,7 @@ $('#kepi_lot').on('change input', function() {
                     $('#model_name').val(response.data);
                     checkStartReady();
                 } else {
-                    console.error('Error fetching data:', response.message);
+                    console.error('Error fetching model:', response.message);
                     $('#model_name').val('');
                 }
             },
@@ -582,11 +602,11 @@ $('#kepi_lot').on('change input', function() {
     }, 500);
 });
 
-window.addEventListener('beforeunload', function (e) {
-    // Only block them if an inspection is actually running
+// ── UNLOAD GUARD ──────────────────────────────────────────────────────────────
+window.addEventListener('beforeunload', function(e) {
     if (state && state.active) {
         e.preventDefault();
-        e.returnValue = ''; // This triggers the standard browser warning popup
+        e.returnValue = '';
     }
 });
 </script>
