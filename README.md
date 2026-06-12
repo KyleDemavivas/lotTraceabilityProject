@@ -46,6 +46,11 @@ A web-based system designed to replace manual paper-based processes for monitori
 14. Micro
 15. WI
 
+## Ongoing Features to be Added
+
+QA Section
+More verbose history lookup
+
 ## Repair Process Flow
 
 Repair Process flow starts with the board being labeled as NO GOOD in any of the process other than SPA, Mounter, and Manual Insertion
