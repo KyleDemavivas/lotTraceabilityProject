@@ -630,7 +630,7 @@ function submitQAInspection() {
         formData.append('defects',           JSON.stringify(serial.defects));
         formData.append('lot_result',        lot_result);
 
-        return fetch('qa_process.php', { method: 'POST', body: formData })
+        return fetch('QA/qa_process.php', { method: 'POST', body: formData })
             .then(r => r.json());
     });
 
@@ -665,7 +665,7 @@ $('#kepi_lot').on('change input', function() {
     if (!lot) return;
     KepiLotTimer = setTimeout(function() {
         $.ajax({
-            url: 'fetch_model.php',
+            url: 'QA/fetch_model.php',
             type: 'POST',
             data: { kepi_lot: lot },
             success: function(response) {
