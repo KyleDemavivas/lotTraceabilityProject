@@ -73,10 +73,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="/traceabilitydev/vi_process.php"><i class="fas fa-eye"></i> <span>Visual Inspection</span></a>
                 </li>
 
-                <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>">
-                    <a href="/traceabilitydev/qa.php"><i class="fas fa-clipboard-check"></i> <span>QA</span></a>
-                </li>
-
                 <?php /* <li class="<?= ($current_page == '/traceabilitydev/repair_process.php') ? 'active' : '' ?>">
                 <a href="/traceabilitydev/repair_process.php"><i class="fas fa-wrench"></i> <span>SMT Repair</span></a>
             </li> */ ?>
@@ -159,6 +155,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </li>
                 <li class="<?php echo ($current_page == '/traceabilitydev/wi.php') ? 'active' : ''; ?>">
                     <a href="/traceabilitydev/wi.php"><i class="fas fa-map-signs"></i> <span>WI</span></a>
+                </li>
+                
+                <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>">
+                    <a href="/traceabilitydev/qa.php"><i class="fas fa-clipboard-check"></i> <span>QA</span></a>
                 </li>
 
                 <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/stencil_master.php', '/traceabilitydev/squeegee_master.php']) ? 'active open' : ''; ?>">
@@ -336,6 +336,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                      <li class="<?php echo ($current_page == '/traceabilitydev/spa_process.php') ? 'active' : ''; ?>">
                         <a href="/traceabilitydev/spa_process.php"><i class="fas fa-spa"></i> <span>SPA</span></a>
+                    </li>
+                <?php } ?>
+
+                <!-- QA MENU -->
+                 <?php if($_SESSION['user_process'] === 'QA') { ?>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/qa.php"><i class="fas fa-clipboard-check"></i> <span>QA</span></a>
                     </li>
                 <?php } ?>
 
