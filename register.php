@@ -146,6 +146,7 @@ include 'sidebar.php';
                 <option value="PARTSIDE 2" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'PARTSIDE 2') ? 'selected' : ''; ?>>PART SIDE 2</option>
                 <option value="MICROSCOPE INSPECTION" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'MICROSCOPE INSPECTION') ? 'selected' : ''; ?>>MICROSCOPE INSPECTION</option>
                 <option value="WITHSTAND INSULATION TEST" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'WITHSTAND INSULATION TEST') ? 'selected' : ''; ?>>WITHSTAND INSULATION TEST</option>
+                <option value="QA" <?php echo (isset($_POST['user_process']) && $_POST['user_process'] == 'QA') ? 'selected' : ''; ?>>QA</option>
             </select>
 
             <label>Username:</label>
