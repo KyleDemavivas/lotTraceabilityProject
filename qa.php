@@ -219,21 +219,80 @@ const LEVEL3_TABLE = [
 ];
 
 const AQL_DATA = {
-    'B': { sample:{normal:3,   tightened:3,   reduced:2  }, normal:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}}, tightened:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}}, reduced:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}} },
-    'C': { sample:{normal:5,   tightened:5,   reduced:2  }, normal:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}}, tightened:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}}, reduced:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}} },
-    'D': { sample:{normal:8,   tightened:8,   reduced:3  }, normal:{aql015:{ac:null,re:null},aql10:{ac:0,re:1}},      tightened:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}}, reduced:{aql015:{ac:null,re:null},aql10:{ac:null,re:null}} },
-    'E': { sample:{normal:13,  tightened:13,  reduced:5  }, normal:{aql015:{ac:null,re:null},aql10:{ac:0,re:1}},      tightened:{aql015:{ac:null,re:null},aql10:{ac:0,re:1}},      reduced:{aql015:{ac:null,re:null},aql10:{ac:0,re:1}}      },
-    'F': { sample:{normal:20,  tightened:20,  reduced:8  }, normal:{aql015:{ac:null,re:null},aql10:{ac:1,re:2}},      tightened:{aql015:{ac:null,re:null},aql10:{ac:0,re:1}},      reduced:{aql015:{ac:0,re:1},      aql10:{ac:0,re:1}}      },
-    'G': { sample:{normal:32,  tightened:32,  reduced:13 }, normal:{aql015:{ac:null,re:null},aql10:{ac:1,re:2}},      tightened:{aql015:{ac:null,re:null},aql10:{ac:1,re:2}},      reduced:{aql015:{ac:null,re:null},aql10:{ac:0,re:1}}      },
-    'H': { sample:{normal:50,  tightened:50,  reduced:20 }, normal:{aql015:{ac:null,re:null},aql10:{ac:1,re:2}},      tightened:{aql015:{ac:0,re:1},      aql10:{ac:1,re:2}},      reduced:{aql015:{ac:0,re:1},      aql10:{ac:1,re:2}}      },
-    'J': { sample:{normal:80,  tightened:80,  reduced:32 }, normal:{aql015:{ac:0,re:1},      aql10:{ac:2,re:3}},      tightened:{aql015:{ac:0,re:1},      aql10:{ac:1,re:2}},      reduced:{aql015:{ac:0,re:1},      aql10:{ac:1,re:2}}      },
-    'K': { sample:{normal:125, tightened:125, reduced:50 }, normal:{aql015:{ac:0,re:1},      aql10:{ac:3,re:4}},      tightened:{aql015:{ac:0,re:1},      aql10:{ac:2,re:3}},      reduced:{aql015:{ac:0,re:1},      aql10:{ac:2,re:3}}      },
-    'L': { sample:{normal:200, tightened:200, reduced:80 }, normal:{aql015:{ac:1,re:2},      aql10:{ac:5,re:6}},      tightened:{aql015:{ac:0,re:1},      aql10:{ac:3,re:4}},      reduced:{aql015:{ac:0,re:1},      aql10:{ac:2,re:3}}      },
-    'M': { sample:{normal:315, tightened:315, reduced:125}, normal:{aql015:{ac:1,re:2},      aql10:{ac:7,re:8}},      tightened:{aql015:{ac:1,re:2},      aql10:{ac:5,re:6}},      reduced:{aql015:{ac:0,re:1},      aql10:{ac:3,re:4}}      },
-    'N': { sample:{normal:500, tightened:500, reduced:200}, normal:{aql015:{ac:2,re:3},      aql10:{ac:10,re:11}},    tightened:{aql015:{ac:1,re:2},      aql10:{ac:8,re:9}},      reduced:{aql015:{ac:1,re:2},      aql10:{ac:5,re:6}}      },
-    'P': { sample:{normal:800, tightened:800, reduced:315}, normal:{aql015:{ac:3,re:4},      aql10:{ac:14,re:15}},    tightened:{aql015:{ac:2,re:3},      aql10:{ac:12,re:13}},    reduced:{aql015:{ac:1,re:2},      aql10:{ac:7,re:8}}      },
-    'Q': { sample:{normal:1250,tightened:1250,reduced:500}, normal:{aql015:{ac:5,re:6},      aql10:{ac:21,re:22}},    tightened:{aql015:{ac:3,re:4},      aql10:{ac:18,re:19}},    reduced:{aql015:{ac:3,re:4},      aql10:{ac:10,re:11}}    },
-    'R': { sample:{normal:2000,tightened:2000,reduced:800}, normal:{aql015:{ac:7,re:8},      aql10:{ac:21,re:22}},    tightened:{aql015:{ac:5,re:6},      aql10:{ac:18,re:19}},    reduced:{aql015:{ac:3,re:6},      aql10:{ac:7,re:10}}     },
+    'B': { sample:{normal:3,   tightened:3,   reduced:2  },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }} },
+
+    'C': { sample:{normal:5,   tightened:5,   reduced:2  },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }} },
+
+    'D': { sample:{normal:8,   tightened:8,   reduced:3  },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }} },
+
+    'E': { sample:{normal:13,  tightened:13,  reduced:5  },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }}},
+
+    'F': { sample:{normal:20,  tightened:20,  reduced:8  },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:2   }} },
+
+    'G': { sample:{normal:32,  tightened:32,  reduced:13 },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:2   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:1   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:2   }} },
+
+    'H': { sample:{normal:50,  tightened:50,  reduced:20 },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:2   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:2   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:0,   re:2   }} },
+
+    'J': { sample:{normal:80,  tightened:80,  reduced:32 },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:2   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:2   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:3   }} },
+
+    'K': { sample:{normal:125, tightened:125, reduced:50 },
+           normal:    {aql015:{ac:0,   re:1   }, aql10:{ac:3,   re:4   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:2,   re:3   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:4   }} },
+
+    'L': { sample:{normal:200, tightened:200, reduced:80 },
+           normal:    {aql015:{ac:1,   re:2   }, aql10:{ac:5,   re:6   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:3,   re:4   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:1,   re:4   }} },
+
+    'M': { sample:{normal:315, tightened:315, reduced:125},
+           normal:    {aql015:{ac:1,   re:2   }, aql10:{ac:7,   re:8   }},
+           tightened: {aql015:{ac:0,   re:1   }, aql10:{ac:5,   re:6   }},
+           reduced:   {aql015:{ac:0,   re:1   }, aql10:{ac:2,   re:5   }} },
+
+    'N': { sample:{normal:500, tightened:500, reduced:200},
+           normal:    {aql015:{ac:2,   re:3   }, aql10:{ac:10,  re:11  }},
+           tightened: {aql015:{ac:1,   re:2   }, aql10:{ac:8,   re:9   }},
+           reduced:   {aql015:{ac:1,   re:3   }, aql10:{ac:5,   re:8   }} },
+
+    'P': { sample:{normal:800, tightened:800, reduced:315},
+           normal:    {aql015:{ac:3,   re:4   }, aql10:{ac:14,  re:15  }},
+           tightened: {aql015:{ac:2,   re:3   }, aql10:{ac:12,  re:13  }},
+           reduced:   {aql015:{ac:1,   re:4   }, aql10:{ac:5,   re:8   }} },
+
+    'Q': { sample:{normal:1250,tightened:1250, reduced:500},
+           normal:    {aql015:{ac:5,   re:6   }, aql10:{ac:21,  re:22  }},
+           tightened: {aql015:{ac:3,   re:4   }, aql10:{ac:18,  re:19  }},
+           reduced:   {aql015:{ac:3,   re:6   }, aql10:{ac:7,   re:10  }} },
+
+    'R': { sample:{normal:2000,tightened:2000, reduced:800},
+           normal:    {aql015:{ac:7,   re:8   }, aql10:{ac:21,  re:22  }},
+           tightened: {aql015:{ac:5,   re:6   }, aql10:{ac:18,  re:19  }},
+           reduced:   {aql015:{ac:3,   re:6   }, aql10:{ac:5,   re:8   }} },
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -258,15 +317,26 @@ function updateJudgement() {
     const banner = document.getElementById('judgementBanner');
     const failed015 = aqlParams.aql015.re !== null && defects015 >= aqlParams.aql015.re;
     const failed10  = aqlParams.aql10.re  !== null && defects10  >= aqlParams.aql10.re;
-    if (failed015 || failed10) {
+    const rejected  = failed015 || failed10;
+
+    if (rejected) {
         banner.className = 'judgement-banner fail';
         banner.textContent = '✕ REJECT — Defect threshold exceeded';
+        $('#serial_input').prop('disabled', true).val('');
+        $('#ngBtn').prop('disabled', true);
+        document.getElementById('serial_error').style.display = 'none';
+        // enable finalize so they can still submit
+        document.getElementById('finalizeBtn').disabled = false;
     } else if (scanned.length >= sampleSize) {
         banner.className = 'judgement-banner pass';
         banner.textContent = '✓ ACCEPT — Inspection complete';
+        $('#serial_input').prop('disabled', true).val('');
+        $('#ngBtn').prop('disabled', true);
     } else {
         banner.className = 'judgement-banner ongoing';
         banner.textContent = '● INSPECTION IN PROGRESS';
+        $('#serial_input').prop('disabled', false);
+        $('#ngBtn').prop('disabled', false);
     }
 }
 
