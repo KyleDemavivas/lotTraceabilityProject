@@ -610,6 +610,10 @@ function submitQAInspection() {
     const lot_qty           = $('#lot_qty').val();
     const model             = $('#model_name').val();
 
+    const failed015  = state.aqlParams.aql015.re !== null && state.defects015 >= state.aqlParams.aql015.re;
+    const failed10   = state.aqlParams.aql10.re  !== null && state.defects10  >= state.aqlParams.aql10.re;
+    const lot_result = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
+
     const inserts = state.scanned.map(serial => {
         const formData = new FormData();
         formData.append('kepi_lot',          kepi_lot);
@@ -624,6 +628,7 @@ function submitQAInspection() {
         formData.append('model',             model);
         formData.append('status',            serial.good ? 'GOOD' : 'NO GOOD');
         formData.append('defects',           JSON.stringify(serial.defects));
+        formData.append('lot_result',        lot_result);
 
         return fetch('qa_process.php', { method: 'POST', body: formData })
             .then(r => r.json());
