@@ -51,7 +51,7 @@ try {
                     <input type="text" class="form-input" id="code_letter" readonly placeholder="—">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Model / Assy:</label>
+                    <label class="form-label">Model:</label>
                     <input type="text" class="form-input" id="model_name" placeholder="—" readonly>
                 </div>
             </div>
@@ -295,6 +295,8 @@ const AQL_DATA = {
            reduced:   {aql015:{ac:3,   re:6   }, aql10:{ac:5,   re:8   }} },
 };
 
+let allowReload = false;
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let state = {
     active: false, letter: null, method: null, sampleSize: 0,
@@ -398,11 +400,13 @@ function defectRowTemplate() {
 function checkStartReady() {
     const qty    = parseInt($('#lot_qty').val());
     const method = $('#inspection_method').val();
-    const ok     = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim();
+    const modelname = $('#model_name').val();
+    const ok = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim() && modelname;
     const letterStr = qty > 0 ? getCodeLetter(qty) : null;
 
     $('#code_letter').val(letterStr || '—');
-    if (letterStr && method && AQL_DATA[letterStr]) {
+
+    if (letterStr && method && AQL_DATA[letterStr] && modelname) {
         $('#sample_size').val(AQL_DATA[letterStr].sample[method]);
     } else {
         $('#sample_size').val('—');
@@ -631,12 +635,15 @@ function submitQAInspection() {
             if (failed.length) {
                 Swal.fire({ icon:'warning', title:'Partial Submit',
                     text: `${failed.length} record(s) failed to insert.`,
-                    toast:true, position:'top-end', timer:4000, showConfirmButton:false });
+                    toast:true, position:'top-end', timer:2500, showConfirmButton:false });
             } else {
                 Swal.fire({ icon:'success', title:'Submitted',
                     text:'QA inspection records submitted successfully.',
-                    toast:true, position:'top-end', timer:3000, showConfirmButton:false })
-                .then(() => location.reload());
+                    toast:true, position:'top-end', timer:1500, showConfirmButton:false })
+                .then(() => {
+                    allowReload = true;
+                    location.reload();
+                });
             }
         })
         .catch(() => {
@@ -674,7 +681,7 @@ $('#kepi_lot').on('change input', function() {
 
 // ── UNLOAD GUARD ──────────────────────────────────────────────────────────────
 window.addEventListener('beforeunload', function(e) {
-    if (state && state.active) {
+    if (state && state.active && !allowReload) {
         e.preventDefault();
         e.returnValue = '';
     }
