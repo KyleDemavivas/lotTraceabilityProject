@@ -379,6 +379,7 @@ function doInserts(lot_result) {
     const lot_qty           = $('#lot_qty').val();
     const model             = $('#model_name').val();
 
+    // Mapping over all scanned items to generate fetch promises
     const inserts = state.scanned.map(serial => {
         const formData = new FormData();
         formData.append('kepi_lot',          kepi_lot);
@@ -395,8 +396,12 @@ function doInserts(lot_result) {
         formData.append('defects',           JSON.stringify(serial.defects));
         formData.append('lot_result',        lot_result);
 
-        return fetch('qa_process.php', { method: 'POST', body: formData })
-            .then(r => r.json());
+        // Adjust path here if qa_process.php lives inside /traceabilitydev/
+        return fetch('QA/qa_process.php', { method: 'POST', body: formData })
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+                return r.json();
+            });
     });
 
     Promise.all(inserts)
@@ -416,8 +421,9 @@ function doInserts(lot_result) {
                 });
             }
         })
-        .catch(() => {
-            Swal.fire({ icon:'error', title:'Network Error', text:'Failed to submit inspection data.' });
+        .catch((error) => {
+            console.error("Insertion failed:", error);
+            Swal.fire({ icon:'error', title:'Insertion Error', text:'Failed to save row records.' });
         });
 }
 
@@ -653,24 +659,21 @@ $('#finalizeBtn').on('click', function() {
 
 // ── SUBMIT ────────────────────────────────────────────────────────────────────
 function submitQAInspection() {
-    const kepi_lot          = $('#kepi_lot').val().trim();
-    const operator_id       = '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>';
-    const shift             = $('#shift').val();
-    const line              = $('#line').val();
-    const inspection_method = $('#inspection_method').val();
-    const sample_size       = $('#sample_size').val();
-    const lot_qty           = $('#lot_qty').val();
-    const model             = $('#model_name').val();
-
-    const failed015  = state.aqlParams.aql015.re !== null && state.defects015 >= state.aqlParams.aql015.re;
-    const failed10   = state.aqlParams.aql10.re  !== null && state.defects10  >= state.aqlParams.aql10.re;
+    const kepi_lot  = $('#kepi_lot').val().trim();
+    const failed015 = state.aqlParams.aql015.re !== null && state.defects015 >= state.aqlParams.aql015.re;
+    const failed10  = state.aqlParams.aql10.re  !== null && state.defects10  >= state.aqlParams.aql10.re;
     const lot_result = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
 
-        fetch('check_lot.php', {
+    // 💡 Added strict application header & absolute URL paths context 
+    fetch('/traceabilitydev/QA/check_lot.php', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ kepi_lot })
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) throw new Error(`HTTP check_lot error! status: ${r.status}`);
+        return r.json();
+    })
     .then(check => {
         if (check.accepted) {
             Swal.fire({
@@ -682,66 +685,36 @@ function submitQAInspection() {
                 cancelButtonText: 'CANCEL',
             }).then(result => {
                 if (result.isConfirmed) {
-                    // wipe previous records for this lot first
-                    fetch('QA/delete_lot.php', {
+                    fetch('/traceabilitydev/QA/delete_lot.php', {
                         method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: new URLSearchParams({ kepi_lot })
                     })
-                    .then(r => r.json())
+                    .then(r => {
+                        if (!r.ok) throw new Error(`HTTP delete_lot error! status: ${r.status}`);
+                        return r.json();
+                    })
                     .then(del => {
                         if (del.status === 'success') {
                             doInserts(lot_result);
                         } else {
                             Swal.fire({ icon:'error', title:'Error', text:'Failed to clear previous records.' });
                         }
+                    })
+                    .catch(err => {
+                        console.error("Error clearing lot data:", err);
+                        Swal.fire({ icon:'error', title:'Network Error', text:'Failed to run deletion script.' });
                     });
                 }
             });
         } else {
             doInserts(lot_result);
         }
+    })
+    .catch((error) => {
+        console.error("Network validation error details:", error);
+        Swal.fire({ icon:'error', title:'Network Error', text:'Failed to check lot verification status. See console for details.' });
     });
-
-    const inserts = state.scanned.map(serial => {
-        const formData = new FormData();
-        formData.append('kepi_lot',          kepi_lot);
-        formData.append('serial_code',       serial.serial);
-        formData.append('inspection_method', inspection_method);
-        formData.append('line',              line);
-        formData.append('shift',             shift);
-        formData.append('location',          '');
-        formData.append('operator_id',       operator_id);
-        formData.append('sample_size',       sample_size);
-        formData.append('lot_qty',           lot_qty);
-        formData.append('model',             model);
-        formData.append('status',            serial.good ? 'GOOD' : 'NO GOOD');
-        formData.append('defects',           JSON.stringify(serial.defects));
-        formData.append('lot_result',        lot_result);
-
-        return fetch('QA/qa_process.php', { method: 'POST', body: formData })
-            .then(r => r.json());
-    });
-
-    Promise.all(inserts)
-        .then(results => {
-            const failed = results.filter(r => r.status !== 'success');
-            if (failed.length) {
-                Swal.fire({ icon:'warning', title:'Partial Submit',
-                    text: `${failed.length} record(s) failed to insert.`,
-                    toast:true, position:'top-end', timer:2500, showConfirmButton:false });
-            } else {
-                Swal.fire({ icon:'success', title:'Submitted',
-                    text:'QA inspection records submitted successfully.',
-                    toast:true, position:'top-end', timer:1500, showConfirmButton:false })
-                .then(() => {
-                    allowReload = true;
-                    location.reload();
-                });
-            }
-        })
-        .catch(() => {
-            Swal.fire({ icon:'error', title:'Network Error', text:'Failed to submit inspection data.' });
-        });
 }
 
 // ── KEPI LOT FETCH ────────────────────────────────────────────────────────────
