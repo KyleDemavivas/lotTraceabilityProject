@@ -402,7 +402,7 @@ function doInserts(lot_result) {
         formData.append('lot_result',        lot_result);
 
         // Adjust path here if qa_process.php lives inside /traceabilitydev/
-        return fetch('QA/qa_process.php', { method: 'POST', body: formData })
+        return fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
             .then(r => {
                 if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
                 return r.json();
