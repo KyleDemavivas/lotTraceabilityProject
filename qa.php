@@ -382,12 +382,17 @@ function doInserts(lot_result) {
     // Mapping over all scanned items to generate fetch promises
     const inserts = state.scanned.map(serial => {
         const formData = new FormData();
+
+        const locations = serial.defects
+            .flatMap(d => d.locations)
+            .join(', ');
+
         formData.append('kepi_lot',          kepi_lot);
         formData.append('serial_code',       serial.serial);
         formData.append('inspection_method', inspection_method);
         formData.append('line',              line);
         formData.append('shift',             shift);
-        formData.append('location',          '');
+        formData.append('location',          locations);
         formData.append('operator_id',       operator_id);
         formData.append('sample_size',       sample_size);
         formData.append('lot_qty',           lot_qty);
