@@ -1,0 +1,363 @@
+<?php include '../sidebar.php'; ?>
+<?php
+if (!isset($_SESSION['user_namefl'])) {
+    header('Location: ../login.php');
+    exit;
+}
+include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Inspection History</title>
+    <link rel="stylesheet" href="../css/qa.css">
+    <style>
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            height: 36px;
+        }
+        .search-bar button {
+            width: auto;
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .history-table th {
+            background: #f0f0f0;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            border-bottom: 2px solid #ddd;
+            white-space: nowrap;
+        }
+        .history-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            vertical-align: middle;
+        }
+        .history-table tr:hover td {
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+        .badge-accept {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .badge-reject {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .no-results {
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+            padding: 32px;
+            letter-spacing: 1px;
+        }
+        /* Detail modal table */
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        .detail-table th {
+            background: #f5f5f5;
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #777;
+            border-bottom: 1px solid #ddd;
+        }
+        .detail-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            vertical-align: top;
+        }
+        .detail-table tr.ng-row td {
+            background: #fff5f5;
+        }
+        .lot-summary {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .summary-box {
+            flex: 1;
+            min-width: 100px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+        .summary-box .sb-label {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .summary-box .sb-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .summary-box .sb-value.accept { color: #16a34a; }
+        .summary-box .sb-value.reject { color: #dc2626; }
+        .summary-box .sb-value.blue   { color: #4facfe; }
+    </style>
+</head>
+<body>
+<div class="form-container">
+
+    <h1 style="text-align:center; margin-bottom:20px; font-size:22px; color:#333;">QA Inspection History</h1>
+
+    <div class="form-section">
+        <h3>Search Lot</h3>
+        <div class="search-bar">
+            <input type="text" id="lot_search" placeholder="Enter KEPI Lot No." autocomplete="off">
+            <button id="searchBtn" style="width:auto; padding:8px 24px;">SEARCH</button>
+            <button id="clearBtn" class="btn-ghost" style="padding:8px 16px;">CLEAR</button>
+        </div>
+    </div>
+
+    <div class="form-section" id="resultsSection" style="display:none;">
+        <h3>Results</h3>
+        <div id="resultsContainer"></div>
+    </div>
+
+</div>
+
+<!-- ── DETAIL MODAL ── -->
+<div class="modal" id="detailModal">
+    <div class="modal-content" style="max-width:720px;">
+        <span class="close" id="closeDetailModal">&times;</span>
+        <h2 id="modalTitle">Lot Detail</h2>
+        <div id="modalBody"></div>
+        <div class="modal-footer">
+            <button class="btn-ghost" id="closeDetailBtn" style="padding:8px 20px; font-size:14px;">CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+$('#searchBtn').on('click', doSearch);
+$('#lot_search').on('keydown', function(e) {
+    if (e.key === 'Enter') doSearch();
+});
+
+$('#clearBtn').on('click', function() {
+    $('#lot_search').val('');
+    $('#resultsSection').hide();
+    $('#resultsContainer').html('');
+});
+
+function doSearch() {
+    const lot = $('#lot_search').val().trim().toUpperCase();
+    if (!lot) {
+        Swal.fire({ icon:'warning', title:'Enter a lot number', toast:true,
+            position:'top-right', timer:2000, showConfirmButton:false });
+        return;
+    }
+
+    $.ajax({
+        url: '/traceabilitydev/QA/fetch_lot_history.php',
+        type: 'POST',
+        data: { kepi_lot: lot },
+        success: function(response) {
+            $('#resultsSection').show();
+            if (!response.success || !response.data.length) {
+                $('#resultsContainer').html('<div class="no-results">No records found for lot <b>' + lot + '</b></div>');
+                return;
+            }
+            renderTable(response.data);
+        },
+        error: function() {
+            Swal.fire({ icon:'error', title:'Network Error', text:'Failed to fetch lot history.' });
+        }
+    });
+}
+
+function renderTable(rows) {
+    // Group by kepi_lot — in case of multiple inspections
+    const html = `
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>KEPI Lot No.</th>
+                    <th>Model</th>
+                    <th>Lot Qty</th>
+                    <th>Sample Size</th>
+                    <th>Method</th>
+                    <th>Line</th>
+                    <th>Shift</th>
+                    <th>Operator</th>
+                    <th>Date</th>
+                    <th>Result</th>
+                    <th>NG Units</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows.map(r => `
+                <tr class="lot-row" data-lot="${r.kepi_lot}">
+                    <td><b>${r.kepi_lot}</b></td>
+                    <td>${r.model}</td>
+                    <td>${r.lot_quantity}</td>
+                    <td>${r.sample_size}</td>
+                    <td>${capitalize(r.inspection_method)}</td>
+                    <td>${r.line}</td>
+                    <td>${r.shift}</td>
+                    <td>${r.operator_id}</td>
+                    <td>${formatDate(r.created_at)}</td>
+                    <td><span class="${r.lot_result === 'ACCEPT' ? 'badge-accept' : 'badge-reject'}">${r.lot_result}</span></td>
+                    <td style="text-align:center;">${r.ng_count}</td>
+                </tr>`).join('')}
+            </tbody>
+        </table>
+        <div style="font-size:12px; color:#aaa; margin-top:8px; text-align:right;">Click a row to view serial details</div>
+    `;
+    $('#resultsContainer').html(html);
+
+    // Row click → open detail modal
+    $('.lot-row').on('click', function() {
+        const lot = $(this).data('lot');
+        openDetailModal(lot);
+    });
+}
+
+function openDetailModal(lot) {
+    $.ajax({
+        url: '/traceabilitydev/QA/fetch_lot_detail.php',
+        type: 'POST',
+        data: { kepi_lot: lot },
+        success: function(response) {
+            if (!response.success) {
+                Swal.fire({ icon:'error', title:'Error', text:'Failed to load lot detail.' });
+                return;
+            }
+            const d = response.data;
+            $('#modalTitle').text('Lot: ' + lot);
+
+            const ngCount  = d.serials.filter(s => s.status === 'NO GOOD').length;
+            const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
+
+            $('#modalBody').html(`
+                <div class="lot-summary">
+                    <div class="summary-box">
+                        <div class="sb-label">Result</div>
+                        <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="sb-label">Method</div>
+                        <div class="sb-value" style="font-size:14px;">${capitalize(d.inspection_method)}</div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="sb-label">Sample Size</div>
+                        <div class="sb-value blue">${d.sample_size}</div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="sb-label">Good</div>
+                        <div class="sb-value accept">${goodCount}</div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="sb-label">NG</div>
+                        <div class="sb-value reject">${ngCount}</div>
+                    </div>
+                </div>
+
+                <table class="detail-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Serial</th>
+                            <th>Status</th>
+                            <th>Defects</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${d.serials.map((s, i) => `
+                        <tr class="${s.status === 'NO GOOD' ? 'ng-row' : ''}">
+                            <td style="color:#aaa; font-size:11px;">${String(i+1).padStart(2,'0')}</td>
+                            <td style="font-family:monospace;">${s.serial_code}</td>
+                            <td><span class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}" style="font-weight:bold; font-size:11px; letter-spacing:1px;">${s.status}</span></td>
+                            <td style="font-size:12px; color:#666;">${formatDefects(s.defects)}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            `);
+
+            $('#detailModal').addClass('active');
+        },
+        error: function() {
+            Swal.fire({ icon:'error', title:'Network Error', text:'Failed to load serial details.' });
+        }
+    });
+}
+
+$('#closeDetailModal, #closeDetailBtn').on('click', function() {
+    $('#detailModal').removeClass('active');
+});
+
+function formatDefects(defects) {
+    if (!defects || !defects.length) return '—';
+    return defects.map(d =>
+        `[${d.severity.toUpperCase()}] ${d.defect_code} @ ${d.location}`
+    ).join('<br>');
+}
+
+function capitalize(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function formatDate(str) {
+    if (!str) return '—';
+    const d = new Date(str);
+    return d.toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })
+        + ' ' + d.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
+}
+
+</script>
+</body>
+</html>
