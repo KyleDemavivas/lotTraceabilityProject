@@ -369,6 +369,58 @@ function updateCounts() {
     document.getElementById('finalizeBtn').disabled = state.scanned.length < state.sampleSize;
 }
 
+function doInserts(lot_result) {
+    const kepi_lot          = $('#kepi_lot').val().trim();
+    const operator_id       = '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>';
+    const shift             = $('#shift').val();
+    const line              = $('#line').val();
+    const inspection_method = $('#inspection_method').val();
+    const sample_size       = $('#sample_size').val();
+    const lot_qty           = $('#lot_qty').val();
+    const model             = $('#model_name').val();
+
+    const inserts = state.scanned.map(serial => {
+        const formData = new FormData();
+        formData.append('kepi_lot',          kepi_lot);
+        formData.append('serial_code',       serial.serial);
+        formData.append('inspection_method', inspection_method);
+        formData.append('line',              line);
+        formData.append('shift',             shift);
+        formData.append('location',          '');
+        formData.append('operator_id',       operator_id);
+        formData.append('sample_size',       sample_size);
+        formData.append('lot_qty',           lot_qty);
+        formData.append('model',             model);
+        formData.append('status',            serial.good ? 'GOOD' : 'NO GOOD');
+        formData.append('defects',           JSON.stringify(serial.defects));
+        formData.append('lot_result',        lot_result);
+
+        return fetch('qa_process.php', { method: 'POST', body: formData })
+            .then(r => r.json());
+    });
+
+    Promise.all(inserts)
+        .then(results => {
+            const failed = results.filter(r => r.status !== 'success');
+            if (failed.length) {
+                Swal.fire({ icon:'warning', title:'Partial Submit',
+                    text: `${failed.length} record(s) failed to insert.`,
+                    toast:true, position:'top-end', timer:2500, showConfirmButton:false });
+            } else {
+                Swal.fire({ icon:'success', title:'Submitted',
+                    text:'QA inspection records submitted successfully.',
+                    toast:true, position:'top-end', timer:1500, showConfirmButton:false })
+                .then(() => {
+                    allowReload = true;
+                    location.reload();
+                });
+            }
+        })
+        .catch(() => {
+            Swal.fire({ icon:'error', title:'Network Error', text:'Failed to submit inspection data.' });
+        });
+}
+
 // ── LOCATION OPTIONS (PHP-rendered) ──────────────────────────────────────────
 const locationOptions = `<?php foreach ($locations as $loc): ?><option value="<?php echo htmlspecialchars($loc); ?>"><?php echo htmlspecialchars($loc); ?></option><?php endforeach; ?>`;
 
@@ -613,6 +665,42 @@ function submitQAInspection() {
     const failed015  = state.aqlParams.aql015.re !== null && state.defects015 >= state.aqlParams.aql015.re;
     const failed10   = state.aqlParams.aql10.re  !== null && state.defects10  >= state.aqlParams.aql10.re;
     const lot_result = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
+
+        fetch('check_lot.php', {
+        method: 'POST',
+        body: new URLSearchParams({ kepi_lot })
+    })
+    .then(r => r.json())
+    .then(check => {
+        if (check.accepted) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Lot Already Accepted',
+                html: `Lot <b>${kepi_lot}</b> has already been accepted in a previous inspection.<br><br>Are you sure you want to submit again?`,
+                confirmButtonText: 'SUBMIT ANYWAY',
+                showCancelButton: true,
+                cancelButtonText: 'CANCEL',
+            }).then(result => {
+                if (result.isConfirmed) {
+                    // wipe previous records for this lot first
+                    fetch('QA/delete_lot.php', {
+                        method: 'POST',
+                        body: new URLSearchParams({ kepi_lot })
+                    })
+                    .then(r => r.json())
+                    .then(del => {
+                        if (del.status === 'success') {
+                            doInserts(lot_result);
+                        } else {
+                            Swal.fire({ icon:'error', title:'Error', text:'Failed to clear previous records.' });
+                        }
+                    });
+                }
+            });
+        } else {
+            doInserts(lot_result);
+        }
+    });
 
     const inserts = state.scanned.map(serial => {
         const formData = new FormData();
