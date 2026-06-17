@@ -157,8 +157,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="/traceabilitydev/wi.php"><i class="fas fa-map-signs"></i> <span>WI</span></a>
                 </li>
                 
-                <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>">
-                    <a href="/traceabilitydev/qa.php"><i class="fas fa-clipboard-check"></i> <span>QA</span></a>
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/qa.php', '/traceabilitydev/QA/qa_history.php']) ? 'active open' : ''; ?>">
+                    <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>QA Process ▾</span></a>
+                    <ul class="submenu">
+                        <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa.php">QA</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/QA/qa_history.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/QA/qa_history.php">QA History</a></li>
+                    </ul>
                 </li>
 
                 <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/stencil_master.php', '/traceabilitydev/squeegee_master.php']) ? 'active open' : ''; ?>">
@@ -340,11 +344,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <?php } ?>
 
                 <!-- QA MENU -->
-                 <?php if($_SESSION['user_process'] === 'QA') { ?>
-                    <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>">
-                        <a href="/traceabilitydev/qa.php"><i class="fas fa-clipboard-check"></i> <span>QA</span></a>
-                    </li>
-                <?php } ?>
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/qa.php', '/traceabilitydev/qa_history.php']) ? 'active open' : ''; ?>">
+                    <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>QA Process ▾</span></a>
+                    <ul class="submenu">
+                        <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa.php">QA</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/qa_history.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa_history.php">QA History</a></li>
+                    </ul>
+                </li>
 
                 <li class="<?php echo ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
                     <a href="account_settings.php"><i class="fas fa-user-cog"></i> <span>Account Settings</span></a>
