@@ -9,8 +9,8 @@ $created_at = date('Y-m-d H:i:s');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $sql = 'INSERT INTO qa_process (kepi_lot, serial_code, inspection_method, line, shift, location, operator_id, created_at, sample_size, lot_quantity, model, status, lot_result) 
-                VALUES (:kepi_lot, :serial_code, :inspection_method, :line, :shift, :location, :operator_id, :created_at, :sample_size, :lot_qty, :model, :status, :lot_result)';
+        $sql = 'INSERT INTO qa_process (kepi_lot, serial_code, inspection_method, line, shift, location, defect_code, severity, operator_id, created_at, sample_size, lot_quantity, model, status, lot_result) 
+                VALUES (:kepi_lot, :serial_code, :inspection_method, :line, :shift, :location, :defect_code, :severity, :operator_id, :created_at, :sample_size, :lot_qty, :model, :status, :lot_result)';
 
         $stmt = $conn->prepare($sql);
         $stmt->execute([
@@ -20,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':line'              => $_POST['line'] ?? '',
             ':shift'             => $_POST['shift'] ?? '',
             ':location'          => $_POST['location'] ?? '',
+            ':defect_code'       => !empty($_POST['defect_code']) ? $_POST['defect_code'] : null,
+            ':severity'          => !empty($_POST['severity']) ? $_POST['severity'] : null,
             ':operator_id'       => $_POST['operator_id'] ?? '',
             ':created_at'        => $created_at,
             ':sample_size'       => $_POST['sample_size'] ?? '',

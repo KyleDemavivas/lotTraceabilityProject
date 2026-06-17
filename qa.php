@@ -379,35 +379,34 @@ function doInserts(lot_result) {
     const lot_qty           = $('#lot_qty').val();
     const model             = $('#model_name').val();
 
-    // Mapping over all scanned items to generate fetch promises
-    const inserts = state.scanned.map(serial => {
-        const formData = new FormData();
+   const inserts = state.scanned.map(serial => {
+    const formData = new FormData();
 
-        const locations = serial.defects
-            .flatMap(d => d.locations)
-            .join(', ');
+    const locations   = serial.defects.flatMap(d => d.locations).join(', ');
+    const defectCodes = serial.defects.map(d => d.defect).join(', ');
+    const severities  = serial.defects.map(d => d.severity).join(', ');
 
-        formData.append('kepi_lot',          kepi_lot);
-        formData.append('serial_code',       serial.serial);
-        formData.append('inspection_method', inspection_method);
-        formData.append('line',              line);
-        formData.append('shift',             shift);
-        formData.append('location',          locations);
-        formData.append('operator_id',       operator_id);
-        formData.append('sample_size',       sample_size);
-        formData.append('lot_qty',           lot_qty);
-        formData.append('model',             model);
-        formData.append('status',            serial.good ? 'GOOD' : 'NO GOOD');
-        formData.append('defects',           JSON.stringify(serial.defects));
-        formData.append('lot_result',        lot_result);
+    formData.append('kepi_lot',          kepi_lot);
+    formData.append('serial_code',       serial.serial);
+    formData.append('inspection_method', inspection_method);
+    formData.append('line',              line);
+    formData.append('shift',             shift);
+    formData.append('location',          locations);
+    formData.append('defect_code',       defectCodes);
+    formData.append('severity',          severities);
+    formData.append('operator_id',       operator_id);
+    formData.append('sample_size',       sample_size);
+    formData.append('lot_qty',           lot_qty);
+    formData.append('model',             model);
+    formData.append('status',            serial.good ? 'GOOD' : 'NO GOOD');
+    formData.append('lot_result',        lot_result);
 
-        // Adjust path here if qa_process.php lives inside /traceabilitydev/
-        return fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
-            .then(r => {
-                if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
-                return r.json();
-            });
-    });
+    return fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
+        .then(r => {
+            if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+            return r.json();
+        });
+});
 
     Promise.all(inserts)
         .then(results => {
