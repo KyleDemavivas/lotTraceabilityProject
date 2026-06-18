@@ -157,11 +157,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="/traceabilitydev/wi.php"><i class="fas fa-map-signs"></i> <span>WI</span></a>
                 </li>
                 
-                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/qa.php', '/traceabilitydev/QA/qa_history.php']) ? 'active open' : ''; ?>">
+                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/qa.php', '/traceabilitydev/QA/qa_history.php', '/traceabilitydev/QA/qa_reject_details.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>QA Process ▾</span></a>
                     <ul class="submenu">
                         <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa.php">QA</a></li>
                         <li class="<?php echo ($current_page == '/traceabilitydev/QA/qa_history.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/QA/qa_history.php">QA History</a></li>
+                        <li class="<?php echo ($current_page == '/traceabilitydev/QA/qa_defects.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/QA/qa_defects.php">QA Defects</a></li>
                     </ul>
                 </li>
 
@@ -217,7 +218,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a href="account_settings.php"><i class="fas fa-user-cog"></i> <span>Account Settings</span></a>
                 </li>
                 <hr>
-                <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                <li><a href="/traceabilitydev/logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
             </ul>
         <?php } ?>
 
@@ -345,19 +346,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                 <!-- QA MENU -->
                 <?php if ($_SESSION['user_process'] === 'QA') { ?>
-                    <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/qa.php', '/traceabilitydev/qa_history.php']) ? 'active open' : ''; ?>">
-                    <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>QA Process ▾</span></a>
-                    <ul class="submenu">
-                        <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa.php">QA</a></li>
-                        <li class="<?php echo ($current_page == '/traceabilitydev/qa_history.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa_history.php">QA History</a></li>
-                    </ul>
-                </li>
+                   <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/qa.php"><i class="fas fa-wrench"></i> <span>QA</span></a>
+                    </li>
+                     <li class="<?php echo ($current_page == '/traceabilitydev/QA/qa_history.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/QA/qa_history.php"><i class="fas fa-history"></i> <span>QA History</span></a>
+                    </li>
+                    <li class="<?php echo ($current_page == '/traceabilitydev/QA/qa_defects.php') ? 'active' : ''; ?>">
+                        <a href="/traceabilitydev/QA/qa_defects.php"><i class="fas fa-exclamation-triangle"></i> <span>QA Defects</span></a>
+                    </li>
                 <?php } ?>
                 <li class="<?php echo ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
                     <a href="account_settings.php"><i class="fas fa-user-cog"></i> <span>Account Settings</span></a>
                 </li>
                 <hr>
-                <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                <li><a href="/traceabilitydev/logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
             </ul>
         <?php } ?>
 
