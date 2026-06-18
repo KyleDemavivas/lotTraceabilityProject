@@ -97,6 +97,33 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
             max-width: 1400px;
             margin-left: 240px;
         }
+        .action-btns {
+            display: flex;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn-repair, .btn-scrap {
+            width: auto;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-repair {
+            background: linear-gradient(135deg, #4facfe, #00c2fe);
+        }
+        .btn-repair:hover {
+            background: linear-gradient(135deg, #00c2fe, #009efd);
+        }
+        .btn-scrap {
+            background: linear-gradient(135deg, #fe4f4f, #fe0000);
+        }
+        .btn-scrap:hover {
+            background: linear-gradient(135deg, #fe0022, #fd0037);
+        }
     </style>
 </head>
 <body>
@@ -155,6 +182,12 @@ function renderNGTable(rows) {
             <td>${r.operator_id}</td>
             <td>${formatDate(r.created_at)}</td>
             <td><span class="${r.lot_result === 'ACCEPT' ? 'badge-accept' : 'badge-reject'}">${r.lot_result}</span></td>
+            <td>
+                <div class="action-btns">
+                    <button class="btn-repair" data-serial="${r.serial_code}" data-lot="${r.kepi_lot}">Repair</button>
+                    <button class="btn-scrap" data-serial="${r.serial_code}" data-lot="${r.kepi_lot}">Scrap</button>
+                </div>
+            </td>
         </tr>
     `).join('');
 
@@ -174,6 +207,7 @@ function renderNGTable(rows) {
                     <th>Operator</th>
                     <th>Date</th>
                     <th>Lot Result</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>${tbody}</tbody>
@@ -184,12 +218,61 @@ function renderNGTable(rows) {
         pageLength: 25,
         lengthMenu: [10, 25, 50, 100],
         order: [[10, 'desc']],
+        columnDefs: [
+            { orderable: false, targets: [12] } // Action column not sortable
+        ],
         language: {
             search: 'Filter:',
             emptyTable: 'No NG records found.',
             info: 'Showing _START_ to _END_ of _TOTAL_ NG serials',
             infoEmpty: 'No records to show',
             infoFiltered: '(filtered from _MAX_ total)',
+        }
+    });
+
+    // Delegate clicks since DataTables redraws on pagination/sort
+    $('#ngDT tbody').on('click', '.btn-repair', function() {
+        const serial = $(this).data('serial');
+        const lot    = $(this).data('lot');
+        handleRepair(serial, lot);
+    });
+
+    $('#ngDT tbody').on('click', '.btn-scrap', function() {
+        const serial = $(this).data('serial');
+        const lot    = $(this).data('lot');
+        handleScrap(serial, lot);
+    });
+}
+
+function handleRepair(serial, lot) {
+    Swal.fire({
+        icon: 'question',
+        title: 'Send to Repair?',
+        html: `Mark serial <b>${serial}</b> from lot <b>${lot}</b> for repair?`,
+        showCancelButton: true,
+        confirmButtonText: 'CONFIRM',
+        cancelButtonText: 'CANCEL',
+    }).then(result => {
+        if (result.isConfirmed) {
+            // TODO: wire up actual repair endpoint
+            console.log('Repair confirmed for', serial, lot);
+        }
+    });
+}
+
+function handleScrap(serial, lot) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Scrap This Board?',
+        html: `Mark serial <b>${serial}</b> from lot <b>${lot}</b> as scrapped? This cannot be undone.`,
+        showCancelButton: true,
+        confirmButtonText: 'CONFIRM SCRAP',
+        confirmButtonColor: '#dc2626',
+        cancelButtonText: 'CANCEL',
+    }).then(result => {
+        if (result.isConfirmed) {
+            // TODO: wire up actual scrap endpoint
+            console.log('Scrap confirmed for', serial, lot);
         }
     });
 }
