@@ -14,9 +14,9 @@ try {
     $stmt->execute([$kepi_lot]);
     $header = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Serials
+    // Serials with defect info already flattened on the row
     $stmt = $conn->prepare("
-        SELECT id, serial_code, status
+        SELECT id, serial_code, status, location, defect_code, severity
         FROM qa_process
         WHERE kepi_lot = ?
         ORDER BY created_at ASC
@@ -24,16 +24,29 @@ try {
     $stmt->execute([$kepi_lot]);
     $serials = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Defects per serial (once qa_defects is wired up)
-    $defectStmt = $conn->prepare("
-        SELECT qa_process_id, defect_code, location, severity
-        FROM qa_defects
-        WHERE qa_process_id = ?
-    ");
-
+    // Reshape flat columns into a defects array per serial,
+    // since location/defect_code/severity are comma-separated lists
     foreach ($serials as &$s) {
-        $defectStmt->execute([$s['id']]);
-        $s['defects'] = $defectStmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($s['defect_code'])) {
+            $defectCodes = array_map('trim', explode(',', $s['defect_code']));
+            $locations   = !empty($s['location']) ? array_map('trim', explode(',', $s['location'])) : [];
+            $severities  = !empty($s['severity']) ? array_map('trim', explode(',', $s['severity'])) : [];
+
+            $defects = [];
+            foreach ($defectCodes as $i => $code) {
+                $defects[] = [
+                    'defect_code' => $code,
+                    'location'    => $locations[$i] ?? '',
+                    'severity'    => $severities[$i] ?? '',
+                ];
+            }
+            $s['defects'] = $defects;
+        } else {
+            $s['defects'] = [];
+        }
+
+        // Clean up raw flat fields since they're now folded into 'defects'
+        unset($s['defect_code'], $s['location'], $s['severity']);
     }
 
     echo json_encode([
