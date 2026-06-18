@@ -344,14 +344,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <?php } ?>
 
                 <!-- QA MENU -->
-                <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/qa.php', '/traceabilitydev/qa_history.php']) ? 'active open' : ''; ?>">
+                <?php if ($_SESSION['user_process'] === 'QA') { ?>
+                    <li class="dropdown <?php echo in_array($current_page, ['/traceabilitydev/qa.php', '/traceabilitydev/qa_history.php']) ? 'active open' : ''; ?>">
                     <a href="#" onclick="toggleDropdown(event)"><i class="fas fa-window-restore"></i> <span>QA Process ▾</span></a>
                     <ul class="submenu">
                         <li class="<?php echo ($current_page == '/traceabilitydev/qa.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa.php">QA</a></li>
                         <li class="<?php echo ($current_page == '/traceabilitydev/qa_history.php') ? 'active' : ''; ?>"><a href="/traceabilitydev/qa_history.php">QA History</a></li>
                     </ul>
                 </li>
-
+                <?php } ?>
                 <li class="<?php echo ($current_page == 'account_settings.php') ? 'active' : ''; ?>">
                     <a href="account_settings.php"><i class="fas fa-user-cog"></i> <span>Account Settings</span></a>
                 </li>
