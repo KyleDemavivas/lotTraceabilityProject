@@ -93,6 +93,11 @@ if (!isset($_SESSION['user_namefl'])) {
             let qr_code = $(this).val().trim();
             clearTimeout(qrDebounceTimer);
 
+             if (qr_code.toUpperCase() === 'ERROR') {
+                    $(this).val('');
+                    return;
+                }
+
             if (qr_code.length > 20) {
                 qrDebounceTimer = setTimeout(function() {
                 $.ajax({
