@@ -184,7 +184,6 @@ function renderNGTable(rows) {
             <td><span class="${r.lot_result === 'ACCEPT' ? 'badge-accept' : 'badge-reject'}">${r.lot_result}</span></td>
             <td>
                 <div class="action-btns">
-                    <button class="btn-repair" data-serial="${r.serial_code}" data-lot="${r.kepi_lot}">Repair</button>
                     <button class="btn-scrap" data-serial="${r.serial_code}" data-lot="${r.kepi_lot}">Scrap</button>
                 </div>
             </td>
@@ -234,29 +233,12 @@ function renderNGTable(rows) {
     $('#ngDT tbody').on('click', '.btn-repair', function() {
         const serial = $(this).data('serial');
         const lot    = $(this).data('lot');
-        handleRepair(serial, lot);
     });
 
     $('#ngDT tbody').on('click', '.btn-scrap', function() {
         const serial = $(this).data('serial');
         const lot    = $(this).data('lot');
         handleScrap(serial, lot);
-    });
-}
-
-function handleRepair(serial, lot) {
-    Swal.fire({
-        icon: 'question',
-        title: 'Send to Repair?',
-        html: `Mark serial <b>${serial}</b> from lot <b>${lot}</b> for repair?`,
-        showCancelButton: true,
-        confirmButtonText: 'CONFIRM',
-        cancelButtonText: 'CANCEL',
-    }).then(result => {
-        if (result.isConfirmed) {
-            // TODO: wire up actual repair endpoint
-            console.log('Repair confirmed for', serial, lot);
-        }
     });
 }
 
