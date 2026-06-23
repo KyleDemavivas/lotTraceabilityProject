@@ -9,7 +9,7 @@ try {
             location, defect_code, severity, operator_id,
             created_at, model, lot_result
         FROM qa_process
-        WHERE status = 'NO GOOD'
+        WHERE status = 'NO GOOD' AND scrap = 0
         ORDER BY created_at DESC
     ");
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
