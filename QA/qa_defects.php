@@ -253,8 +253,22 @@ function handleScrap(serial, lot) {
         cancelButtonText: 'CANCEL',
     }).then(result => {
         if (result.isConfirmed) {
-            // TODO: wire up actual scrap endpoint
-            console.log('Scrap confirmed for', serial, lot);
+            $.ajax({
+                url: '/traceabilitydev/QA/serial_scrap.php',
+                type: 'POST',
+                data: { serial_code: serial, kepi_lot: lot },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire({ icon:'success', title:'Scrapped', text:`Serial ${serial} has been marked as scrapped.` });
+                        loadNGSerials();
+                    } else {
+                        Swal.fire({ icon:'error', title:'Error', text: response.message || 'Failed to scrap serial.' });
+                    }
+                },
+                error: function() {
+                    Swal.fire({ icon:'error', title:'Network Error', text:'Failed to scrap serial.' });
+                }
+            });
         }
     });
 }
