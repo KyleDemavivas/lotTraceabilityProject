@@ -8,16 +8,21 @@ if (!$kepi_lot) { echo json_encode(['success' => false]); exit; }
 try {
     $stmt = $conn->prepare("
         SELECT 
-            kepi_lot, model, lot_quantity, sample_size,
-            inspection_method, line, shift, operator_id,
-            MIN(created_at) as created_at,
-            lot_result,
-            SUM(CASE WHEN status = 'NO GOOD' THEN 1 ELSE 0 END) as ng_count
-        FROM qa_process
-        WHERE kepi_lot LIKE ?
-        GROUP BY kepi_lot, model, lot_quantity, sample_size,
-                 inspection_method, line, shift, operator_id, lot_result
-        ORDER BY MIN(created_at) DESC
+            ql.id AS inspection_id,
+            ql.kepi_lot, ql.model, ql.lot_quantity, ql.sample_size,
+            ql.inspection_method, ql.code_letter, ql.line, ql.shift, ql.operator_id,
+            ql.attempt_number, ql.lot_result, ql.created_at,
+            ql.defects_015, ql.defects_10,
+            ISNULL(ng.ng_count, 0) AS ng_count
+        FROM qa_lot ql
+        LEFT JOIN (
+            SELECT inspection_id, COUNT(*) AS ng_count
+            FROM qa_process
+            WHERE status = 'NO GOOD'
+            GROUP BY inspection_id
+        ) ng ON ng.inspection_id = ql.id
+        WHERE ql.kepi_lot LIKE ?
+        ORDER BY ql.kepi_lot, ql.attempt_number DESC
     ");
     $stmt->execute(['%' . $kepi_lot . '%']);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

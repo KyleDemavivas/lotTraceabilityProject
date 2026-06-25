@@ -374,50 +374,51 @@ function updateCounts() {
 function doInserts(lot_result) {
     const kepi_lot          = $('#kepi_lot').val().trim();
     const operator_id       = '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>';
-    const shift             = $('#shift').val();
-    const line              = $('#line').val();
-    const inspection_method = $('#inspection_method').val();
-    const sample_size       = $('#sample_size').val();
-    const lot_qty           = $('#lot_qty').val();
-    const model             = $('#model_name').val();
+    const shift              = $('#shift').val();
+    const line               = $('#line').val();
+    const inspection_method  = $('#inspection_method').val();
+    const sample_size        = $('#sample_size').val();
+    const lot_qty             = $('#lot_qty').val();
+    const model               = $('#model_name').val();
+    const code_letter         = $('#code_letter').val();
 
-   const inserts = state.scanned.map(serial => {
+    const serials = state.scanned.map(serial => {
+        const locations   = serial.defects.flatMap(d => d.locations).join(', ');
+        const defectCodes = serial.defects.map(d => d.defect).join(', ');
+        const severities  = serial.defects.map(d => d.severity).join(', ');
+        return {
+            serial_code: serial.serial,
+            status:      serial.good ? 'GOOD' : 'NO GOOD',
+            location:    locations,
+            defect_code: defectCodes,
+            severity:    severities,
+            lot_out:     0,   // wire these up once you have real lot_out/scrap UI controls
+            scrap:       0,
+        };
+    });
+
     const formData = new FormData();
-
-    const locations   = serial.defects.flatMap(d => d.locations).join(', ');
-    const defectCodes = serial.defects.map(d => d.defect).join(', ');
-    const severities  = serial.defects.map(d => d.severity).join(', ');
-
     formData.append('kepi_lot',          kepi_lot);
-    formData.append('serial_code',       serial.serial);
+    formData.append('model',             model);
     formData.append('inspection_method', inspection_method);
-    formData.append('line',              line);
-    formData.append('shift',             shift);
-    formData.append('location',          locations);
-    formData.append('defect_code',       defectCodes);
-    formData.append('severity',          severities);
-    formData.append('operator_id',       operator_id);
+    formData.append('code_letter',       code_letter);
     formData.append('sample_size',       sample_size);
     formData.append('lot_qty',           lot_qty);
-    formData.append('model',             model);
-    formData.append('status',            serial.good ? 'GOOD' : 'NO GOOD');
+    formData.append('line',              line);
+    formData.append('shift',             shift);
+    formData.append('operator_id',       operator_id);
+    formData.append('defects_015',       state.defects015);
+    formData.append('defects_10',        state.defects10);
     formData.append('lot_result',        lot_result);
+    formData.append('serials',           JSON.stringify(serials));
 
-    return fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
+    fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
         .then(r => {
             if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
             return r.json();
-        });
-});
-
-    Promise.all(inserts)
-        .then(results => {
-            const failed = results.filter(r => r.status !== 'success');
-            if (failed.length) {
-                Swal.fire({ icon:'warning', title:'Partial Submit',
-                    text: `${failed.length} record(s) failed to insert.`,
-                    toast:true, position:'top-end', timer:2500, showConfirmButton:false });
-            } else {
+        })
+        .then(result => {
+            if (result.status === 'success') {
                 Swal.fire({ icon:'success', title:'Submitted',
                     text:'QA inspection records submitted successfully.',
                     toast:true, position:'top-end', timer:1500, showConfirmButton:false })
@@ -425,6 +426,8 @@ function doInserts(lot_result) {
                     allowReload = true;
                     location.reload();
                 });
+            } else {
+                Swal.fire({ icon:'error', title:'Submit Failed', text: result.message || 'Failed to save records.' });
             }
         })
         .catch((error) => {
@@ -673,58 +676,8 @@ function submitQAInspection() {
     const failed015 = state.aqlParams.aql015.re !== null && state.defects015 >= state.aqlParams.aql015.re;
     const failed10  = state.aqlParams.aql10.re  !== null && state.defects10  >= state.aqlParams.aql10.re;
     const lot_result = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
-
-    // 💡 Added strict application header & absolute URL paths context 
-    fetch('/traceabilitydev/QA/check_lot.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ kepi_lot })
-    })
-    .then(r => {
-        if (!r.ok) throw new Error(`HTTP check_lot error! status: ${r.status}`);
-        return r.json();
-    })
-    .then(check => {
-        if (check.accepted) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Lot Already Accepted',
-                html: `Lot <b>${kepi_lot}</b> has already been accepted in a previous inspection.<br><br>Are you sure you want to submit again?`,
-                confirmButtonText: 'SUBMIT ANYWAY',
-                showCancelButton: true,
-                cancelButtonText: 'CANCEL',
-            }).then(result => {
-                if (result.isConfirmed) {
-                    fetch('/traceabilitydev/QA/delete_lot.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ kepi_lot })
-                    })
-                    .then(r => {
-                        if (!r.ok) throw new Error(`HTTP delete_lot error! status: ${r.status}`);
-                        return r.json();
-                    })
-                    .then(del => {
-                        if (del.status === 'success') {
-                            doInserts(lot_result);
-                        } else {
-                            Swal.fire({ icon:'error', title:'Error', text:'Failed to clear previous records.' });
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Error clearing lot data:", err);
-                        Swal.fire({ icon:'error', title:'Network Error', text:'Failed to run deletion script.' });
-                    });
-                }
-            });
-        } else {
-            doInserts(lot_result);
-        }
-    })
-    .catch((error) => {
-        console.error("Network validation error details:", error);
-        Swal.fire({ icon:'error', title:'Network Error', text:'Failed to check lot verification status. See console for details.' });
-    });
+    
+    doInserts(lot_result);
 }
 
 // ── KEPI LOT FETCH ────────────────────────────────────────────────────────────
@@ -753,19 +706,28 @@ $('#kepi_lot').on('change input', function() {
             }
         });
 
-         $.ajax({
-                url: 'QA/check_lot.php',
-                type: 'POST',
-                data: { kepi_lot: lot },
-                success: function(check) {
-                    if (check.accepted) {
-                        $('#lot_dupe_warning').show().text('⚠ This lot was already ACCEPTED in a previous inspection.');
-                    } else {
-                        $('#lot_dupe_warning').hide();
-                    }
+        $.ajax({
+            url: 'QA/check_lot.php',
+            type: 'POST',
+            data: { kepi_lot: lot },
+            success: function(check) {
+                if (check.accepted) {
+                    $('#lot_dupe_warning').show().text(
+                        `⚠ This lot was already ACCEPTED on attempt #${check.attempt_count}. This will be recorded as attempt #${check.attempt_count + 1}.`
+                    );
+                } else if (check.attempt_count > 0) {
+                    $('#lot_dupe_warning').show().text(
+                        `This lot has ${check.attempt_count} prior attempt(s), most recent result: ${check.last_result}.`
+                    );
+                } else {
+                    $('#lot_dupe_warning').hide();
                 }
-            });
-            }, 500);
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error);
+            }
+        });
+    }, 500);
 });
 
 // ── UNLOAD GUARD ──────────────────────────────────────────────────────────────

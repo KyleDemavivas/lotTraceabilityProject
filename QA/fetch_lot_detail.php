@@ -2,30 +2,36 @@
 include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 header('Content-Type: application/json');
 
-$kepi_lot = $_POST['kepi_lot'] ?? '';
-if (!$kepi_lot) { echo json_encode(['success' => false]); exit; }
+$inspection_id = $_POST['inspection_id'] ?? '';
+if (!$inspection_id) { echo json_encode(['success' => false, 'message' => 'Missing inspection_id.']); exit; }
 
 try {
-    // Lot header
+    // Lot header — now a direct lookup on qa_lot by its own id
     $stmt = $conn->prepare("
-        SELECT TOP 1 inspection_method, sample_size, lot_result
-        FROM qa_process WHERE kepi_lot = ?
+        SELECT id, kepi_lot, attempt_number, model, inspection_method, code_letter,
+               sample_size, lot_quantity, line, shift, operator_id,
+               defects_015, defects_10, lot_result, created_at
+        FROM qa_lot WHERE id = ?
     ");
-    $stmt->execute([$kepi_lot]);
+    $stmt->execute([$inspection_id]);
     $header = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Serials with defect info already flattened on the row
+    if (!$header) {
+        echo json_encode(['success' => false, 'message' => 'Inspection not found.']);
+        exit;
+    }
+
+    // Serials for this specific attempt only
     $stmt = $conn->prepare("
-        SELECT id, serial_code, status, location, defect_code, severity
+        SELECT id, serial_code, status, location, defect_code, severity, lot_out, scrap
         FROM qa_process
-        WHERE kepi_lot = ?
+        WHERE inspection_id = ?
         ORDER BY created_at ASC
     ");
-    $stmt->execute([$kepi_lot]);
+    $stmt->execute([$inspection_id]);
     $serials = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Reshape flat columns into a defects array per serial,
-    // since location/defect_code/severity are comma-separated lists
+    // Reshape flat columns into a defects array per serial
     foreach ($serials as &$s) {
         if (!empty($s['defect_code'])) {
             $defectCodes = array_map('trim', explode(',', $s['defect_code']));
@@ -45,7 +51,6 @@ try {
             $s['defects'] = [];
         }
 
-        // Clean up raw flat fields since they're now folded into 'defects'
         unset($s['defect_code'], $s['location'], $s['severity']);
     }
 

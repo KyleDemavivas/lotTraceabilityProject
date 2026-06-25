@@ -35,8 +35,19 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
         }
         .history-table {
             width: 100%;
+            min-width: 900px;
             border-collapse: collapse;
             font-size: 13px;
+        }
+
+        #resultsContainer {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        .history-table td:nth-child(2),
+        .history-table td:nth-child(10) {
+            white-space: nowrap;
         }
         .history-table th {
             background: #f0f0f0;
@@ -183,7 +194,7 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 let currentDetailData = null;
-let currentDetailLot  = null;
+let currentDetailInspection = null;
 
 $('#searchBtn').on('click', doSearch);
 $('#lot_search').on('keydown', function(e) {
@@ -223,12 +234,12 @@ function doSearch() {
 }
 
 function renderTable(rows) {
-    // Group by kepi_lot — in case of multiple inspections
     const html = `
         <table class="history-table">
             <thead>
                 <tr>
                     <th>KEPI Lot No.</th>
+                    <th>Attempt</th>
                     <th>Model</th>
                     <th>Lot Qty</th>
                     <th>Sample Size</th>
@@ -243,8 +254,9 @@ function renderTable(rows) {
             </thead>
             <tbody>
                 ${rows.map(r => `
-                <tr class="lot-row" data-lot="${r.kepi_lot}">
+                <tr class="lot-row" data-inspection="${r.inspection_id}">
                     <td><b>${r.kepi_lot}</b></td>
+                    <td style="text-align:center;">#${r.attempt_number}</td>
                     <td>${r.model}</td>
                     <td>${r.lot_quantity}</td>
                     <td>${r.sample_size}</td>
@@ -262,29 +274,30 @@ function renderTable(rows) {
     `;
     $('#resultsContainer').html(html);
 
-    // Row click → open detail modal
     $('.lot-row').on('click', function() {
-        const lot = $(this).data('lot');
-        openDetailModal(lot);
+        const inspectionId = $(this).data('inspection');
+        const lot          = $(this).find('td').first().text();
+        openDetailModal(inspectionId, lot);
     });
 }
 
-function openDetailModal(lot) {
+function openDetailModal(inspectionId, lotLabel) {
     $.ajax({
         url: '/traceabilitydev/QA/fetch_lot_detail.php',
         type: 'POST',
-        data: { kepi_lot: lot },
+        data: { inspection_id: inspectionId },
         success: function(response) {
             if (!response.success) {
                 Swal.fire({ icon:'error', title:'Error', text:'Failed to load lot detail.' });
                 return;
             }
-             const d = response.data;
-            currentDetailData = d;
-            currentDetailLot  = lot;
-            $('#modalTitle').text('Lot: ' + lot);
+            const d = response.data;
+            currentDetailData       = d;
+            currentDetailInspection = inspectionId;
 
-            const ngCount  = d.serials.filter(s => s.status === 'NO GOOD').length;
+            $('#modalTitle').text(`Lot: ${d.kepi_lot} — Attempt #${d.attempt_number}`);
+
+            const ngCount   = d.serials.filter(s => s.status === 'NO GOOD').length;
             const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
 
             $('#modalBody').html(`
@@ -342,7 +355,7 @@ function openDetailModal(lot) {
 
 $('#printDetailBtn').on('click', function() {
     if (!currentDetailData) return;
-    printLotDetail(currentDetailLot, currentDetailData);
+    printLotDetail(currentDetailData.kepi_lot, currentDetailData);
 });
 
 function printLotDetail(lot, d) {
