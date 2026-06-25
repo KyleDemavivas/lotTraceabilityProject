@@ -38,6 +38,7 @@ try {
         <div class="column">
             <div class="form-section">
                 <h3>Lot Information</h3>
+                                <div class="lot-dupe-warning" id="lot_dupe_warning" style="display:none;"></div>
                 <div class="form-group">
                     <label class="form-label">KEPI Lot No.:</label>
                     <input type="text" class="form-input" id="kepi_lot" autocomplete="off" placeholder="Enter lot number">
@@ -751,7 +752,20 @@ $('#kepi_lot').on('change input', function() {
                 console.error('AJAX error:', status, error);
             }
         });
-    }, 500);
+
+         $.ajax({
+                url: 'QA/check_lot.php',
+                type: 'POST',
+                data: { kepi_lot: lot },
+                success: function(check) {
+                    if (check.accepted) {
+                        $('#lot_dupe_warning').show().text('⚠ This lot was already ACCEPTED in a previous inspection.');
+                    } else {
+                        $('#lot_dupe_warning').hide();
+                    }
+                }
+            });
+            }, 500);
 });
 
 // ── UNLOAD GUARD ──────────────────────────────────────────────────────────────
