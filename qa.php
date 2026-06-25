@@ -66,7 +66,8 @@ try {
                         <option value="">— Select Method —</option>
                         <option value="normal">Normal</option>
                         <option value="tightened">Tightened</option>
-                        <option value="reduced">Reduced</option>
+                       <option option value="reduced">Reduced</option>
+                       <option option value="fullcheck">Full Check</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -469,7 +470,11 @@ function checkStartReady() {
     $('#code_letter').val(letterStr || '—');
 
     if (letterStr && method && AQL_DATA[letterStr] && modelname) {
-        $('#sample_size').val(AQL_DATA[letterStr].sample[method]);
+        if (method === 'fullcheck') {
+            $('#sample_size').val(5);
+        } else {
+            $('#sample_size').val(AQL_DATA[letterStr].sample[method]);
+        }
     } else {
         $('#sample_size').val('—');
     }
@@ -487,8 +492,8 @@ $('#startBtn').on('click', function() {
         return;
     }
     const data   = AQL_DATA[letter];
-    const params = data[method];
-    const sample = data.sample[method];
+    const params = method === 'fullcheck' ? data.normal : data[method];
+    const sample = method === 'fullcheck' ? 5 : data.sample[method];
 
     state = {
         active: true, letter, method, sampleSize: sample,
