@@ -173,6 +173,7 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
         <h2 id="modalTitle">Lot Detail</h2>
         <div id="modalBody"></div>
         <div class="modal-footer">
+            <button class="btn-ghost" id="printDetailBtn" style="padding:8px 20px; font-size:14px;">PRINT</button>
             <button class="btn-ghost" id="closeDetailBtn" style="padding:8px 20px; font-size:14px;">CLOSE</button>
         </div>
     </div>
@@ -181,6 +182,8 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+let currentDetailData = null;
+let currentDetailLot  = null;
 
 $('#searchBtn').on('click', doSearch);
 $('#lot_search').on('keydown', function(e) {
@@ -276,7 +279,9 @@ function openDetailModal(lot) {
                 Swal.fire({ icon:'error', title:'Error', text:'Failed to load lot detail.' });
                 return;
             }
-            const d = response.data;
+             const d = response.data;
+            currentDetailData = d;
+            currentDetailLot  = lot;
             $('#modalTitle').text('Lot: ' + lot);
 
             const ngCount  = d.serials.filter(s => s.status === 'NO GOOD').length;
@@ -333,6 +338,113 @@ function openDetailModal(lot) {
             Swal.fire({ icon:'error', title:'Network Error', text:'Failed to load serial details.' });
         }
     });
+}
+
+$('#printDetailBtn').on('click', function() {
+    if (!currentDetailData) return;
+    printLotDetail(currentDetailLot, currentDetailData);
+});
+
+function printLotDetail(lot, d) {
+    const ngCount   = d.serials.filter(s => s.status === 'NO GOOD').length;
+    const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
+
+    const printHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>QA Lot Detail - ${lot}</title>
+            <style>
+                body { font-family: Arial, sans-serif; color:#222; padding: 24px; }
+                h1 { font-size: 18px; margin-bottom: 4px; }
+                .sub { font-size: 12px; color:#666; margin-bottom: 18px; }
+                .lot-summary { display:flex; gap:10px; margin-bottom:18px; }
+                .summary-box { flex:1; border:1px solid #ccc; border-radius:6px; padding:8px; text-align:center; }
+                .sb-label { font-size:10px; font-weight:bold; text-transform:uppercase; color:#888; letter-spacing:1px; margin-bottom:4px; }
+                .sb-value { font-size:16px; font-weight:bold; }
+                .accept { color:#16a34a; }
+                .reject { color:#dc2626; }
+                .blue   { color:#4facfe; }
+                table { width:100%; border-collapse: collapse; font-size:12px; margin-top:10px; }
+                th { background:#f0f0f0; padding:6px 8px; text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; border-bottom:2px solid #ddd; }
+                td { padding:6px 8px; border-bottom:1px solid #eee; }
+                tr.ng-row td { background:#fff5f5; }
+                .status-good { color:#16a34a; }
+                .status-ng   { color:#dc2626; }
+                @media print {
+                    body { padding: 0; }
+                }
+            </style>
+        </head>
+        <body>
+            <h1>QA Inspection Detail — Lot ${lot}</h1>
+            <div class="sub">Printed ${new Date().toLocaleString('en-PH')}</div>
+
+            <div class="lot-summary">
+                <div class="summary-box">
+                    <div class="sb-label">Result</div>
+                    <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Method</div>
+                    <div class="sb-value" style="font-size:14px;">${capitalize(d.inspection_method)}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Sample Size</div>
+                    <div class="sb-value blue">${d.sample_size}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Good</div>
+                    <div class="sb-value accept">${goodCount}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">NG</div>
+                    <div class="sb-value reject">${ngCount}</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Serial</th>
+                        <th>Status</th>
+                        <th>Defects</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${d.serials.map((s, i) => `
+                    <tr class="${s.status === 'NO GOOD' ? 'ng-row' : ''}">
+                        <td>${String(i+1).padStart(2,'0')}</td>
+                        <td style="font-family:monospace;">${s.serial_code}</td>
+                        <td class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}"><b>${s.status}</b></td>
+                        <td>${formatDefects(s.defects)}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </body>
+        </html>
+    `;
+
+    const printFrame = document.createElement('iframe');
+    printFrame.style.position = 'fixed';
+    printFrame.style.right = '0';
+    printFrame.style.bottom = '0';
+    printFrame.style.width = '0';
+    printFrame.style.height = '0';
+    printFrame.style.border = '0';
+    document.body.appendChild(printFrame);
+
+    const frameDoc = printFrame.contentWindow.document;
+    frameDoc.open();
+    frameDoc.write(printHtml);
+    frameDoc.close();
+
+    printFrame.contentWindow.focus();
+    printFrame.contentWindow.print();
+
+    setTimeout(() => document.body.removeChild(printFrame), 1000);
 }
 
 $('#closeDetailModal, #closeDetailBtn').on('click', function() {
