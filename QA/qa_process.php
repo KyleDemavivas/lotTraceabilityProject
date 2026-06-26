@@ -103,8 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $inspectionId = $conn->lastInsertId();
 
         // 3. Insert each serial row, tagged with the new inspection_id
-        $serialSql = 'INSERT INTO qa_process (serial_code, status, location, defect_code, severity, lot_out, scrap, inspection_id, created_at)
-                      VALUES (:serial_code, :status, :location, :defect_code, :severity, :lot_out, :scrap, :inspection_id, :created_at)';
+        $serialSql = 'INSERT INTO qa_process (serial_code, status, location, defect_code, severity, lot_out, scrap, inspection_id, created_at, parts_specification)
+              VALUES (:serial_code, :status, :location, :defect_code, :severity, :lot_out, :scrap, :inspection_id, :created_at, :parts_specification)';
         $serialStmt = $conn->prepare($serialSql);
 
         foreach ($serials as $s) {
@@ -118,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':scrap'         => $s['scrap'] ?? 0,
                 ':inspection_id' => $inspectionId,
                 ':created_at'    => $created_at,
+                ':parts_specification' => $s['parts_specification'] ?? null,
             ]);
         }
 

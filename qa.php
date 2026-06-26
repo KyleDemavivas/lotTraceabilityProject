@@ -329,6 +329,7 @@ let state = {
     active: false, letter: null, method: null, sampleSize: 0,
     scanned: [], currentSerial: null,
     defects015: 0, defects10: 0, aqlParams: null,
+    scanCountForSpec: 0,   // tracks GOOD boards seen so far, for the first-5 Parts Spec popup
 };
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -379,10 +380,14 @@ function renderSerialList() {
         const detail = s.defects.length
             ? s.defects.map(d => `[${d.severity.toUpperCase()}] ${d.defect} @ ${d.locations.join(', ')}`).join(' | ')
             : '';
+        const specTag = s.parts_specification
+            ? `<span class="ng-detail" style="color:#4facfe;">Spec: ${s.parts_specification}</span>`
+            : '';
         return `<div class="serial-row ${s.good ? '' : 'ng'}">
             <span class="serial-num">#${String(i+1).padStart(2,'0')}</span>
             <span class="serial-code">${s.serial}</span>
             ${detail ? `<span class="ng-detail">${detail}</span>` : ''}
+            ${specTag}
             <span class="serial-status ${s.good ? 'status-good' : 'status-ng'}">${s.good ? 'GOOD' : 'NG'}</span>
         </div>`;
     }).join('');
@@ -421,8 +426,9 @@ function doInserts(lot_result, finalizeData) {
             location:    locations,
             defect_code: defectCodes,
             severity:    severities,
-            lot_out:     0,   // wire these up once you have real lot_out/scrap UI controls
+            lot_out:     0,
             scrap:       0,
+            parts_specification: serial.parts_specification || null,
         };
     });
 
@@ -496,6 +502,39 @@ function deriveJudgement(method, defects015, defects10, aqlParams) {
     return 'B Passed';
 }
 
+function promptPartsSpecification(serial) {
+    Swal.fire({
+        title: 'Parts Specification',
+        html: `<div style="text-align:left; font-size:13px;">
+            <div class="form-group">
+                <label class="form-label" style="min-width:140px;">Board:</label>
+                <input type="text" class="form-input" value="${serial}" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="min-width:140px;">Parts Spec:</label>
+                <input type="text" class="form-input" id="sw_parts_spec" autocomplete="off" placeholder="Enter parts specification">
+            </div>
+        </div>`,
+        confirmButtonText: 'CONFIRM',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        preConfirm: () => {
+            const val = document.getElementById('sw_parts_spec').value.trim();
+            if (!val) {
+                Swal.showValidationMessage('Parts Specification is required.');
+                return false;
+            }
+            return val;
+        },
+    }).then(result => {
+        if (result.isConfirmed) {
+            const entry = state.scanned.find(s => s.serial === serial);
+            if (entry) entry.parts_specification = result.value;
+            $('#serial_input').val('').focus();
+        }
+    });
+}
+
 // ── LOCATION OPTIONS (PHP-rendered) ──────────────────────────────────────────
 const locationOptions = `<?php foreach ($locations as $loc): ?><option value="<?php echo htmlspecialchars($loc); ?>"><?php echo htmlspecialchars($loc); ?></option><?php endforeach; ?>`;
 
@@ -563,6 +602,7 @@ $('#startBtn').on('click', function() {
         active: true, letter, method, sampleSize: sample,
         aqlParams: params, scanned: [], currentSerial: null,
         defects015: 0, defects10: 0,
+        scanCountForSpec: 0,
     };
 
     $('#disp_letter').text(letter);
@@ -613,10 +653,16 @@ $('#serial_input').on('keydown', function(e) {
         reverseButtons: true,
         allowOutsideClick: false,
     }).then(result => {
-        if (result.isConfirmed) {
-            state.scanned.push({ serial, good: true, defects: [] });
+       if (result.isConfirmed) {
+            state.scanned.push({ serial, good: true, defects: [], parts_specification: null });
+            state.scanCountForSpec++;
             renderSerialList(); updateCounts(); updateJudgement();
-            $('#serial_input').val('').focus();
+
+            if (state.scanCountForSpec <= 5) {
+                promptPartsSpecification(serial);
+            } else {
+                $('#serial_input').val('').focus();
+            }
         } else {
             state.currentSerial = serial;
             openNgModal(serial);
@@ -651,10 +697,17 @@ function closeNgModal() {
 }
 
 $('#closeNgModal, #ngCancelBtn').on('click', function() {
-    // cancelled without saving — push as GOOD
-    state.scanned.push({ serial: state.currentSerial, good: true, defects: [] });
+    const serial = state.currentSerial;
+    state.scanned.push({ serial, good: true, defects: [], parts_specification: null });
+    state.scanCountForSpec++;
     renderSerialList(); updateCounts(); updateJudgement();
     closeNgModal();
+
+    if (state.scanCountForSpec <= 5) {
+        promptPartsSpecification(serial);
+    } else {
+        $('#serial_input').val('').focus();
+    }
 });
 
 $('#addNgDefectBtn').on('click', function() {
@@ -671,6 +724,7 @@ $('#ngSaveBtn').on('click', function() {
         const defect    = $(this).find('.defect-input').val().trim().toUpperCase();
         const locations = $(this).find('.location-select').val() || [];
         const severity  = $(this).find('.severity-radio:checked').val() || 'major';
+
         if (!defect && !locations.length) return;
         if (!defect || !locations.length) { valid = false; return; }
         defects.push({ defect, locations, severity });
@@ -686,9 +740,17 @@ $('#ngSaveBtn').on('click', function() {
         else                        state.defects10  += 1;
     });
 
-    state.scanned.push({ serial: state.currentSerial, good: false, defects });
+    const serial = state.currentSerial;
+    state.scanned.push({ serial, good: false, defects, parts_specification: null });
+    state.scanCountForSpec++;
     closeNgModal();
     renderSerialList(); updateCounts(); updateJudgement();
+
+    if (state.scanCountForSpec <= 5) {
+        promptPartsSpecification(serial);
+    } else {
+        $('#serial_input').val('').focus();
+    }
 });
 
 $('#ngBtn').on('click', function() {
