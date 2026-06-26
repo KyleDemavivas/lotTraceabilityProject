@@ -396,7 +396,7 @@ function updateCounts() {
     document.getElementById('finalizeBtn').disabled = state.scanned.length < state.sampleSize;
 }
 
-function doInserts(lot_result) {
+function doInserts(lot_result, finalizeData) {
     const kepi_lot          = $('#kepi_lot').val().trim();
     const operator_id       = '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>';
     const shift              = $('#shift').val();
@@ -444,6 +444,13 @@ function doInserts(lot_result) {
     formData.append('assy_no',          assy_no);
     formData.append('reference_no',     reference_no);
     formData.append('inspection_level', inspection_level);
+    formData.append('judgement', finalizeData.judgement);
+    formData.append('parts_appearance',      finalizeData.parts_appearance);
+    formData.append('pcb_appearance',        finalizeData.pcb_appearance);
+    formData.append('solder_condition',      finalizeData.solder_condition);
+    formData.append('labels_markings',       finalizeData.labels_markings);
+    formData.append('subassembly_condition', finalizeData.subassembly_condition);
+    formData.append('package_condition',     finalizeData.package_condition);
 
     fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
         .then(r => {
@@ -467,6 +474,26 @@ function doInserts(lot_result) {
             console.error("Insertion failed:", error);
             Swal.fire({ icon:'error', title:'Insertion Error', text:'Failed to save row records.' });
         });
+}
+
+function deriveJudgement(method, defects015, defects10, aqlParams) {
+    const failed015 = aqlParams.aql015.re !== null && defects015 >= aqlParams.aql015.re;
+    const failed10  = aqlParams.aql10.re  !== null && defects10  >= aqlParams.aql10.re;
+    const rejected  = failed015 || failed10;
+    const hasDefects = (defects015 + defects10) > 0;
+    const isFullcheck = method === 'fullcheck';
+
+    if (rejected) {
+        return isFullcheck ? 'NG Reject' : 'D Lot Out';
+    }
+    if (isFullcheck && !hasDefects) {
+        return 'GO Accept';
+    }
+    if (!isFullcheck && !hasDefects) {
+        return 'A Passed';
+    }
+    // Any method with some defects but under threshold (includes fullcheck-with-defects)
+    return 'B Passed';
 }
 
 // ── LOCATION OPTIONS (PHP-rendered) ──────────────────────────────────────────
@@ -681,6 +708,19 @@ $('#finalizeBtn').on('click', function() {
     const failed015 = aqlParams.aql015.re !== null && defects015 >= aqlParams.aql015.re;
     const failed10  = aqlParams.aql10.re  !== null && defects10  >= aqlParams.aql10.re;
     const judgement = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
+    const derivedJudgement = deriveJudgement(method, defects015, defects10, aqlParams);
+
+    const remarkFieldsHtml = judgement === 'ACCEPT' ? `
+        <hr style="margin:12px 0;">
+        <div style="text-align:left; font-size:13px;">
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Parts Appearance:</label><input type="text" class="form-input" id="fz_parts_appearance"></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">PCB Appearance:</label><input type="text" class="form-input" id="fz_pcb_appearance"></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Solder Condition:</label><input type="text" class="form-input" id="fz_solder_condition"></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Labels/Markings:</label><input type="text" class="form-input" id="fz_labels_markings"></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Sub Assembly Condition:</label><input type="text" class="form-input" id="fz_subassembly_condition"></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Package Condition:</label><input type="text" class="form-input" id="fz_package_condition"></div>
+        </div>
+    ` : '';
 
     Swal.fire({
         icon: judgement === 'ACCEPT' ? 'success' : 'error',
@@ -694,23 +734,51 @@ $('#finalizeBtn').on('click', function() {
             <hr style="margin:8px 0;">
             <b>AQL 0.15 (Major):</b> ${defects015} defects &nbsp;|&nbsp; Re: ${fmtAcRe(aqlParams.aql015.re)}<br>
             <b>AQL 1.0 (Minor):</b> ${defects10} defects &nbsp;|&nbsp; Re: ${fmtAcRe(aqlParams.aql10.re)}<br>
+            <hr style="margin:8px 0;">
+            <div class="form-group">
+                <label class="form-label" style="min-width:160px;">Judgement:</label>
+                <select class="form-input" id="fz_judgement">
+                    <option value="A Passed" ${derivedJudgement === 'A Passed' ? 'selected' : ''}>A Passed</option>
+                    <option value="B Passed" ${derivedJudgement === 'B Passed' ? 'selected' : ''}>B Passed</option>
+                    <option value="D Lot Out" ${derivedJudgement === 'D Lot Out' ? 'selected' : ''}>D Lot Out</option>
+                    <option value="GO Accept" ${derivedJudgement === 'GO Accept' ? 'selected' : ''}>GO Accept</option>
+                    <option value="NG Reject" ${derivedJudgement === 'NG Reject' ? 'selected' : ''}>NG Reject</option>
+                </select>
+            </div>
+            ${remarkFieldsHtml}
         </div>`,
         confirmButtonText: 'CONFIRM & SUBMIT',
         showCancelButton: true,
         cancelButtonText: 'GO BACK',
+        preConfirm: () => {
+            const selectedJudgement = document.getElementById('fz_judgement').value;
+            if (selectedJudgement !== derivedJudgement) {
+                Swal.showValidationMessage(`Judgement must match the calculated result: ${derivedJudgement}`);
+                return false;
+            }
+            return {
+                judgement: selectedJudgement,
+                parts_appearance:        document.getElementById('fz_parts_appearance')?.value || '',
+                pcb_appearance:          document.getElementById('fz_pcb_appearance')?.value || '',
+                solder_condition:        document.getElementById('fz_solder_condition')?.value || '',
+                labels_markings:         document.getElementById('fz_labels_markings')?.value || '',
+                subassembly_condition:   document.getElementById('fz_subassembly_condition')?.value || '',
+                package_condition:       document.getElementById('fz_package_condition')?.value || '',
+            };
+        },
     }).then(result => {
-        if (result.isConfirmed) submitQAInspection();
+        if (result.isConfirmed) submitQAInspection(result.value);
     });
 });
 
 // ── SUBMIT ────────────────────────────────────────────────────────────────────
-function submitQAInspection() {
+function submitQAInspection(finalizeData) {
     const kepi_lot  = $('#kepi_lot').val().trim();
     const failed015 = state.aqlParams.aql015.re !== null && state.defects015 >= state.aqlParams.aql015.re;
     const failed10  = state.aqlParams.aql10.re  !== null && state.defects10  >= state.aqlParams.aql10.re;
     const lot_result = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
-    
-    doInserts(lot_result);
+
+    doInserts(lot_result, finalizeData);
 }
 
 // ── KEPI LOT FETCH ────────────────────────────────────────────────────────────
