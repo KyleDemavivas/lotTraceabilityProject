@@ -281,6 +281,11 @@ function renderTable(rows) {
     });
 }
 
+$(document).on('change', '#toggleShowAll', function() {
+    showAllSerials = $(this).is(':checked');
+    $('#detailTableWrapper').html(renderDetailTable(currentDetailData.serials, showAllSerials));
+});
+
 function openDetailModal(inspectionId, lotLabel) {
     $.ajax({
         url: '/traceabilitydev/QA/fetch_lot_detail.php',
@@ -294,6 +299,7 @@ function openDetailModal(inspectionId, lotLabel) {
             const d = response.data;
             currentDetailData       = d;
             currentDetailInspection = inspectionId;
+            showAllSerials           = false;   // reset toggle on every fresh open
 
             $('#modalTitle').text(`Lot: ${d.kepi_lot} — Attempt #${d.attempt_number}`);
 
@@ -324,25 +330,16 @@ function openDetailModal(inspectionId, lotLabel) {
                     </div>
                 </div>
 
-                <table class="detail-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Serial</th>
-                            <th>Status</th>
-                            <th>Defects</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${d.serials.map((s, i) => `
-                        <tr class="${s.status === 'NO GOOD' ? 'ng-row' : ''}">
-                            <td style="color:#aaa; font-size:11px;">${String(i+1).padStart(2,'0')}</td>
-                            <td style="font-family:monospace;">${s.serial_code}</td>
-                            <td><span class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}" style="font-weight:bold; font-size:11px; letter-spacing:1px;">${s.status}</span></td>
-                            <td style="font-size:12px; color:#666;">${formatDefects(s.defects)}</td>
-                        </tr>`).join('')}
-                    </tbody>
-                </table>
+                <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-bottom:8px;">
+                    <label style="font-size:12px; color:#666; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="checkbox" id="toggleShowAll">
+                        Show all serials (including GOOD)
+                    </label>
+                </div>
+
+                <div id="detailTableWrapper">
+                    ${renderDetailTable(d.serials, showAllSerials)}
+                </div>
             `);
 
             $('#detailModal').addClass('active');
@@ -353,6 +350,36 @@ function openDetailModal(inspectionId, lotLabel) {
     });
 }
 
+function renderDetailTable(serials, showAll) {
+    const filtered = showAll ? serials : serials.filter(s => s.status === 'NO GOOD');
+
+    if (!filtered.length) {
+        return `<div class="empty-state">${showAll ? 'No serials recorded.' : 'No NG units \u2014 all serials passed.'}</div>`;
+    }
+
+    return `
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Serial</th>
+                    <th>Status</th>
+                    <th>Defects</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filtered.map((s, i) => `
+                <tr class="${s.status === 'NO GOOD' ? 'ng-row' : ''}">
+                    <td style="color:#aaa; font-size:11px;">${String(i+1).padStart(2,'0')}</td>
+                    <td style="font-family:monospace;">${s.serial_code}</td>
+                    <td><span class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}" style="font-weight:bold; font-size:11px; letter-spacing:1px;">${s.status}</span></td>
+                    <td style="font-size:12px; color:#666;">${formatDefects(s.defects)}</td>
+                </tr>`).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
 $('#printDetailBtn').on('click', function() {
     if (!currentDetailData) return;
     printLotDetail(currentDetailData.kepi_lot, currentDetailData);
@@ -361,6 +388,8 @@ $('#printDetailBtn').on('click', function() {
 function printLotDetail(lot, d) {
     const ngCount   = d.serials.filter(s => s.status === 'NO GOOD').length;
     const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
+    const printSerials = showAllSerials ? d.serials : d.serials.filter(s => s.status === 'NO GOOD');
+
 
     const printHtml = `
         <!DOCTYPE html>
@@ -417,25 +446,18 @@ function printLotDetail(lot, d) {
                 </div>
             </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Serial</th>
-                        <th>Status</th>
-                        <th>Defects</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${d.serials.map((s, i) => `
-                    <tr class="${s.status === 'NO GOOD' ? 'ng-row' : ''}">
-                        <td>${String(i+1).padStart(2,'0')}</td>
-                        <td style="font-family:monospace;">${s.serial_code}</td>
-                        <td class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}"><b>${s.status}</b></td>
-                        <td>${formatDefects(s.defects)}</td>
-                    </tr>`).join('')}
-                </tbody>
-            </table>
+           <table>
+            <thead>...</thead>
+            <tbody>
+                ${printSerials.map((s, i) => `
+                <tr class="${s.status === 'NO GOOD' ? 'ng-row' : ''}">
+                    <td>${String(i+1).padStart(2,'0')}</td>
+                    <td style="font-family:monospace;">${s.serial_code}</td>
+                    <td class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}"><b>${s.status}</b></td>
+                    <td>${formatDefects(s.defects)}</td>
+                </tr>`).join('')}
+            </tbody>
+        </table>
         </body>
         </html>
     `;
