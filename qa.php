@@ -55,6 +55,18 @@ try {
                     <label class="form-label">Model:</label>
                     <input type="text" class="form-input" id="model_name" placeholder="—" readonly>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Customer:</label>
+                    <input type="text" class="form-input" id="customer" autocomplete="off" placeholder="Enter customer">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assy No.:</label>
+                    <input type="text" class="form-input" id="assy_no" autocomplete="off" placeholder="Enter assembly number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reference No.:</label>
+                    <input type="text" class="form-input" id="reference_no" autocomplete="off" placeholder="Enter reference number">
+                </div>
             </div>
         </div>
 
@@ -69,6 +81,19 @@ try {
                         <option value="tightened">Tightened</option>
                        <option option value="reduced">Reduced</option>
                        <option option value="fullcheck">Full Check</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Inspection Level:</label>
+                    <select class="form-input" id="inspection_level">
+                        <option value="">— Select Level —</option>
+                        <option value="I">Level I</option>
+                        <option value="II">Level II</option>
+                        <option value="III">Level III</option>
+                        <option value="S-1">Special Level S-1</option>
+                        <option value="S-2">Special Level S-2</option>
+                        <option value="S-3">Special Level S-3</option>
+                        <option value="S-4">Special Level S-4</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -381,6 +406,10 @@ function doInserts(lot_result) {
     const lot_qty             = $('#lot_qty').val();
     const model               = $('#model_name').val();
     const code_letter         = $('#code_letter').val();
+    const customer         = $('#customer').val().trim();
+    const assy_no          = $('#assy_no').val().trim();
+    const reference_no     = $('#reference_no').val().trim();
+    const inspection_level = $('#inspection_level').val();
 
     const serials = state.scanned.map(serial => {
         const locations   = serial.defects.flatMap(d => d.locations).join(', ');
@@ -411,6 +440,10 @@ function doInserts(lot_result) {
     formData.append('defects_10',        state.defects10);
     formData.append('lot_result',        lot_result);
     formData.append('serials',           JSON.stringify(serials));
+    formData.append('customer',         customer);
+    formData.append('assy_no',          assy_no);
+    formData.append('reference_no',     reference_no);
+    formData.append('inspection_level', inspection_level);
 
     fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
         .then(r => {

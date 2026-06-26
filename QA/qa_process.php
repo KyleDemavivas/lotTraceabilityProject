@@ -21,6 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $defects_015        = $_POST['defects_015'] ?? 0;
     $defects_10         = $_POST['defects_10'] ?? 0;
     $lot_result         = $_POST['lot_result'] ?? 'ACCEPT';
+    $customer         = $_POST['customer'] ?? '';
+    $assy_no          = $_POST['assy_no'] ?? '';
+    $reference_no     = $_POST['reference_no'] ?? '';
+    $inspection_level = $_POST['inspection_level'] ?? '';
 
     // serials is a JSON string from the frontend: array of {serial_code, status, location, defect_code, severity, lot_out, scrap}
     $serialsJson = $_POST['serials'] ?? '[]';
@@ -41,8 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nextAttempt = $stmt->fetch(PDO::FETCH_ASSOC)['next_attempt'];
 
         // 2. Insert the qa_lot header row
-        $sql = 'INSERT INTO qa_lot (kepi_lot, attempt_number, model, inspection_method, code_letter, sample_size, lot_quantity, line, shift, operator_id, defects_015, defects_10, lot_result, created_at)
-                VALUES (:kepi_lot, :attempt_number, :model, :inspection_method, :code_letter, :sample_size, :lot_quantity, :line, :shift, :operator_id, :defects_015, :defects_10, :lot_result, :created_at)';
+        $sql = 'INSERT INTO qa_lot (kepi_lot, attempt_number, model, inspection_method, code_letter, sample_size, lot_quantity, line, shift, operator_id, defects_015, defects_10, lot_result, created_at, customer, assy_no, reference_no, inspection_level)
+        VALUES (:kepi_lot, :attempt_number, :model, :inspection_method, :code_letter, :sample_size, :lot_quantity, :line, :shift, :operator_id, :defects_015, :defects_10, :lot_result, :created_at, :customer, :assy_no, :reference_no, :inspection_level)';
         $stmt = $conn->prepare($sql);
         $stmt->execute([
             ':kepi_lot'          => $kepi_lot,
@@ -59,6 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':defects_10'        => $defects_10,
             ':lot_result'        => $lot_result,
             ':created_at'        => $created_at,
+            ':customer'          => $customer,
+            ':assy_no'           => $assy_no,
+            ':reference_no'      => $reference_no,
+            ':inspection_level'  => $inspection_level,
         ]);
 
         $inspectionId = $conn->lastInsertId();
