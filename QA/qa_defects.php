@@ -95,7 +95,7 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
         }
         .form-container {
             max-width: 1400px;
-            margin-left: 240px;
+            margin-left: 220px;
         }
         .action-btns {
             display: flex;
@@ -215,8 +215,9 @@ function renderNGTable(rows) {
 
     $('#ngDT').DataTable({
         pageLength: 25,
-        lengthMenu: [10, 25, 50, 100],
         order: [[10, 'desc']],
+        lengthChange: false,
+        info: false,
         columnDefs: [
             { orderable: false, targets: [12] } // Action column not sortable
         ],
