@@ -195,6 +195,7 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 <script>
 let currentDetailData = null;
 let currentDetailInspection = null;
+let showAllSerials           = false;
 
 $('#searchBtn').on('click', doSearch);
 $('#lot_search').on('keydown', function(e) {
@@ -307,40 +308,67 @@ function openDetailModal(inspectionId, lotLabel) {
             const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
 
             $('#modalBody').html(`
-                <div class="lot-summary">
-                    <div class="summary-box">
-                        <div class="sb-label">Result</div>
-                        <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
-                    </div>
-                    <div class="summary-box">
-                        <div class="sb-label">Method</div>
-                        <div class="sb-value" style="font-size:14px;">${capitalize(d.inspection_method)}</div>
-                    </div>
-                    <div class="summary-box">
-                        <div class="sb-label">Sample Size</div>
-                        <div class="sb-value blue">${d.sample_size}</div>
-                    </div>
-                    <div class="summary-box">
-                        <div class="sb-label">Good</div>
-                        <div class="sb-value accept">${goodCount}</div>
-                    </div>
-                    <div class="summary-box">
-                        <div class="sb-label">NG</div>
-                        <div class="sb-value reject">${ngCount}</div>
-                    </div>
+            <div class="lot-summary">
+                <div class="summary-box">
+                    <div class="sb-label">Result</div>
+                    <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
                 </div>
+                <div class="summary-box">
+                    <div class="sb-label">Judgement</div>
+                    <div class="sb-value" style="font-size:13px;">${d.judgement || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Method</div>
+                    <div class="sb-value" style="font-size:14px;">${capitalize(d.inspection_method)}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Level</div>
+                    <div class="sb-value" style="font-size:14px;">${d.inspection_level || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Sample Size</div>
+                    <div class="sb-value blue">${d.sample_size}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Good</div>
+                    <div class="sb-value accept">${goodCount}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">NG</div>
+                    <div class="sb-value reject">${ngCount}</div>
+                </div>
+            </div>
 
-                <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-bottom:8px;">
-                    <label style="font-size:12px; color:#666; display:flex; align-items:center; gap:6px; cursor:pointer;">
-                        <input type="checkbox" id="toggleShowAll">
-                        Show all serials (including GOOD)
-                    </label>
-                </div>
+            <div style="font-size:13px; color:#555; margin-bottom:12px; display:flex; flex-wrap:wrap; gap:8px 24px;">
+                ${d.customer         ? `<span><b>Customer:</b> ${d.customer}</span>` : ''}
+                ${d.assy_no          ? `<span><b>Assy No.:</b> ${d.assy_no}</span>` : ''}
+                ${d.reference_no     ? `<span><b>Reference No.:</b> ${d.reference_no}</span>` : ''}
+            </div>
 
-                <div id="detailTableWrapper">
-                    ${renderDetailTable(d.serials, showAllSerials)}
+            ${d.lot_result === 'ACCEPT' && (d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
+            <div style="font-size:12px; background:#f9f9f9; border:1px solid #eee; border-radius:6px; padding:10px 14px; margin-bottom:12px;">
+                <div style="font-weight:bold; text-transform:uppercase; font-size:10px; letter-spacing:1px; color:#888; margin-bottom:8px;">Final Inspection Remarks</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; color:#444;">
+                    ${d.parts_appearance       ? `<div><b>Parts Appearance:</b> ${d.parts_appearance}</div>` : ''}
+                    ${d.pcb_appearance         ? `<div><b>PCB Appearance:</b> ${d.pcb_appearance}</div>` : ''}
+                    ${d.solder_condition       ? `<div><b>Solder Condition:</b> ${d.solder_condition}</div>` : ''}
+                    ${d.labels_markings        ? `<div><b>Labels/Markings:</b> ${d.labels_markings}</div>` : ''}
+                    ${d.subassembly_condition  ? `<div><b>Sub Assembly Condition:</b> ${d.subassembly_condition}</div>` : ''}
+                    ${d.package_condition      ? `<div><b>Package Condition:</b> ${d.package_condition}</div>` : ''}
                 </div>
-            `);
+            </div>` : ''}
+
+            <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-bottom:8px;">
+                <label style="font-size:12px; color:#666; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input type="checkbox" id="toggleShowAll">
+                    Show all serials (including GOOD)
+                </label>
+            </div>
+
+            <div id="detailTableWrapper">
+                ${renderDetailTable(d.serials, showAllSerials)}
+            </div>
+        `);
 
             $('#detailModal').addClass('active');
         },
@@ -354,7 +382,7 @@ function renderDetailTable(serials, showAll) {
     const filtered = showAll ? serials : serials.filter(s => s.status === 'NO GOOD');
 
     if (!filtered.length) {
-        return `<div class="empty-state">${showAll ? 'No serials recorded.' : 'No NG units \u2014 all serials passed.'}</div>`;
+        return `<div class="empty-state">${showAll ? 'No serials recorded.' : 'No NG units — all serials passed.'}</div>`;
     }
 
     return `
@@ -364,6 +392,7 @@ function renderDetailTable(serials, showAll) {
                     <th>#</th>
                     <th>Serial</th>
                     <th>Status</th>
+                    <th>Parts Spec</th>
                     <th>Defects</th>
                 </tr>
             </thead>
@@ -373,6 +402,7 @@ function renderDetailTable(serials, showAll) {
                     <td style="color:#aaa; font-size:11px;">${String(i+1).padStart(2,'0')}</td>
                     <td style="font-family:monospace;">${s.serial_code}</td>
                     <td><span class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}" style="font-weight:bold; font-size:11px; letter-spacing:1px;">${s.status}</span></td>
+                    <td style="font-size:12px; color:#4facfe;">${s.parts_specification || '—'}</td>
                     <td style="font-size:12px; color:#666;">${formatDefects(s.defects)}</td>
                 </tr>`).join('')}
             </tbody>
@@ -392,75 +422,113 @@ function printLotDetail(lot, d) {
 
 
     const printHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>QA Lot Detail - ${lot}</title>
-            <style>
-                body { font-family: Arial, sans-serif; color:#222; padding: 24px; }
-                h1 { font-size: 18px; margin-bottom: 4px; }
-                .sub { font-size: 12px; color:#666; margin-bottom: 18px; }
-                .lot-summary { display:flex; gap:10px; margin-bottom:18px; }
-                .summary-box { flex:1; border:1px solid #ccc; border-radius:6px; padding:8px; text-align:center; }
-                .sb-label { font-size:10px; font-weight:bold; text-transform:uppercase; color:#888; letter-spacing:1px; margin-bottom:4px; }
-                .sb-value { font-size:16px; font-weight:bold; }
-                .accept { color:#16a34a; }
-                .reject { color:#dc2626; }
-                .blue   { color:#4facfe; }
-                table { width:100%; border-collapse: collapse; font-size:12px; margin-top:10px; }
-                th { background:#f0f0f0; padding:6px 8px; text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; border-bottom:2px solid #ddd; }
-                td { padding:6px 8px; border-bottom:1px solid #eee; }
-                tr.ng-row td { background:#fff5f5; }
-                .status-good { color:#16a34a; }
-                .status-ng   { color:#dc2626; }
-                @media print {
-                    body { padding: 0; }
-                }
-            </style>
-        </head>
-        <body>
-            <h1>QA Inspection Detail — Lot ${lot}</h1>
-            <div class="sub">Printed ${new Date().toLocaleString('en-PH')}</div>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>QA Lot Detail - ${lot}</title>
+        <style>
+            body { font-family: Arial, sans-serif; color:#222; padding: 24px; }
+            h1 { font-size: 18px; margin-bottom: 4px; }
+            .sub { font-size: 12px; color:#666; margin-bottom: 18px; }
+            .lot-summary { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+            .summary-box { flex:1; min-width:80px; border:1px solid #ccc; border-radius:6px; padding:8px; text-align:center; }
+            .sb-label { font-size:10px; font-weight:bold; text-transform:uppercase; color:#888; letter-spacing:1px; margin-bottom:4px; }
+            .sb-value { font-size:15px; font-weight:bold; }
+            .accept { color:#16a34a; }
+            .reject { color:#dc2626; }
+            .blue   { color:#4facfe; }
+            .meta-row { font-size:12px; color:#555; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:6px 20px; }
+            .remarks-box { font-size:11px; background:#f9f9f9; border:1px solid #eee; border-radius:4px; padding:8px 12px; margin-bottom:12px; }
+            .remarks-box b { text-transform:uppercase; font-size:10px; letter-spacing:1px; color:#888; display:block; margin-bottom:6px; }
+            .remarks-grid { display:grid; grid-template-columns:1fr 1fr; gap:3px 14px; }
+            table { width:100%; border-collapse:collapse; font-size:12px; margin-top:10px; }
+            th { background:#f0f0f0; padding:6px 8px; text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#555; border-bottom:2px solid #ddd; }
+            td { padding:6px 8px; border-bottom:1px solid #eee; }
+            tr.ng-row td { background:#fff5f5; }
+            .status-good { color:#16a34a; }
+            .status-ng   { color:#dc2626; }
+            @media print { body { padding: 0; } }
+        </style>
+    </head>
+    <body>
+        <h1>QA Inspection Detail — Lot ${lot} (Attempt #${d.attempt_number})</h1>
+        <div class="sub">Printed ${new Date().toLocaleString('en-PH')}</div>
 
-            <div class="lot-summary">
-                <div class="summary-box">
-                    <div class="sb-label">Result</div>
-                    <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Method</div>
-                    <div class="sb-value" style="font-size:14px;">${capitalize(d.inspection_method)}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Sample Size</div>
-                    <div class="sb-value blue">${d.sample_size}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Good</div>
-                    <div class="sb-value accept">${goodCount}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">NG</div>
-                    <div class="sb-value reject">${ngCount}</div>
-                </div>
+        <div class="lot-summary">
+            <div class="summary-box">
+                <div class="sb-label">Result</div>
+                <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
             </div>
+            <div class="summary-box">
+                <div class="sb-label">Judgement</div>
+                <div class="sb-value" style="font-size:12px;">${d.judgement || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Method</div>
+                <div class="sb-value" style="font-size:13px;">${capitalize(d.inspection_method)}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Level</div>
+                <div class="sb-value" style="font-size:13px;">${d.inspection_level || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Sample Size</div>
+                <div class="sb-value blue">${d.sample_size}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Good</div>
+                <div class="sb-value accept">${goodCount}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">NG</div>
+                <div class="sb-value reject">${ngCount}</div>
+            </div>
+        </div>
 
-           <table>
-            <thead>...</thead>
+        <div class="meta-row">
+            ${d.customer     ? `<span><b>Customer:</b> ${d.customer}</span>` : ''}
+            ${d.assy_no      ? `<span><b>Assy No.:</b> ${d.assy_no}</span>` : ''}
+            ${d.reference_no ? `<span><b>Reference No.:</b> ${d.reference_no}</span>` : ''}
+        </div>
+
+        ${d.lot_result === 'ACCEPT' && (d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
+        <div class="remarks-box">
+            <b>Final Inspection Remarks</b>
+            <div class="remarks-grid">
+                ${d.parts_appearance      ? `<div><b>Parts Appearance:</b> ${d.parts_appearance}</div>` : ''}
+                ${d.pcb_appearance        ? `<div><b>PCB Appearance:</b> ${d.pcb_appearance}</div>` : ''}
+                ${d.solder_condition      ? `<div><b>Solder Condition:</b> ${d.solder_condition}</div>` : ''}
+                ${d.labels_markings       ? `<div><b>Labels/Markings:</b> ${d.labels_markings}</div>` : ''}
+                ${d.subassembly_condition ? `<div><b>Sub Assembly Condition:</b> ${d.subassembly_condition}</div>` : ''}
+                ${d.package_condition     ? `<div><b>Package Condition:</b> ${d.package_condition}</div>` : ''}
+            </div>
+        </div>` : ''}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Serial</th>
+                    <th>Status</th>
+                    <th>Parts Spec</th>
+                    <th>Defects</th>
+                </tr>
+            </thead>
             <tbody>
                 ${printSerials.map((s, i) => `
                 <tr class="${s.status === 'NO GOOD' ? 'ng-row' : ''}">
                     <td>${String(i+1).padStart(2,'0')}</td>
                     <td style="font-family:monospace;">${s.serial_code}</td>
                     <td class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}"><b>${s.status}</b></td>
+                    <td style="color:#4facfe;">${s.parts_specification || '—'}</td>
                     <td>${formatDefects(s.defects)}</td>
                 </tr>`).join('')}
             </tbody>
         </table>
-        </body>
-        </html>
-    `;
+    </body>
+    </html>
+`;
 
     const printFrame = document.createElement('iframe');
     printFrame.style.position = 'fixed';
