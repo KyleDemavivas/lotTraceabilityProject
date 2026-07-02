@@ -63,10 +63,6 @@ try {
                     <label class="form-label">Assy No.:</label>
                     <input type="text" class="form-input" id="assy_no" autocomplete="off" placeholder="Enter assembly number">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Reference No.:</label>
-                    <input type="text" class="form-input" id="reference_no" autocomplete="off" placeholder="Enter reference number">
-                </div>
             </div>
         </div>
 
@@ -323,6 +319,8 @@ const AQL_DATA = {
 };
 
 let allowReload = false;
+let pollTimer = null;
+const POLL_INTERVAL_MS = 3000;
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let state = {
@@ -330,7 +328,91 @@ let state = {
     scanned: [], currentSerial: null,
     defects015: 0, defects10: 0, aqlParams: null,
     scanCountForSpec: 0,   // tracks GOOD boards seen so far, for the first-5 Parts Spec popup
+    inspectionId: null, attemptNumber: null,
 };
+
+// ── SERVER SYNC HELPERS ──────────────────────────────────────────────────────
+function applyServerSerials(serverSerials) {
+    state.scanned = serverSerials.map(s => ({
+        serial: s.serial_code,
+        good: s.status === 'GOOD',
+        defects: s.defect_code ? [{
+            defect: s.defect_code, severity: (s.severity || 'major').split(', ')[0],
+            locations: s.location ? s.location.split(', ') : []
+        }] : [],
+        parts_specification: s.parts_specification || null,
+    }));
+    state.scanCountForSpec = state.scanned.length;
+}
+
+function submitScan(serial, status, location, defect_code, severity, parts_spec, majorCount, minorCount) {
+    $('#serial_input').prop('disabled', true);
+    $.post('QA/qa_scan.php', {
+        inspection_id: state.inspectionId,
+        serial_code: serial,
+        status: status,
+        location: location,
+        defect_code: defect_code,
+        severity: severity,
+        parts_specification: parts_spec,
+        major_count: majorCount,
+        minor_count: minorCount,
+    }, null, 'json')
+    .done(function(res) {
+        if (res.status === 'duplicate') {
+            document.getElementById('serial_error').textContent = res.message;
+            document.getElementById('serial_error').style.display = 'block';
+            syncFromServer(); // pull the real state, someone else beat us to it
+        } else if (res.status !== 'success') {
+            Swal.fire({ icon:'error', title:'Scan Failed', text: res.message || 'Could not save scan.' });
+        } else {
+            state.scanned.push({ serial, good: status === 'GOOD',
+                defects: defect_code ? [{ defect: defect_code, severity: severity || 'major', locations: location ? location.split(', ') : [] }] : [],
+                parts_specification: parts_spec });
+            state.scanCountForSpec++;
+            state.defects015 += majorCount;
+            state.defects10  += minorCount;
+            renderSerialList(); updateCounts(); updateJudgement();
+        }
+    })
+    .fail(function() {
+        Swal.fire({ icon:'error', title:'Network Error', text:'Scan was not saved — check connection and rescan.' });
+    })
+    .always(function() {
+        $('#serial_input').prop('disabled', false).val('').focus();
+    });
+}
+
+function syncFromServer() {
+    if (!state.inspectionId) return;
+    $.getJSON('QA/qa_lot_state.php', { inspection_id: state.inspectionId })
+        .done(function(res) {
+            if (res.status !== 'success' || !res.lot) return;
+            if (res.lot.status !== 'IN_PROGRESS') {
+                // Someone else finalized this lot from another tab
+                stopPolling();
+                Swal.fire({ icon:'info', title:'Lot Finalized',
+                    text:'This lot was finalized from another session.' })
+                    .then(() => { allowReload = true; location.reload(); });
+                return;
+            }
+            state.defects015 = res.lot.defects_015;
+            state.defects10  = res.lot.defects_10;
+            applyServerSerials(res.serials);
+            renderSerialList();
+            updateCounts();
+            updateJudgement();
+        });
+}
+
+function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(syncFromServer, POLL_INTERVAL_MS);
+}
+
+function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+}
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function getCodeLetter(qty) {
@@ -401,70 +483,21 @@ function updateCounts() {
     document.getElementById('finalizeBtn').disabled = state.scanned.length < state.sampleSize;
 }
 
-function doInserts(lot_result, finalizeData) {
-    const kepi_lot          = $('#kepi_lot').val().trim();
-    const operator_id       = '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>';
-    const shift              = $('#shift').val();
-    const line               = $('#line').val();
-    const inspection_method  = $('#inspection_method').val();
-    const sample_size        = $('#sample_size').val();
-    const lot_qty             = $('#lot_qty').val();
-    const model               = $('#model_name').val();
-    const code_letter         = $('#code_letter').val();
-    const customer         = $('#customer').val().trim();
-    const assy_no          = $('#assy_no').val().trim();
-    const reference_no     = $('#reference_no').val().trim();
-    const inspection_level = $('#inspection_level').val();
+function finalizeInspection(lot_result, finalizeData) {
+    if (!state.inspectionId) {
+        Swal.fire({ icon:'error', title:'Error', text:'No active inspection session found.' });
+        return;
+    }
 
-    const serials = state.scanned.map(serial => {
-        const locations   = serial.defects.flatMap(d => d.locations).join(', ');
-        const defectCodes = serial.defects.map(d => d.defect).join(', ');
-        const severities  = serial.defects.map(d => d.severity).join(', ');
-        return {
-            serial_code: serial.serial,
-            status:      serial.good ? 'GOOD' : 'NO GOOD',
-            location:    locations,
-            defect_code: defectCodes,
-            severity:    severities,
-            lot_out:     0,
-            scrap:       0,
-            parts_specification: serial.parts_specification || null,
-        };
-    });
+    const payload = Object.assign({
+        inspection_id: state.inspectionId,
+        lot_result: lot_result,
+    }, finalizeData);
 
-    const formData = new FormData();
-    formData.append('kepi_lot',          kepi_lot);
-    formData.append('model',             model);
-    formData.append('inspection_method', inspection_method);
-    formData.append('code_letter',       code_letter);
-    formData.append('sample_size',       sample_size);
-    formData.append('lot_qty',           lot_qty);
-    formData.append('line',              line);
-    formData.append('shift',             shift);
-    formData.append('operator_id',       operator_id);
-    formData.append('defects_015',       state.defects015);
-    formData.append('defects_10',        state.defects10);
-    formData.append('lot_result',        lot_result);
-    formData.append('serials',           JSON.stringify(serials));
-    formData.append('customer',         customer);
-    formData.append('assy_no',          assy_no);
-    formData.append('reference_no',     reference_no);
-    formData.append('inspection_level', inspection_level);
-    formData.append('judgement', finalizeData.judgement);
-    formData.append('parts_appearance',      finalizeData.parts_appearance);
-    formData.append('pcb_appearance',        finalizeData.pcb_appearance);
-    formData.append('solder_condition',      finalizeData.solder_condition);
-    formData.append('labels_markings',       finalizeData.labels_markings);
-    formData.append('subassembly_condition', finalizeData.subassembly_condition);
-    formData.append('package_condition',     finalizeData.package_condition);
-
-    fetch('/traceabilitydev/QA/qa_process.php', { method: 'POST', body: formData })
-        .then(r => {
-            if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
-            return r.json();
-        })
-        .then(result => {
+    $.post('QA/qa_finalize.php', payload, null, 'json')
+        .done(function(result) {
             if (result.status === 'success') {
+                stopPolling();
                 Swal.fire({ icon:'success', title:'Submitted',
                     text:'QA inspection records submitted successfully.',
                     toast:true, position:'top-end', timer:1500, showConfirmButton:false })
@@ -473,12 +506,11 @@ function doInserts(lot_result, finalizeData) {
                     location.reload();
                 });
             } else {
-                Swal.fire({ icon:'error', title:'Submit Failed', text: result.message || 'Failed to save records.' });
+                Swal.fire({ icon:'error', title:'Submit Failed', text: result.message || 'Failed to finalize.' });
             }
         })
-        .catch((error) => {
-            console.error("Insertion failed:", error);
-            Swal.fire({ icon:'error', title:'Insertion Error', text:'Failed to save row records.' });
+        .fail(function() {
+            Swal.fire({ icon:'error', title:'Network Error', text:'Failed to reach the server to finalize.' });
         });
 }
 
@@ -500,39 +532,6 @@ function deriveJudgement(method, defects015, defects10, aqlParams) {
     }
     // Any method with some defects but under threshold (includes fullcheck-with-defects)
     return 'B Passed';
-}
-
-function promptPartsSpecification(serial) {
-    Swal.fire({
-        title: 'Parts Specification',
-        html: `<div style="text-align:left; font-size:13px;">
-            <div class="form-group">
-                <label class="form-label" style="min-width:140px;">Board:</label>
-                <input type="text" class="form-input" value="${serial}" readonly>
-            </div>
-            <div class="form-group">
-                <label class="form-label" style="min-width:140px;">Parts Spec:</label>
-                <input type="text" class="form-input" id="sw_parts_spec" autocomplete="off" placeholder="Enter parts specification">
-            </div>
-        </div>`,
-        confirmButtonText: 'CONFIRM',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        preConfirm: () => {
-            const val = document.getElementById('sw_parts_spec').value.trim();
-            if (!val) {
-                Swal.showValidationMessage('Parts Specification is required.');
-                return false;
-            }
-            return val;
-        },
-    }).then(result => {
-        if (result.isConfirmed) {
-            const entry = state.scanned.find(s => s.serial === serial);
-            if (entry) entry.parts_specification = result.value;
-            $('#serial_input').val('').focus();
-        }
-    });
 }
 
 // ── LOCATION OPTIONS (PHP-rendered) ──────────────────────────────────────────
@@ -597,31 +596,84 @@ $('#startBtn').on('click', function() {
     const data   = AQL_DATA[letter];
     const params = method === 'fullcheck' ? data.normal : data[method];
     const sample = method === 'fullcheck' ? 5 : data.sample[method];
+    const $btn = $(this).prop('disabled', true).text('STARTING...');
 
-    state = {
-        active: true, letter, method, sampleSize: sample,
-        aqlParams: params, scanned: [], currentSerial: null,
-        defects015: 0, defects10: 0,
-        scanCountForSpec: 0,
-    };
+    $.post('QA/qa_session.php', {
+        kepi_lot: $('#kepi_lot').val().trim(),
+        model: $('#model_name').val(),
+        inspection_method: method,
+        code_letter: letter,
+        sample_size: sample,
+        lot_qty: qty,
+        line: $('#line').val(),
+        shift: $('#shift').val(),
+        operator_id: '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>',
+        customer: $('#customer').val().trim(),
+        assy_no: $('#assy_no').val().trim(),
+        inspection_level: $('#inspection_level').val(),
+    }, null, 'json')
+    .done(function(res) {
+        if (res.status !== 'success') {
+            Swal.fire({ icon:'error', title:'Error', text: res.message || 'Failed to start inspection.' });
+            $btn.prop('disabled', false).text('START INSPECTION');
+            return;
+        }
 
-    $('#disp_letter').text(letter);
-    $('#disp_sample').text(sample);
-    $('#disp_method').text(method.charAt(0).toUpperCase() + method.slice(1));
-    $('#disp_lotqty').text(qty);
-    $('#re_015').text(fmtAcRe(params.aql015.re));
-    $('#re_10').text(fmtAcRe(params.aql10.re));
-    $('#sample_total').text(sample);
-    $('#scanned_count').text(0);
-    $('#count_015').text(0);
-    $('#count_10').text(0);
+        if (res.joined) {
+            const lot = res.lot;
+            const jLetter = lot.code_letter, jMethod = lot.inspection_method, jSample = lot.sample_size;
+            const jData = AQL_DATA[jLetter];
+            const jParams = jMethod === 'fullcheck' ? jData.normal : jData[jMethod];
 
-    $('#aqlPanel, #scanPanel').show();
-    $('#serial_input').prop('disabled', false).focus();
-    $('#ngBtn').prop('disabled', false);
-    $(this).prop('disabled', true).text('ACTIVE');
-    updateJudgement();
-    renderSerialList();
+            state = {
+                active: true, letter: jLetter, method: jMethod, sampleSize: jSample,
+                aqlParams: jParams, scanned: [], currentSerial: null,
+                defects015: lot.defects_015, defects10: lot.defects_10,
+                scanCountForSpec: 0, inspectionId: lot.id, attemptNumber: lot.attempt_number,
+            };
+            applyServerSerials(res.serials);
+
+            $('#disp_letter').text(jLetter);
+            $('#disp_sample').text(jSample);
+            $('#disp_method').text(jMethod.charAt(0).toUpperCase() + jMethod.slice(1));
+            $('#disp_lotqty').text(lot.lot_quantity);
+            $('#re_015').text(fmtAcRe(jParams.aql015.re));
+            $('#re_10').text(fmtAcRe(jParams.aql10.re));
+            $('#sample_total').text(jSample);
+
+            Swal.fire({ icon:'info', title:'Joined In-Progress Inspection',
+                text:`Attempt #${lot.attempt_number} is already being inspected. You're now scanning the same session — the method/sample size are locked to what was started first.`,
+                toast:true, position:'top-end', timer:4000, showConfirmButton:false });
+        } else {
+            state = {
+                active: true, letter, method, sampleSize: sample,
+                aqlParams: params, scanned: [], currentSerial: null,
+                defects015: 0, defects10: 0,
+                scanCountForSpec: 0, inspectionId: res.lot_id, attemptNumber: res.attempt_number,
+            };
+            $('#disp_letter').text(letter);
+            $('#disp_sample').text(sample);
+            $('#disp_method').text(method.charAt(0).toUpperCase() + method.slice(1));
+            $('#disp_lotqty').text(qty);
+            $('#re_015').text(fmtAcRe(params.aql015.re));
+            $('#re_10').text(fmtAcRe(params.aql10.re));
+            $('#sample_total').text(sample);
+        }
+
+        $('#inspection_method, #inspection_level, #lot_qty').prop('disabled', true);
+        $('#aqlPanel, #scanPanel').show();
+        $('#serial_input').prop('disabled', false).focus();
+        $('#ngBtn').prop('disabled', false);
+        $btn.text('ACTIVE');
+        updateJudgement();
+        renderSerialList();
+        updateCounts();
+        startPolling();
+    })
+    .fail(function() {
+        Swal.fire({ icon:'error', title:'Network Error', text:'Could not reach the server to start inspection.' });
+        $btn.prop('disabled', false).text('START INSPECTION');
+    });
 });
 
 // ── SERIAL SCAN ───────────────────────────────────────────────────────────────
@@ -654,15 +706,8 @@ $('#serial_input').on('keydown', function(e) {
         allowOutsideClick: false,
     }).then(result => {
        if (result.isConfirmed) {
-            state.scanned.push({ serial, good: true, defects: [], parts_specification: null });
-            state.scanCountForSpec++;
-            renderSerialList(); updateCounts(); updateJudgement();
-
-            if (state.scanCountForSpec <= 5) {
-                promptPartsSpecification(serial);
-            } else {
-                $('#serial_input').val('').focus();
-            }
+        const spec = state.scanCountForSpec < 5 ? "Part Spec" : null;
+        submitScan(serial, 'GOOD', null, null, null, spec, 0, 0);
         } else {
             state.currentSerial = serial;
             openNgModal(serial);
@@ -698,16 +743,9 @@ function closeNgModal() {
 
 $('#closeNgModal, #ngCancelBtn').on('click', function() {
     const serial = state.currentSerial;
-    state.scanned.push({ serial, good: true, defects: [], parts_specification: null });
-    state.scanCountForSpec++;
-    renderSerialList(); updateCounts(); updateJudgement();
+    const spec = state.scanCountForSpec < 5 ? "Part Spec" : null;
     closeNgModal();
-
-    if (state.scanCountForSpec <= 5) {
-        promptPartsSpecification(serial);
-    } else {
-        $('#serial_input').val('').focus();
-    }
+    submitScan(serial, 'GOOD', null, null, null, spec, 0, 0);
 });
 
 $('#addNgDefectBtn').on('click', function() {
@@ -735,22 +773,17 @@ $('#ngSaveBtn').on('click', function() {
         return;
     }
 
-    defects.forEach(d => {
-        if (d.severity === 'major') state.defects015 += 1;
-        else                        state.defects10  += 1;
-    });
+    let majorCount = 0, minorCount = 0;
+    defects.forEach(d => { if (d.severity === 'major') majorCount++; else minorCount++; });
 
+    const locations   = defects.flatMap(d => d.locations).join(', ');
+    const defectCodes = defects.map(d => d.defect).join(', ');
+    const severities   = defects.map(d => d.severity).join(', ');
     const serial = state.currentSerial;
-    state.scanned.push({ serial, good: false, defects, parts_specification: null });
-    state.scanCountForSpec++;
-    closeNgModal();
-    renderSerialList(); updateCounts(); updateJudgement();
+    const spec = state.scanCountForSpec < 5 ? "Part Spec" : null;
 
-    if (state.scanCountForSpec <= 5) {
-        promptPartsSpecification(serial);
-    } else {
-        $('#serial_input').val('').focus();
-    }
+    closeNgModal();
+    submitScan(serial, 'NO GOOD', locations, defectCodes, severities, spec, majorCount, minorCount);
 });
 
 $('#ngBtn').on('click', function() {
@@ -835,12 +868,11 @@ $('#finalizeBtn').on('click', function() {
 
 // ── SUBMIT ────────────────────────────────────────────────────────────────────
 function submitQAInspection(finalizeData) {
-    const kepi_lot  = $('#kepi_lot').val().trim();
     const failed015 = state.aqlParams.aql015.re !== null && state.defects015 >= state.aqlParams.aql015.re;
     const failed10  = state.aqlParams.aql10.re  !== null && state.defects10  >= state.aqlParams.aql10.re;
     const lot_result = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
 
-    doInserts(lot_result, finalizeData);
+    finalizeInspection(lot_result, finalizeData);
 }
 
 // ── KEPI LOT FETCH ────────────────────────────────────────────────────────────

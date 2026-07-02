@@ -8,7 +8,7 @@ if (!$kepi_lot) { echo json_encode(['accepted' => false, 'attempt_count' => 0]);
 // Get the most recent attempt for this lot
 $stmt = $conn->prepare("SELECT TOP 1 lot_result, attempt_number 
                          FROM qa_lot 
-                         WHERE kepi_lot = ? 
+                         WHERE kepi_lot = ? AND status = 'FINALIZED'
                          ORDER BY attempt_number DESC");
 $stmt->execute([$kepi_lot]);
 $latest = $stmt->fetch(PDO::FETCH_ASSOC);

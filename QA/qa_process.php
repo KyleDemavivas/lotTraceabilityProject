@@ -23,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lot_result         = $_POST['lot_result'] ?? 'ACCEPT';
     $customer         = $_POST['customer'] ?? '';
     $assy_no          = $_POST['assy_no'] ?? '';
-    $reference_no     = $_POST['reference_no'] ?? '';
     $inspection_level = $_POST['inspection_level'] ?? '';
 
     //FINALIZATION DATA
@@ -58,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             kepi_lot, attempt_number, model, inspection_method, code_letter,
             sample_size, lot_quantity, line, shift, operator_id,
             defects_015, defects_10, lot_result, created_at,
-            customer, assy_no, reference_no, inspection_level,
+            customer, assy_no, inspection_level,
             judgement, parts_appearance, pcb_appearance, solder_condition,
             labels_markings, subassembly_condition, package_condition
         )
@@ -66,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             :kepi_lot, :attempt_number, :model, :inspection_method, :code_letter,
             :sample_size, :lot_quantity, :line, :shift, :operator_id,
             :defects_015, :defects_10, :lot_result, :created_at,
-            :customer, :assy_no, :reference_no, :inspection_level,
+            :customer, :assy_no, :inspection_level,
             :judgement, :parts_appearance, :pcb_appearance, :solder_condition,
             :labels_markings, :subassembly_condition, :package_condition
         )';
@@ -89,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':created_at'        => $created_at,
             ':customer'          => $customer,
             ':assy_no'           => $assy_no,
-            ':reference_no'      => $reference_no,
             ':inspection_level'  => $inspection_level,
             ':judgement'              => $judgement,
             ':parts_appearance'       => $parts_appearance,
