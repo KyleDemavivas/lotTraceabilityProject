@@ -13,7 +13,7 @@ try {
     $stmt = $conn->prepare("
         SELECT id, kepi_lot, attempt_number, model, inspection_method, code_letter,
                sample_size, lot_quantity, line, shift, operator_id,
-               defects_015, defects_10, lot_result, created_at,
+               defects_015, defects_10, lot_result, created_at, status,
                customer, assy_no, reference_no, inspection_level,
                judgement, parts_appearance, pcb_appearance, solder_condition,
                labels_markings, subassembly_condition, package_condition
@@ -31,7 +31,7 @@ try {
     // 2. Serial query — add parts_specification
     $stmt = $conn->prepare("
         SELECT id, serial_code, status, location, defect_code, severity,
-               lot_out, scrap, parts_specification
+               lot_out, scrap, parts_specification, scanned_by
         FROM qa_process
         WHERE inspection_id = ?
         ORDER BY created_at ASC

@@ -10,6 +10,7 @@ $location      = $_POST['location'] ?? null;
 $defect_code   = $_POST['defect_code'] ?? null;
 $severity      = $_POST['severity'] ?? null;
 $parts_spec    = $_POST['parts_specification'] ?? null;
+$scanned_by    = $_POST['scanned_by'] ?? 'Unknown';
 $major_count   = (int)($_POST['major_count'] ?? 0);
 $minor_count   = (int)($_POST['minor_count'] ?? 0);
 
@@ -32,8 +33,8 @@ try {
     }
 
     $stmt = $conn->prepare("INSERT INTO qa_process
-        (serial_code, status, location, defect_code, severity, lot_out, scrap, inspection_id, created_at, parts_specification)
-        VALUES (:serial_code, :status, :location, :defect_code, :severity, 0, 0, :inspection_id, :created_at, :parts_spec)");
+        (serial_code, status, location, defect_code, severity, lot_out, scrap, inspection_id, created_at, parts_specification, scanned_by)
+        VALUES (:serial_code, :status, :location, :defect_code, :severity, 0, 0, :inspection_id, :created_at, :parts_spec, :scanned_by)");
     $stmt->execute([
         ':serial_code'   => $serial_code,
         ':status'        => $status,
@@ -43,6 +44,7 @@ try {
         ':inspection_id' => $inspection_id,
         ':created_at'    => date('Y-m-d H:i:s'),
         ':parts_spec'    => $parts_spec,
+        ':scanned_by'    => $scanned_by,
     ]);
 
     if ($major_count > 0 || $minor_count > 0) {

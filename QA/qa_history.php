@@ -90,6 +90,16 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
             font-weight: bold;
             letter-spacing: 1px;
         }
+        .badge-progress {
+            background: #fef9c3;
+            color: #a16207;
+            border: 1px solid #fde047;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
         .no-results {
             text-align: center;
             color: #bbb;
@@ -266,8 +276,8 @@ function renderTable(rows) {
                     <td>${r.shift}</td>
                     <td>${r.operator_id}</td>
                     <td>${formatDate(r.created_at)}</td>
-                    <td><span class="${r.lot_result === 'ACCEPT' ? 'badge-accept' : 'badge-reject'}">${r.lot_result}</span></td>
-                    <td style="text-align:center;">${r.ng_count}</td>
+                    <td>${resultBadge(r.status, r.lot_result)}</td>
+                    <td style="text-align:center;">${r.status === 'IN_PROGRESS' ? '—' : r.ng_count}</td>
                 </tr>`).join('')}
             </tbody>
         </table>
@@ -311,7 +321,7 @@ function openDetailModal(inspectionId, lotLabel) {
             <div class="lot-summary">
                 <div class="summary-box">
                     <div class="sb-label">Result</div>
-                    <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
+                    <div class="sb-value ${d.status === 'IN_PROGRESS' ? '' : (d.lot_result === 'ACCEPT' ? 'accept' : 'reject')}" style="${d.status === 'IN_PROGRESS' ? 'color:#a16207;' : ''}">${d.status === 'IN_PROGRESS' ? 'IN PROGRESS' : d.lot_result}</div>
                 </div>
                 <div class="summary-box">
                     <div class="sb-label">Judgement</div>
@@ -394,6 +404,7 @@ function renderDetailTable(serials, showAll) {
                     <th>Status</th>
                     <th>Parts Spec</th>
                     <th>Defects</th>
+                    <th>Scanned By</th>
                 </tr>
             </thead>
             <tbody>
@@ -404,6 +415,7 @@ function renderDetailTable(serials, showAll) {
                     <td><span class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}" style="font-weight:bold; font-size:11px; letter-spacing:1px;">${s.status}</span></td>
                     <td style="font-size:12px; color:#4facfe;">${s.parts_specification || '—'}</td>
                     <td style="font-size:12px; color:#666;">${formatDefects(s.defects)}</td>
+                    <td style="font-size:12px; color:#666;">${s.scanned_by || '—'}</td>
                 </tr>`).join('')}
             </tbody>
         </table>
@@ -513,6 +525,7 @@ function printLotDetail(lot, d) {
                     <th>Status</th>
                     <th>Parts Spec</th>
                     <th>Defects</th>
+                    <th>Scanned By</th>
                 </tr>
             </thead>
             <tbody>
@@ -523,6 +536,7 @@ function printLotDetail(lot, d) {
                     <td class="${s.status === 'GOOD' ? 'status-good' : 'status-ng'}"><b>${s.status}</b></td>
                     <td style="color:#4facfe;">${s.parts_specification || '—'}</td>
                     <td>${formatDefects(s.defects)}</td>
+                    <td>${s.scanned_by || '—'}</td>
                 </tr>`).join('')}
             </tbody>
         </table>
@@ -571,6 +585,11 @@ function formatDate(str) {
     const d = new Date(str);
     return d.toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' })
         + ' ' + d.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' });
+}
+
+function resultBadge(status, lotResult) {
+    if (status === 'IN_PROGRESS') return `<span class="badge-progress">IN PROGRESS</span>`;
+    return `<span class="${lotResult === 'ACCEPT' ? 'badge-accept' : 'badge-reject'}">${lotResult}</span>`;
 }
 
 </script>

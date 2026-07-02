@@ -357,6 +357,7 @@ function submitScan(serial, status, location, defect_code, severity, parts_spec,
         parts_specification: parts_spec,
         major_count: majorCount,
         minor_count: minorCount,
+        scanned_by: '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>',
     }, null, 'json')
     .done(function(res) {
         if (res.status === 'duplicate') {

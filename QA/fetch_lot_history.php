@@ -11,7 +11,7 @@ try {
             ql.id AS inspection_id,
             ql.kepi_lot, ql.model, ql.lot_quantity, ql.sample_size,
             ql.inspection_method, ql.code_letter, ql.line, ql.shift, ql.operator_id,
-            ql.attempt_number, ql.lot_result, ql.created_at,
+            ql.attempt_number, ql.lot_result, ql.created_at, ql.status,
             ql.defects_015, ql.defects_10,
             ISNULL(ng.ng_count, 0) AS ng_count
         FROM qa_lot ql
