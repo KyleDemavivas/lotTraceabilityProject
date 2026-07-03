@@ -397,10 +397,13 @@ if ($serial_code != '') {
     // $ict_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // POKANON
-    $sql = 'SELECT * FROM POKANON WHERE ProdLot = :ProdLot';
-    $stmt = $conn_pokanon->prepare($sql);
-    $stmt->execute(['ProdLot' => $prodlot]);
-    $pokanon_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $pokanon_data = [];
+    if ($conn_pokanon) {
+        $sql = 'SELECT * FROM POKANON WHERE ProdLot = :ProdLot';
+        $stmt = $conn_pokanon->prepare($sql);
+        $stmt->execute(['ProdLot' => $prodlot]);
+        $pokanon_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
 
@@ -586,7 +589,13 @@ foreach ($rows as $row) { ?>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($pokanon_data)) { ?>
+                            <?php if ($conn_pokanon === null) { ?>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: #dc2626; font-weight: bold; background-color: #fee2e2;">
+                                        ⚠️ POKANON database is currently offline or unreachable.
+                                    </td>
+                                </tr>
+                            <?php } else if (!empty($pokanon_data)) { ?>
                                 <?php foreach ($pokanon_data as $row) { ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($row['ProdLot']); ?></td>
