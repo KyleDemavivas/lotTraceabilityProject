@@ -398,6 +398,7 @@ if ($serial_code != '') {
 
     // POKANON
     $pokanon_data = [];
+    $conn_pokanon = get_conn_pokanon();
     if ($conn_pokanon) {
         $sql = 'SELECT * FROM POKANON WHERE ProdLot = :ProdLot';
         $stmt = $conn_pokanon->prepare($sql);
