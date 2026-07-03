@@ -70,6 +70,12 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
             background: #f9f9f9;
             cursor: pointer;
         }
+        .history-table tr.reject-row td {
+            background: #fef2f2;
+        }
+        .history-table tr.reject-row:hover td {
+            background: #fde8e8;
+        }
         .badge-accept {
             background: #dcfce7;
             color: #16a34a;
@@ -265,9 +271,9 @@ function renderTable(rows) {
             </thead>
             <tbody>
                 ${rows.map(r => `
-                <tr class="lot-row" data-inspection="${r.inspection_id}">
+               <tr class="lot-row ${r.status !== 'IN_PROGRESS' && r.lot_result === 'REJECT' ? 'reject-row' : ''}" data-inspection="${r.inspection_id}">
                     <td><b>${r.kepi_lot}</b></td>
-                    <td style="text-align:center;">#${r.attempt_number}</td>
+                    <td style="text-align:center;">${r.attempt_number > 1 ? 'Re-Inspection #' + r.attempt_number : '#' + r.attempt_number}</td>
                     <td>${r.model}</td>
                     <td>${r.lot_quantity}</td>
                     <td>${r.sample_size}</td>
