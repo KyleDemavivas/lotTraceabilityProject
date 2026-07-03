@@ -588,7 +588,7 @@ function formatDate(str) {
 }
 
 function resultBadge(status, lotResult) {
-    if (status === 'IN_PROGRESS') return `<span class="badge-progress">IN PROGRESS</span>`;
+    if (status === 'IN_PROGRESS') return `<span class="badge-progress">ONGOING</span>`;
     return `<span class="${lotResult === 'ACCEPT' ? 'badge-accept' : 'badge-reject'}">${lotResult}</span>`;
 }
 
