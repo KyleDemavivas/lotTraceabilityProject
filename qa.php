@@ -47,7 +47,7 @@ try {
                     <label class="form-label">Lot Quantity:</label>
                     <input type="number" class="form-input" id="lot_qty" min="1" placeholder="Enter quantity">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display:none;">
                     <label class="form-label">Code Letter:</label>
                     <input type="text" class="form-input" id="code_letter" readonly placeholder="—">
                 </div>
@@ -56,12 +56,12 @@ try {
                     <input type="text" class="form-input" id="model_name" placeholder="—" readonly>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Customer:</label>
-                    <input type="text" class="form-input" id="customer" autocomplete="off" placeholder="Enter customer">
+                    <label class="form-label">Assy No.:</label>
+                    <input type="text" class="form-input" id="assy_no" autocomplete="off" placeholder="—" readonly>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Assy No.:</label>
-                    <input type="text" class="form-input" id="assy_no" autocomplete="off" placeholder="Enter assembly number">
+                    <label class="form-label">Customer:</label>
+                    <input type="text" class="form-input" id="customer" autocomplete="off" placeholder="Enter customer">
                 </div>
             </div>
         </div>
@@ -890,11 +890,13 @@ $('#kepi_lot').on('change input', function() {
             data: { kepi_lot: lot },
             success: function(response) {
                 if (response.success) {
-                    $('#model_name').val(response.data);
+                    $('#model_name').val(response.data.model_name);
+                    $('#assy_no').val(response.data.assy_code || '');
                     checkStartReady();
                 } else {
                     console.error('Error fetching model:', response.message);
                     $('#model_name').val('');
+                    $('#assy_no').val('');
                 }
             },
             error: function(xhr, status, error) {
