@@ -8,10 +8,6 @@ $dsn = 'sqlsrv:Server=localhost;Database=prod_traceability';
 $username = 'sa';
 $password = 'Kepi-123';
 
-$dsn2 = 'mysql:host=192.168.1.138;port=3306;dbname=esd_logs;charset=utf8mb4';
-$username2 = 'admin';
-$password2 = 'Kepi-123';
-
 try {
     $conn = new PDO($dsn, $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -19,12 +15,6 @@ try {
     exit('Connection failed: '.$e->getMessage());
 }
 
-try {
-    $conn2 = new PDO($dsn2, $username2, $password2);
-    $conn2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    exit('Connection failed: '.$e->getMessage());
-}
 include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 
 $error_message = '';
@@ -67,11 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // fetch esd logs for current shift and date
-    $stmt = $conn2->prepare("SELECT empid FROM esd_logs WHERE empid=:empid AND result_com='GOOD' AND datelogs=:shift ORDER BY timelogs DESC LIMIT 1");
-    $stmt->bindParam(':shift', $getCurrentDate, PDO::PARAM_STR);
-    $stmt->bindParam(':empid', $empid, PDO::PARAM_STR);
-    $stmt->execute();
-    $esd_logs = $stmt->fetchColumn();
+    $esd_conn = get_conn_remote();
+    if($esd_conn){
+        $stmt = $conn2->prepare("SELECT empid FROM esd_logs WHERE empid=:empid AND result_com='GOOD' AND datelogs=:shift ORDER BY timelogs DESC LIMIT 1");
+        $stmt->bindParam(':shift', $getCurrentDate, PDO::PARAM_STR);
+        $stmt->bindParam(':empid', $empid, PDO::PARAM_STR);
+        $stmt->execute();
+        $esd_logs = $stmt->fetchColumn();
+
+    }
 
     if ($user && password_verify($user_password, $user['user_password'])) {
         $_SESSION['user_id'] = $user['user_id'];
