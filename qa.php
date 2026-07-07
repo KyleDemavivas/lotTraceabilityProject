@@ -116,6 +116,7 @@ try {
                 </div>
                 <div style="margin-top:20px;">
                     <button id="startBtn" class="btn-inline" disabled>START INSPECTION</button>
+                    <button id="continueBtn" class="btn-inline" style="display:none;">CONTINUE INSPECTION</button>
                 </div>
             </div>
         </div>
@@ -421,6 +422,16 @@ function getCodeLetter(qty) {
         if (qty >= min && qty <= max) return letter;
     }
     return null;
+}
+
+function setSetupFieldsDisabled(disabled) {
+    $('#lot_qty, #inspection_method, #inspection_level, #shift, #line, #customer').prop('disabled', disabled);
+    if (disabled) {
+        $('#startBtn').hide();
+    } else {
+        $('#startBtn').show();
+        checkStartReady();
+    }
 }
 
 function fmtAcRe(val) { return val === null ? '↑↓' : val; }
@@ -921,12 +932,17 @@ function submitQAInspection(finalizeData) {
 
 // ── KEPI LOT FETCH ────────────────────────────────────────────────────────────
 var KepiLotTimer;
+var lastCheckedLot = null;
 
-$('#kepi_lot').on('change input', function() {
+$('#kepi_lot').on('input change', function() {
     clearTimeout(KepiLotTimer);
     const lot = $(this).val().trim();
     if (!lot) return;
+
     KepiLotTimer = setTimeout(function() {
+        if (lot === lastCheckedLot) return;   // ← skip redundant re-check
+        lastCheckedLot = lot;
+
         $.ajax({
             url: 'QA/fetch_model.php',
             type: 'POST',
@@ -952,6 +968,18 @@ $('#kepi_lot').on('change input', function() {
             type: 'POST',
             data: { kepi_lot: lot },
             success: function(check) {
+                if (check.in_progress) {
+                    $('#lot_dupe_warning').show().text(
+                        `⚠ This lot is currently IN PROGRESS (Attempt #${check.attempt_number || '?'}). Click Continue to join the scanning session.`
+                    );
+                    setSetupFieldsDisabled(true);
+                    $('#continueBtn').show().prop('disabled', false).text('CONTINUE INSPECTION');
+                    return;
+                }
+
+                $('#continueBtn').hide();
+                setSetupFieldsDisabled(false);
+
                 if (check.accepted) {
                     $('#lot_dupe_warning').show().text(
                         `⚠ This lot was already ACCEPTED on attempt #${check.attempt_count}. This will be recorded as attempt #${check.attempt_count + 1}.`
@@ -969,6 +997,63 @@ $('#kepi_lot').on('change input', function() {
             }
         });
     }, 500);
+});
+
+$('#continueBtn').on('click', function() {
+    const $btn = $(this).prop('disabled', true).text('JOINING...');
+
+    $.post('QA/qa_session.php', {
+        kepi_lot: $('#kepi_lot').val().trim(),
+        model: $('#model_name').val(),
+        operator_id: '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>',
+    }, null, 'json')
+    .done(function(res) {
+        if (res.status !== 'success' || !res.joined) {
+            Swal.fire({ icon:'error', title:'Error', text: res.message || 'Could not join this inspection.' });
+            $btn.prop('disabled', false).text('CONTINUE INSPECTION');
+            return;
+        }
+
+        const lot = res.lot;
+        const jLetter = lot.code_letter, jMethod = lot.inspection_method, jSample = lot.sample_size;
+        const jData = AQL_DATA[jLetter];
+        const jParams = jMethod === 'fullcheck' ? jData.normal : jData[jMethod];
+
+        state = {
+            active: true, letter: jLetter, method: jMethod, sampleSize: jSample,
+            aqlParams: jParams, scanned: [], currentSerial: null,
+            defects015: lot.defects_015, defects10: lot.defects_10,
+            scanCountForSpec: 0, inspectionId: lot.id, attemptNumber: lot.attempt_number,
+        };
+        applyServerSerials(res.serials);
+
+        $('#disp_letter').text(jLetter);
+        $('#disp_sample').text(jSample);
+        $('#disp_method').text(jMethod.charAt(0).toUpperCase() + jMethod.slice(1));
+        $('#disp_lotqty').text(lot.lot_quantity);
+        $('#re_015').text(fmtAcRe(jParams.aql015.re));
+        $('#re_10').text(fmtAcRe(jParams.aql10.re));
+        $('#sample_total').text(jSample);
+
+        $('#kepi_lot').prop('disabled', true);
+        $('#aqlPanel, #scanPanel').show();
+        $('#serial_input').prop('disabled', false).focus();
+        $('#ngBtn').prop('disabled', false);
+        $('#continueBtn').hide();
+
+        Swal.fire({ icon:'info', title:'Joined In-Progress Inspection',
+            text:`You're now scanning attempt #${lot.attempt_number} alongside the original session.`,
+            toast:true, position:'top-end', timer:4000, showConfirmButton:false });
+
+        updateJudgement();
+        renderSerialList();
+        updateCounts();
+        startPolling();
+    })
+    .fail(function() {
+        Swal.fire({ icon:'error', title:'Network Error', text:'Could not reach the server.' });
+        $btn.prop('disabled', false).text('CONTINUE INSPECTION');
+    });
 });
 
 // ── UNLOAD GUARD ──────────────────────────────────────────────────────────────
