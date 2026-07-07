@@ -545,7 +545,50 @@ function defectRowTemplate() {
         <div class="dual-inputs">
             <div class="half-group">
                 <label>Defect</label>
-                <input type="text" class="form-input defect-input" placeholder="Enter defect">
+                <select>
+                    <option value="">Select a defect</option>
+                    <option value="Conductor spacing">Conductor spacing</option>
+                    <option value="Contacting Lead">Contacting Lead</option>
+                    <option value="Crack Solder">Crack Solder</option>
+                    <option value="Cut Pattern">Cut Pattern</option>
+                    <option value="Damaged Component">Damaged Component</option>
+                    <option value="Deformed Pin">Deformed Pin</option>
+                    <option value="Detached Component">Detached Component</option>
+                    <option value="Electrode Corrosion">Electrode Corrosion</option>
+                    <option value="Excess Solder">Excess Solder</option>
+                    <option value="Floating Component">Floating Component</option>
+                    <option value="Flux">Flux</option>
+                    <option value="Foreign Material">Foreign Material</option>
+                    <option value="Insufficient Solder">Insufficient Solder</option>
+                    <option value="Inverted Component">Inverted Component</option>
+                    <option value="Lead Not Inserted">Lead Not Inserted</option>
+                    <option value="Lead to Lead">Lead to Lead</option>
+                    <option value="Lead to Pattern">Lead to Pattern</option>
+                    <option value="Lead to Solder">Lead to Solder</option>
+                    <option value="Lead Too Long/Short">Lead Too Long/Short</option>
+                    <option value="Lifted Component">Lifted Component</option>
+                    <option value="Lifted Lead">Lifted Lead</option>
+                    <option value="Lifted Solder">Lifted Solder</option>
+                    <option value="Horizontal/Rotational Misalignment">Horizontal/Rotational Misalignment</option>
+                    <option value="Missing Component">Missing Component</option>
+                    <option value="Missing/Damaged Silk Print">Missing/Damaged Silk Print</option>
+                    <option value="No Solder">No Solder</option>
+                    <option value="Non-Legible of Specification">Non-Legible of Specification</option>
+                    <option value="Remove Pattern">Remove Pattern</option>
+                    <option value="Resist Peeling">Resist Peeling</option>
+                    <option value="Solder Ball">Solder Ball</option>
+                    <option value="Solder Bridge">Solder Bridge</option>
+                    <option value="Solder Horn/Icicle">Solder Horn/Icicle</option>
+                    <option value="Solder Splash/Residue">Solder Splash/Residue</option>
+                    <option value="Solder Spouting">Solder Spouting</option>
+                    <option value="Tombstone">Tombstone</option>
+                    <option value="Uneven Pin Height">Uneven Pin Height</option>
+                    <option value="Wrong Component">Wrong Component</option>
+                    <option value="Wrong Polarity">Wrong Polarity</option>
+                    <option value="Vertical Misalignment">Vertical Misalignment</option>
+                    <option value="Component Chip Off">Component Chip Off</option>
+                    <option value="Board Chip Off">Board Chip Off</option>
+                </select>
             </div>
             <div class="half-group">
                 <label>Location</label>
