@@ -121,6 +121,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <option value="WITHSTAND INSULATION TEST">WITHSTAND INSULATION TEST</option>
                         <option value="ADMIN">ADMIN</option>
                         <option value="WITHSTAND INSULATION TEST">WITHSTAND INSULATION TEST</option>
+                        <option value="QA">QA</option>
                     </select>
                 </div>
                 <div class="form-group">
