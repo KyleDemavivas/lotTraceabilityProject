@@ -56,7 +56,7 @@ switch ($_SESSION['user_process']) {
         header('Location: /traceabilitydev/useraccounts.php');
         exit;
     case 'LL VERIFICATION':
-        header('Location: /traceabilitydev/ll_verification.php');
+        header('Location: /traceabilitydev/verify_repairLL.php');
         exit;
     case 'QA':
         header('Location: /traceabilitydev/qa.php');
