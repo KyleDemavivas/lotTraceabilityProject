@@ -319,6 +319,52 @@ const AQL_DATA = {
            reduced:   {aql015:{ac:3,   re:6   }, aql10:{ac:5,   re:8   }} },
 };
 
+// ── DEFECT SEVERITY MAP (from Defect Classification Standard) ─────────────────
+// null = severity depends on a sub-condition; operator selects manually.
+const DEFECT_SEVERITY = {
+    'Conductor spacing': 'minor',
+    'Contacting Lead': 'minor',
+    'Crack Solder': 'minor',
+    'Cut Pattern': 'major',
+    'Damaged Component': 'major',
+    'Deformed Pin': 'minor',
+    'Detached Component': 'major',
+    'Electrode Corrosion': 'minor',
+    'Excess Solder': 'minor',
+    'Floating Component': 'minor',
+    'Flux': 'major',
+    'Foreign Material': null,        // Non-conductive = Minor, Conductive = Major
+    'Insufficient Solder': null,     // IC/PCB parts = Major, HW parts = Minor
+    'Inverted Component': 'minor',
+    'Lead Not Inserted': 'minor',
+    'Lead to Lead': 'minor',
+    'Lead to Pattern': 'minor',
+    'Lead to Solder': 'minor',
+    'Lead Too Long/Short': 'minor',
+    'Lifted Component': 'minor',
+    'Lifted Lead': 'minor',
+    'Lifted Solder': 'minor',
+    'Horizontal/Rotational Misalignment': 'minor',
+    'Missing Component': 'major',
+    'Missing/Damaged Silk Print': 'minor',
+    'No Solder': 'major',
+    'Non-Legible of Specification': 'minor',
+    'Remove Pattern': 'minor',
+    'Resist Peeling': 'minor',
+    'Solder Ball': 'minor',
+    'Solder Bridge': 'major',
+    'Solder Horn/Icicle': 'minor',
+    'Solder Splash/Residue': 'minor',
+    'Solder Spouting': 'minor',
+    'Tombstone': 'minor',
+    'Uneven Pin Height': 'minor',
+    'Wrong Component': 'major',
+    'Wrong Polarity': 'major',
+    'Vertical Misalignment': 'minor',
+    'Component Chip Off': 'minor',
+    'Board Chip Off': 'minor',
+};
+
 let allowReload = false;
 let pollTimer = null;
 const POLL_INTERVAL_MS = 3000;
@@ -556,7 +602,7 @@ function defectRowTemplate() {
         <div class="dual-inputs">
             <div class="half-group">
                 <label>Defect</label>
-                <select>
+                <select class="defect-select" style="width:100%;">
                     <option value="">Select a defect</option>
                     <option value="Conductor spacing">Conductor spacing</option>
                     <option value="Contacting Lead">Contacting Lead</option>
@@ -606,7 +652,7 @@ function defectRowTemplate() {
                 <select class="location-select" multiple="multiple" style="width:100%;">${locationOptions}</select>
             </div>
         </div>
-        <div style="margin-top:8px;">
+        <div style="margin-top:8px; display:none;" class="severity-wrap">
             <label style="font-size:12px; font-weight:600; color:#555;">Severity</label>
             <div class="severity-toggle">
                 <label><input type="radio" name="severity_${ts}" class="severity-radio" value="major" checked> Major (AQL 0.15)</label>
@@ -720,6 +766,7 @@ $('#startBtn').on('click', function() {
         $('#serial_input').prop('disabled', false).focus();
         $('#ngBtn').prop('disabled', false);
         $btn.text('ACTIVE');
+$('#continueBtn').hide();
         updateJudgement();
         renderSerialList();
         updateCounts();
@@ -788,7 +835,7 @@ function openNgModal(serial) {
     $('#ng_defect_rows').html(defectRowTemplate());
     initSelect2InRow($('#ng_defect_rows .ng-defect-row')[0]);
     $('#ngModal').addClass('active');
-    setTimeout(() => $('#ng_defect_rows .defect-input').first().focus(), 100);
+    setTimeout(() => $('#ng_defect_rows .defect-select').first().focus(), 100);
 }
 
 function closeNgModal() {
@@ -814,7 +861,7 @@ $('#ngSaveBtn').on('click', function() {
     const defects = [];
     let valid = true;
     $('#ng_defect_rows .ng-defect-row').each(function() {
-        const defect    = $(this).find('.defect-input').val().trim().toUpperCase();
+        const defect    = $(this).find('.defect-select').val().trim().toUpperCase();
         const locations = $(this).find('.location-select').val() || [];
         const severity  = $(this).find('.severity-radio:checked').val() || 'major';
 
@@ -850,6 +897,24 @@ $('#ngBtn').on('click', function() {
     }
     state.currentSerial = serial;
     openNgModal(serial);
+});
+
+// ── DEFECT AUTO-SEVERITY ───────────────────────────────────────────────────
+$('#ng_defect_rows').on('change', '.defect-select', function() {
+    const $row = $(this).closest('.ng-defect-row');
+    const defect = $(this).val();
+    const severity = DEFECT_SEVERITY[defect];
+
+    if (defect && severity === null) {
+        // Foreign Material / Insufficient Solder — needs manual judgement call
+        $row.find('.severity-wrap').show();
+    } else {
+        // everything else — auto-classified, no need to show the operator a choice
+        $row.find('.severity-wrap').hide();
+        if (severity) {
+            $row.find(`.severity-radio[value="${severity}"]`).prop('checked', true);
+        }
+    }
 });
 
 // ── FINALIZE ──────────────────────────────────────────────────────────────────
