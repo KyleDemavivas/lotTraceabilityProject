@@ -56,17 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // fetch esd logs for current shift and date
-    $esd_conn = get_conn_remote();
-    if($esd_conn){
-        $stmt = $conn2->prepare("SELECT empid FROM esd_logs WHERE empid=:empid AND result_com='GOOD' AND datelogs=:shift ORDER BY timelogs DESC LIMIT 1");
-        $stmt->bindParam(':shift', $getCurrentDate, PDO::PARAM_STR);
-        $stmt->bindParam(':empid', $empid, PDO::PARAM_STR);
-        $stmt->execute();
-        $esd_logs = $stmt->fetchColumn();
-
-    }
-
     if ($user && password_verify($user_password, $user['user_password'])) {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['emp_id'] = $user['emp_id'];
