@@ -442,7 +442,7 @@ try {
                 $('#nogoodForm .defect-location-row').each(function(index) {
                     const defect = $(this).find('select[name="defect[]"]').val();
                     const location = $(this)
-                        .find(`select[name="location[${index}][]"]`)
+                        .find(`select[name="location2[${index}][]"]`)
                         .val();
 
                     const defectVal = defect ? defect.trim() : '';
@@ -506,6 +506,12 @@ try {
                         if (response.status === 'success') {
                             closeNoGoodModal();
                         }
+                    }, error(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'AJAX Error',
+                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`
+                        });
                     }
                 });
             });
