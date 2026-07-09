@@ -325,10 +325,12 @@ function openDetailModal(inspectionId, lotLabel) {
 
             $('#modalBody').html(`
             <div class="lot-summary">
-                <div class="summary-box">
-                    <div class="sb-label">Result</div>
+                    <div class="summary-box">
+                        <div class="sb-label">Result</div>
                     <div class="sb-value ${d.status === 'IN_PROGRESS' ? '' : (d.lot_result === 'ACCEPT' ? 'accept' : 'reject')}" style="${d.status === 'IN_PROGRESS' ? 'color:#a16207;' : ''}">${d.status === 'IN_PROGRESS' ? 'IN PROGRESS' : d.lot_result}</div>
                 </div>
+            </div>
+            <div class="lot-summary">
                 <div class="summary-box">
                     <div class="sb-label">Judgement</div>
                     <div class="sb-value" style="font-size:13px;">${d.judgement || '—'}</div>
@@ -342,16 +344,12 @@ function openDetailModal(inspectionId, lotLabel) {
                     <div class="sb-value" style="font-size:14px;">${d.inspection_level || '—'}</div>
                 </div>
                 <div class="summary-box">
+                    <div class="sb-label">Lot Qty</div>
+                    <div class="sb-value blue">${d.lot_quantity || '—'}</div>
+                </div>
+                <div class="summary-box">
                     <div class="sb-label">Sample Size</div>
                     <div class="sb-value blue">${d.sample_size}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Good</div>
-                    <div class="sb-value accept">${goodCount}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">NG</div>
-                    <div class="sb-value reject">${ngCount}</div>
                 </div>
             </div>
 
@@ -359,10 +357,6 @@ function openDetailModal(inspectionId, lotLabel) {
                 <div class="summary-box">
                     <div class="sb-label">Model</div>
                     <div class="sb-value" style="font-size:14px;">${d.model || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Lot Qty</div>
-                    <div class="sb-value blue">${d.lot_quantity || '—'}</div>
                 </div>
                 <div class="summary-box">
                     <div class="sb-label">Line</div>
@@ -379,6 +373,17 @@ function openDetailModal(inspectionId, lotLabel) {
                 <div class="summary-box">
                     <div class="sb-label">Assy No.</div>
                     <div class="sb-value" style="font-size:13px;">${d.assy_no || '—'}</div>
+                </div>
+            </div>
+
+            <div class="lot-summary">
+            <div class="summary-box">
+                    <div class="sb-label">Good</div>
+                    <div class="sb-value accept">${goodCount}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">NG</div>
+                    <div class="sb-value reject">${ngCount}</div>
                 </div>
             </div>
 
@@ -497,65 +502,67 @@ function printLotDetail(lot, d) {
         <div class="sub">Printed ${new Date().toLocaleString('en-PH')}</div>
 
         <div class="lot-summary">
-        <div class="summary-box">
-                <div class="sb-label">Result</div>
-                <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
+                    <div class="summary-box">
+                        <div class="sb-label">Result</div>
+                    <div class="sb-value ${d.status === 'IN_PROGRESS' ? '' : (d.lot_result === 'ACCEPT' ? 'accept' : 'reject')}" style="${d.status === 'IN_PROGRESS' ? 'color:#a16207;' : ''}">${d.status === 'IN_PROGRESS' ? 'IN PROGRESS' : d.lot_result}</div>
+                </div>
             </div>
-        </div>
+            <div class="lot-summary">
+                <div class="summary-box">
+                    <div class="sb-label">Judgement</div>
+                    <div class="sb-value" style="font-size:13px;">${d.judgement || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Method</div>
+                    <div class="sb-value" style="font-size:14px;">${capitalize(d.inspection_method)}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Level</div>
+                    <div class="sb-value" style="font-size:14px;">${d.inspection_level || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Lot Qty</div>
+                    <div class="sb-value blue">${d.lot_quantity || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Sample Size</div>
+                    <div class="sb-value blue">${d.sample_size}</div>
+                </div>
+            </div>
 
-        <div class="lot-summary">
-            <div class="summary-box">
-                <div class="sb-label">Judgement</div>
-                <div class="sb-value" style="font-size:12px;">${d.judgement || '—'}</div>
+            <div class="lot-summary">
+                <div class="summary-box">
+                    <div class="sb-label">Model</div>
+                    <div class="sb-value" style="font-size:14px;">${d.model || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Line</div>
+                    <div class="sb-value" style="font-size:14px;">${d.line || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Shift</div>
+                    <div class="sb-value" style="font-size:14px;">${d.shift || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Customer</div>
+                    <div class="sb-value" style="font-size:13px;">${d.customer || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Assy No.</div>
+                    <div class="sb-value" style="font-size:13px;">${d.assy_no || '—'}</div>
+                </div>
             </div>
-            <div class="summary-box">
-                <div class="sb-label">Method</div>
-                <div class="sb-value" style="font-size:13px;">${capitalize(d.inspection_method)}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">Level</div>
-                <div class="sb-value" style="font-size:13px;">${d.inspection_level || '—'}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">Sample Size</div>
-                <div class="sb-value blue">${d.sample_size}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">Good</div>
-                <div class="sb-value accept">${goodCount}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">NG</div>
-                <div class="sb-value reject">${ngCount}</div>
-            </div>
-        </div>
 
-        <div class="lot-summary">
+            <div class="lot-summary">
             <div class="summary-box">
-                <div class="sb-label">Model</div>
-                <div class="sb-value" style="font-size:13px;">${d.model || '—'}</div>
+                    <div class="sb-label">Good</div>
+                    <div class="sb-value accept">${goodCount}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">NG</div>
+                    <div class="sb-value reject">${ngCount}</div>
+                </div>
             </div>
-            <div class="summary-box">
-                <div class="sb-label">Lot Qty</div>
-                <div class="sb-value blue">${d.lot_quantity || '—'}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">Line</div>
-                <div class="sb-value" style="font-size:13px;">${d.line || '—'}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">Shift</div>
-                <div class="sb-value" style="font-size:13px;">${d.shift || '—'}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">Customer</div>
-                <div class="sb-value" style="font-size:12px;">${d.customer || '—'}</div>
-            </div>
-            <div class="summary-box">
-                <div class="sb-label">Assy No.</div>
-                <div class="sb-value" style="font-size:12px;">${d.assy_no || '—'}</div>
-            </div>
-        </div>
 
         ${d.reference_no ? `<div class="meta-row"><span><b>Reference No.:</b> ${d.reference_no}</span></div>` : ''}
 
