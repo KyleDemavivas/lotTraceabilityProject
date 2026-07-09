@@ -319,51 +319,67 @@ const AQL_DATA = {
            reduced:   {aql015:{ac:3,   re:6   }, aql10:{ac:5,   re:8   }} },
 };
 
-// ── DEFECT SEVERITY MAP (from Defect Classification Standard) ─────────────────
-// null = severity depends on a sub-condition; operator selects manually.
+// ── DEFECT SEVERITY + CATEGORY MAP (from Defect Classification Standard) ──────
+// severity: null = depends on a sub-condition; operator selects manually.
 const DEFECT_SEVERITY = {
-    'Conductor spacing': 'minor',
-    'Contacting Lead': 'minor',
-    'Crack Solder': 'minor',
-    'Cut Pattern': 'major',
-    'Damaged Component': 'major',
-    'Deformed Pin': 'minor',
-    'Detached Component': 'major',
-    'Electrode Corrosion': 'minor',
-    'Excess Solder': 'minor',
-    'Floating Component': 'minor',
-    'Flux': 'major',
-    'Foreign Material': null,        // Non-conductive = Minor, Conductive = Major
-    'Insufficient Solder': null,     // IC/PCB parts = Major, HW parts = Minor
-    'Inverted Component': 'minor',
-    'Lead Not Inserted': 'minor',
-    'Lead to Lead': 'minor',
-    'Lead to Pattern': 'minor',
-    'Lead to Solder': 'minor',
-    'Lead Too Long/Short': 'minor',
-    'Lifted Component': 'minor',
-    'Lifted Lead': 'minor',
-    'Lifted Solder': 'minor',
-    'Horizontal/Rotational Misalignment': 'minor',
-    'Missing Component': 'major',
-    'Missing/Damaged Silk Print': 'minor',
-    'No Solder': 'major',
-    'Non-Legible of Specification': 'minor',
-    'Remove Pattern': 'minor',
-    'Resist Peeling': 'minor',
-    'Solder Ball': 'minor',
-    'Solder Bridge': 'major',
-    'Solder Horn/Icicle': 'minor',
-    'Solder Splash/Residue': 'minor',
-    'Solder Spouting': 'minor',
-    'Tombstone': 'minor',
-    'Uneven Pin Height': 'minor',
-    'Wrong Component': 'major',
-    'Wrong Polarity': 'major',
-    'Vertical Misalignment': 'minor',
-    'Component Chip Off': 'minor',
-    'Board Chip Off': 'minor',
+    'Conductor spacing': { severity: 'minor', category: 'Parts Appearance' },
+    'Contacting Lead': { severity: 'minor', category: 'Parts Appearance' },
+    'Crack Solder': { severity: 'minor', category: 'Solderability Condition' },
+    'Cut Pattern': { severity: 'major', category: 'PCB Appearance' },
+    'Damaged Component': { severity: 'major', category: 'Parts Appearance' },
+    'Deformed Pin': { severity: 'minor', category: 'Parts Appearance' },
+    'Detached Component': { severity: 'major', category: 'Parts Appearance' },
+    'Electrode Corrosion': { severity: 'minor', category: 'Parts Appearance' },
+    'Excess Solder': { severity: 'minor', category: 'Solderability Condition' },
+    'Floating Component': { severity: 'minor', category: 'Mounting Condition' },
+    'Flux': { severity: 'major', category: 'Parts Appearance' },
+    'Foreign Material': { severity: null, category: 'Parts Appearance' }, // Non-conductive = Minor, Conductive = Major
+    'Insufficient Solder': { severity: null, category: 'Solderability Condition' }, // IC/PCB parts = Major, HW parts = Minor
+    'Inverted Component': { severity: 'minor', category: 'Mounting Condition' },
+    'Lead Not Inserted': { severity: 'minor', category: 'Mounting Condition' },
+    'Lead to Lead': { severity: 'minor', category: 'Parts Appearance' },
+    'Lead to Pattern': { severity: 'minor', category: 'Parts Appearance' },
+    'Lead to Solder': { severity: 'minor', category: 'Parts Appearance' },
+    'Lead Too Long/Short': { severity: 'minor', category: 'Parts Appearance' },
+    'Lifted Component': { severity: 'minor', category: 'Mounting Condition' },
+    'Lifted Lead': { severity: 'minor', category: 'Parts Appearance' },
+    'Lifted Solder': { severity: 'minor', category: 'Solderability Condition' },
+    'Horizontal/Rotational Misalignment': { severity: 'minor', category: 'Mounting Condition' },
+    'Missing Component': { severity: 'major', category: 'Mounting Condition' },
+    'Missing/Damaged Silk Print': { severity: 'minor', category: 'Parts Appearance' },
+    'No Solder': { severity: 'major', category: 'Solderability Condition' },
+    'Non-Legible of Specification': { severity: 'minor', category: 'Parts Appearance' },
+    'Remove Pattern': { severity: 'minor', category: 'PCB Appearance' },
+    'Resist Peeling': { severity: 'minor', category: 'PCB Appearance' },
+    'Solder Ball': { severity: 'minor', category: 'Solderability Condition' },
+    'Solder Bridge': { severity: 'major', category: 'Solderability Condition' },
+    'Solder Horn/Icicle': { severity: 'minor', category: 'Solderability Condition' },
+    'Solder Splash/Residue': { severity: 'minor', category: 'Solderability Condition' },
+    'Solder Spouting': { severity: 'minor', category: 'Solderability Condition' },
+    'Tombstone': { severity: 'minor', category: 'Mounting Condition' },
+    'Uneven Pin Height': { severity: 'minor', category: 'Parts Appearance' },
+    'Wrong Component': { severity: 'major', category: 'Parts Appearance' },
+    'Wrong Polarity': { severity: 'major', category: 'Mounting Condition' },
+    'Vertical Misalignment': { severity: 'minor', category: 'Mounting Condition' },
+    'Component Chip Off': { severity: 'minor', category: 'Parts Appearance' },
+    'Board Chip Off': { severity: 'minor', category: 'PCB Appearance' },
 };
+
+// Maps the spreadsheet's category labels to the finalize-payload field keys.
+const CATEGORY_FIELD_MAP = {
+    'Parts Appearance': 'parts_appearance',
+    'PCB Appearance': 'pcb_appearance',
+    'Solderability Condition': 'solder_condition',
+    'Mounting Condition': 'subassembly_condition',
+};
+
+// Defect names are stored UPPERCASED once an NG entry is saved (see ngSaveBtn),
+// but DEFECT_SEVERITY is keyed in Title Case. Build a case-insensitive index
+// so category/severity re-derivation (e.g. recomputeCategoryCounts) still matches.
+const DEFECT_SEVERITY_LOOKUP = {};
+Object.keys(DEFECT_SEVERITY).forEach(k => {
+    DEFECT_SEVERITY_LOOKUP[k.toUpperCase()] = DEFECT_SEVERITY[k];
+});
 
 let allowReload = false;
 let pollTimer = null;
@@ -371,7 +387,7 @@ const POLL_INTERVAL_MS = 3000;
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let state = {
-    active: false, letter: null, method: null, sampleSize: 0,
+    active: false, letter: null, method: null, sampleSize: 0, lotQty: 0,
     scanned: [], currentSerial: null,
     defects015: 0, defects10: 0, aqlParams: null,
     scanCountForSpec: 0,   // tracks GOOD boards seen so far, for the first-5 Parts Spec popup
@@ -390,6 +406,22 @@ function applyServerSerials(serverSerials) {
         parts_specification: s.parts_specification || null,
     }));
     state.scanCountForSpec = state.scanned.length;
+}
+
+// Derives category counts from every recorded defect across all scanned boards.
+// Counts per defect occurrence (a board with 2 Parts Appearance defects counts as 2).
+function recomputeCategoryCounts() {
+    const counts = { parts_appearance: 0, pcb_appearance: 0, solder_condition: 0, subassembly_condition: 0 };
+    state.scanned.forEach(s => {
+        s.defects.forEach(d => {
+            d.defect.split(', ').forEach(name => {
+                const entry = DEFECT_SEVERITY_LOOKUP[name.trim().toUpperCase()];
+                const field = entry && CATEGORY_FIELD_MAP[entry.category];
+                if (field) counts[field]++;
+            });
+        });
+    });
+    return counts;
 }
 
 function submitScan(serial, status, location, defect_code, severity, parts_spec, majorCount, minorCount) {
@@ -444,8 +476,12 @@ function syncFromServer() {
                     .then(() => { allowReload = true; location.reload(); });
                 return;
             }
-            state.defects015 = res.lot.defects_015;
-            state.defects10  = res.lot.defects_10;
+            // Defect counts only ever go up during an inspection. If this poll landed
+            // before the server's aggregate columns caught up with a scan we already
+            // know succeeded locally, don't let the count regress — that's what was
+            // causing the REJECT banner to flash and then disappear.
+            state.defects015 = Math.max(state.defects015, res.lot.defects_015);
+            state.defects10  = Math.max(state.defects10,  res.lot.defects_10);
             applyServerSerials(res.serials);
             renderSerialList();
             updateCounts();
@@ -727,7 +763,7 @@ $('#startBtn').on('click', function() {
             const jParams = jMethod === 'fullcheck' ? jData.normal : jData[jMethod];
 
             state = {
-                active: true, letter: jLetter, method: jMethod, sampleSize: jSample,
+                active: true, letter: jLetter, method: jMethod, sampleSize: jSample, lotQty: lot.lot_quantity,
                 aqlParams: jParams, scanned: [], currentSerial: null,
                 defects015: lot.defects_015, defects10: lot.defects_10,
                 scanCountForSpec: 0, inspectionId: lot.id, attemptNumber: lot.attempt_number,
@@ -747,7 +783,7 @@ $('#startBtn').on('click', function() {
                 toast:true, position:'top-end', timer:4000, showConfirmButton:false });
         } else {
             state = {
-                active: true, letter, method, sampleSize: sample,
+                active: true, letter, method, sampleSize: sample, lotQty: qty,
                 aqlParams: params, scanned: [], currentSerial: null,
                 defects015: 0, defects10: 0,
                 scanCountForSpec: 0, inspectionId: res.lot_id, attemptNumber: res.attempt_number,
@@ -903,7 +939,8 @@ $('#ngBtn').on('click', function() {
 $('#ng_defect_rows').on('change', '.defect-select', function() {
     const $row = $(this).closest('.ng-defect-row');
     const defect = $(this).val();
-    const severity = DEFECT_SEVERITY[defect];
+    const entry = DEFECT_SEVERITY[defect];
+    const severity = entry ? entry.severity : undefined;
 
     if (defect && severity === null) {
         // Foreign Material / Insufficient Solder — needs manual judgement call
@@ -919,23 +956,26 @@ $('#ng_defect_rows').on('change', '.defect-select', function() {
 
 // ── FINALIZE ──────────────────────────────────────────────────────────────────
 $('#finalizeBtn').on('click', function() {
-    const { aqlParams, defects015, defects10, scanned, sampleSize, letter, method } = state;
+    const { aqlParams, defects015, defects10, scanned, sampleSize, letter, method, lotQty } = state;
     const failed015 = aqlParams.aql015.re !== null && defects015 >= aqlParams.aql015.re;
     const failed10  = aqlParams.aql10.re  !== null && defects10  >= aqlParams.aql10.re;
     const judgement = (failed015 || failed10) ? 'REJECT' : 'ACCEPT';
     const derivedJudgement = deriveJudgement(method, defects015, defects10, aqlParams);
 
-    const remarkFieldsHtml = judgement === 'ACCEPT' ? `
+    const categoryCounts = recomputeCategoryCounts();
+    const denom = method === 'fullcheck' ? lotQty : sampleSize;
+
+    const remarkFieldsHtml = `
         <hr style="margin:12px 0;">
         <div style="text-align:left; font-size:13px;">
-            <div class="form-group"><label class="form-label" style="min-width:160px;">Parts Appearance:</label><input type="text" class="form-input" id="fz_parts_appearance"></div>
-            <div class="form-group"><label class="form-label" style="min-width:160px;">PCB Appearance:</label><input type="text" class="form-input" id="fz_pcb_appearance"></div>
-            <div class="form-group"><label class="form-label" style="min-width:160px;">Solder Condition:</label><input type="text" class="form-input" id="fz_solder_condition"></div>
-            <div class="form-group"><label class="form-label" style="min-width:160px;">Labels/Markings:</label><input type="text" class="form-input" id="fz_labels_markings"></div>
-            <div class="form-group"><label class="form-label" style="min-width:160px;">Sub Assembly Condition:</label><input type="text" class="form-input" id="fz_subassembly_condition"></div>
-            <div class="form-group"><label class="form-label" style="min-width:160px;">Package Condition:</label><input type="text" class="form-input" id="fz_package_condition"></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Parts Appearance:</label><span style="font-weight:600;">${categoryCounts.parts_appearance}/${denom}</span></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">PCB Appearance:</label><span style="font-weight:600;">${categoryCounts.pcb_appearance}/${denom}</span></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Solder Condition:</label><span style="font-weight:600;">${categoryCounts.solder_condition}/${denom}</span></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Sub Assembly Condition:</label><span style="font-weight:600;">${categoryCounts.subassembly_condition}/${denom}</span></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Labels/Markings:</label><span style="font-weight:600;">0/${denom}</span></div>
+            <div class="form-group"><label class="form-label" style="min-width:160px;">Package Condition:</label><span style="font-weight:600;">0/${denom}</span></div>
         </div>
-    ` : '';
+    `;
 
     Swal.fire({
         icon: judgement === 'ACCEPT' ? 'success' : 'error',
@@ -973,12 +1013,12 @@ $('#finalizeBtn').on('click', function() {
             }
             return {
                 judgement: selectedJudgement,
-                parts_appearance:        document.getElementById('fz_parts_appearance')?.value || '',
-                pcb_appearance:          document.getElementById('fz_pcb_appearance')?.value || '',
-                solder_condition:        document.getElementById('fz_solder_condition')?.value || '',
-                labels_markings:         document.getElementById('fz_labels_markings')?.value || '',
-                subassembly_condition:   document.getElementById('fz_subassembly_condition')?.value || '',
-                package_condition:       document.getElementById('fz_package_condition')?.value || '',
+                parts_appearance:      `${categoryCounts.parts_appearance}/${denom}`,
+                pcb_appearance:        `${categoryCounts.pcb_appearance}/${denom}`,
+                solder_condition:      `${categoryCounts.solder_condition}/${denom}`,
+                subassembly_condition: `${categoryCounts.subassembly_condition}/${denom}`,
+                labels_markings:       `0/${denom}`,
+                package_condition:     `0/${denom}`,
             };
         },
     }).then(result => {
@@ -1085,7 +1125,7 @@ $('#continueBtn').on('click', function() {
         const jParams = jMethod === 'fullcheck' ? jData.normal : jData[jMethod];
 
         state = {
-            active: true, letter: jLetter, method: jMethod, sampleSize: jSample,
+            active: true, letter: jLetter, method: jMethod, sampleSize: jSample, lotQty: lot.lot_quantity,
             aqlParams: jParams, scanned: [], currentSerial: null,
             defects015: lot.defects_015, defects10: lot.defects_10,
             scanCountForSpec: 0, inspectionId: lot.id, attemptNumber: lot.attempt_number,

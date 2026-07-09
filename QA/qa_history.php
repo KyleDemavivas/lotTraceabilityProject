@@ -170,6 +170,31 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
         .summary-box .sb-value.accept { color: #16a34a; }
         .summary-box .sb-value.reject { color: #dc2626; }
         .summary-box .sb-value.blue   { color: #4facfe; }
+        .result-banner {
+            flex: none !important;
+            width: 100%;
+            padding: 14px !important;
+            border-width: 2px !important;
+        }
+        .result-banner.rb-accept {
+            background: #dcfce7 !important;
+            border-color: #86efac !important;
+        }
+        .result-banner.rb-reject {
+            background: #fee2e2 !important;
+            border-color: #fca5a5 !important;
+        }
+        .result-banner.rb-progress {
+            background: #fef9c3 !important;
+            border-color: #fde047 !important;
+        }
+        .result-banner .sb-label {
+            font-size: 11px;
+        }
+        .result-banner .sb-value {
+            font-size: 26px !important;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
@@ -322,14 +347,16 @@ function openDetailModal(inspectionId, lotLabel) {
 
             const ngCount   = d.serials.filter(s => s.status === 'NO GOOD').length;
             const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
+            const resultClass = d.status === 'IN_PROGRESS' ? 'rb-progress' : (d.lot_result === 'ACCEPT' ? 'rb-accept' : 'rb-reject');
 
             $('#modalBody').html(`
             <div class="lot-summary">
-                    <div class="summary-box">
-                        <div class="sb-label">Result</div>
+                <div class="summary-box result-banner ${resultClass}">
+                    <div class="sb-label">Result</div>
                     <div class="sb-value ${d.status === 'IN_PROGRESS' ? '' : (d.lot_result === 'ACCEPT' ? 'accept' : 'reject')}" style="${d.status === 'IN_PROGRESS' ? 'color:#a16207;' : ''}">${d.status === 'IN_PROGRESS' ? 'IN PROGRESS' : d.lot_result}</div>
                 </div>
             </div>
+
             <div class="lot-summary">
                 <div class="summary-box">
                     <div class="sb-label">Judgement</div>
@@ -344,12 +371,16 @@ function openDetailModal(inspectionId, lotLabel) {
                     <div class="sb-value" style="font-size:14px;">${d.inspection_level || '—'}</div>
                 </div>
                 <div class="summary-box">
-                    <div class="sb-label">Lot Qty</div>
-                    <div class="sb-value blue">${d.lot_quantity || '—'}</div>
-                </div>
-                <div class="summary-box">
                     <div class="sb-label">Sample Size</div>
                     <div class="sb-value blue">${d.sample_size}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Good</div>
+                    <div class="sb-value accept">${goodCount}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">NG</div>
+                    <div class="sb-value reject">${ngCount}</div>
                 </div>
             </div>
 
@@ -357,6 +388,10 @@ function openDetailModal(inspectionId, lotLabel) {
                 <div class="summary-box">
                     <div class="sb-label">Model</div>
                     <div class="sb-value" style="font-size:14px;">${d.model || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Lot Qty</div>
+                    <div class="sb-value blue">${d.lot_quantity || '—'}</div>
                 </div>
                 <div class="summary-box">
                     <div class="sb-label">Line</div>
@@ -376,28 +411,17 @@ function openDetailModal(inspectionId, lotLabel) {
                 </div>
             </div>
 
-            <div class="lot-summary">
-            <div class="summary-box">
-                    <div class="sb-label">Good</div>
-                    <div class="sb-value accept">${goodCount}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">NG</div>
-                    <div class="sb-value reject">${ngCount}</div>
-                </div>
-            </div>
-
             ${d.reference_no ? `<div style="font-size:13px; color:#555; margin-bottom:12px;"><b>Reference No.:</b> ${d.reference_no}</div>` : ''}
 
-            ${d.lot_result === 'ACCEPT' && (d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
+            ${(d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
             <div style="font-size:12px; background:#f9f9f9; border:1px solid #eee; border-radius:6px; padding:10px 14px; margin-bottom:12px;">
-                <div style="font-weight:bold; text-transform:uppercase; font-size:10px; letter-spacing:1px; color:#888; margin-bottom:8px;">Final Inspection Remarks</div>
+                <div style="font-weight:bold; text-transform:uppercase; font-size:10px; letter-spacing:1px; color:#888; margin-bottom:8px;">Defect Category Summary</div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; color:#444;">
                     ${d.parts_appearance       ? `<div><b>Parts Appearance:</b> ${d.parts_appearance}</div>` : ''}
                     ${d.pcb_appearance         ? `<div><b>PCB Appearance:</b> ${d.pcb_appearance}</div>` : ''}
                     ${d.solder_condition       ? `<div><b>Solder Condition:</b> ${d.solder_condition}</div>` : ''}
-                    ${d.labels_markings        ? `<div><b>Labels/Markings:</b> ${d.labels_markings}</div>` : ''}
                     ${d.subassembly_condition  ? `<div><b>Sub Assembly Condition:</b> ${d.subassembly_condition}</div>` : ''}
+                    ${d.labels_markings        ? `<div><b>Labels/Markings:</b> ${d.labels_markings}</div>` : ''}
                     ${d.package_condition      ? `<div><b>Package Condition:</b> ${d.package_condition}</div>` : ''}
                 </div>
             </div>` : ''}
@@ -465,6 +489,7 @@ function printLotDetail(lot, d) {
     const ngCount   = d.serials.filter(s => s.status === 'NO GOOD').length;
     const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
     const printSerials = showAllSerials ? d.serials : d.serials.filter(s => s.status === 'NO GOOD');
+    const resultClass = d.lot_result === 'ACCEPT' ? 'rb-accept' : 'rb-reject';
 
 
     const printHtml = `
@@ -494,6 +519,11 @@ function printLotDetail(lot, d) {
             tr.ng-row td { background:#fff5f5; }
             .status-good { color:#16a34a; }
             .status-ng   { color:#dc2626; }
+            .result-banner { flex:none; width:100%; padding:14px; border-width:2px; }
+            .result-banner.rb-accept { background:#dcfce7; border-color:#86efac; }
+            .result-banner.rb-reject { background:#fee2e2; border-color:#fca5a5; }
+            .result-banner .sb-label { font-size:11px; }
+            .result-banner .sb-value { font-size:22px; letter-spacing:1px; }
             @media print { body { padding: 0; } }
         </style>
     </head>
@@ -502,79 +532,77 @@ function printLotDetail(lot, d) {
         <div class="sub">Printed ${new Date().toLocaleString('en-PH')}</div>
 
         <div class="lot-summary">
-                    <div class="summary-box">
-                        <div class="sb-label">Result</div>
-                    <div class="sb-value ${d.status === 'IN_PROGRESS' ? '' : (d.lot_result === 'ACCEPT' ? 'accept' : 'reject')}" style="${d.status === 'IN_PROGRESS' ? 'color:#a16207;' : ''}">${d.status === 'IN_PROGRESS' ? 'IN PROGRESS' : d.lot_result}</div>
-                </div>
+            <div class="summary-box result-banner ${resultClass}">
+                <div class="sb-label">Result</div>
+                <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
             </div>
-            <div class="lot-summary">
-                <div class="summary-box">
-                    <div class="sb-label">Judgement</div>
-                    <div class="sb-value" style="font-size:13px;">${d.judgement || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Method</div>
-                    <div class="sb-value" style="font-size:14px;">${capitalize(d.inspection_method)}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Level</div>
-                    <div class="sb-value" style="font-size:14px;">${d.inspection_level || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Lot Qty</div>
-                    <div class="sb-value blue">${d.lot_quantity || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Sample Size</div>
-                    <div class="sb-value blue">${d.sample_size}</div>
-                </div>
-            </div>
+        </div>
 
-            <div class="lot-summary">
-                <div class="summary-box">
-                    <div class="sb-label">Model</div>
-                    <div class="sb-value" style="font-size:14px;">${d.model || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Line</div>
-                    <div class="sb-value" style="font-size:14px;">${d.line || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Shift</div>
-                    <div class="sb-value" style="font-size:14px;">${d.shift || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Customer</div>
-                    <div class="sb-value" style="font-size:13px;">${d.customer || '—'}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">Assy No.</div>
-                    <div class="sb-value" style="font-size:13px;">${d.assy_no || '—'}</div>
-                </div>
-            </div>
-
-            <div class="lot-summary">
+        <div class="lot-summary">
             <div class="summary-box">
-                    <div class="sb-label">Good</div>
-                    <div class="sb-value accept">${goodCount}</div>
-                </div>
-                <div class="summary-box">
-                    <div class="sb-label">NG</div>
-                    <div class="sb-value reject">${ngCount}</div>
-                </div>
+                <div class="sb-label">Judgement</div>
+                <div class="sb-value" style="font-size:12px;">${d.judgement || '—'}</div>
             </div>
+            <div class="summary-box">
+                <div class="sb-label">Method</div>
+                <div class="sb-value" style="font-size:13px;">${capitalize(d.inspection_method)}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Level</div>
+                <div class="sb-value" style="font-size:13px;">${d.inspection_level || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Sample Size</div>
+                <div class="sb-value blue">${d.sample_size}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Good</div>
+                <div class="sb-value accept">${goodCount}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">NG</div>
+                <div class="sb-value reject">${ngCount}</div>
+            </div>
+        </div>
+
+        <div class="lot-summary">
+            <div class="summary-box">
+                <div class="sb-label">Model</div>
+                <div class="sb-value" style="font-size:13px;">${d.model || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Lot Qty</div>
+                <div class="sb-value blue">${d.lot_quantity || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Line</div>
+                <div class="sb-value" style="font-size:13px;">${d.line || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Shift</div>
+                <div class="sb-value" style="font-size:13px;">${d.shift || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Customer</div>
+                <div class="sb-value" style="font-size:12px;">${d.customer || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Assy No.</div>
+                <div class="sb-value" style="font-size:12px;">${d.assy_no || '—'}</div>
+            </div>
+        </div>
 
         ${d.reference_no ? `<div class="meta-row"><span><b>Reference No.:</b> ${d.reference_no}</span></div>` : ''}
 
-        ${d.lot_result === 'ACCEPT' && (d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
+        ${(d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
         <div class="remarks-box">
-            <b>Final Inspection Remarks</b>
+            <b>Defect Category Summary</b>
             <div class="remarks-grid">
                 ${d.parts_appearance      ? `<div><b>Parts Appearance:</b> ${d.parts_appearance}</div>` : ''}
                 ${d.pcb_appearance        ? `<div><b>PCB Appearance:</b> ${d.pcb_appearance}</div>` : ''}
                 ${d.solder_condition      ? `<div><b>Solder Condition:</b> ${d.solder_condition}</div>` : ''}
-                ${d.labels_markings       ? `<div><b>Labels/Markings:</b> ${d.labels_markings}</div>` : ''}
                 ${d.subassembly_condition ? `<div><b>Sub Assembly Condition:</b> ${d.subassembly_condition}</div>` : ''}
+                ${d.labels_markings       ? `<div><b>Labels/Markings:</b> ${d.labels_markings}</div>` : ''}
                 ${d.package_condition     ? `<div><b>Package Condition:</b> ${d.package_condition}</div>` : ''}
             </div>
         </div>` : ''}
