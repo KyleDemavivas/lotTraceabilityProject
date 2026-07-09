@@ -355,11 +355,34 @@ function openDetailModal(inspectionId, lotLabel) {
                 </div>
             </div>
 
-            <div style="font-size:13px; color:#555; margin-bottom:12px; display:flex; flex-wrap:wrap; gap:8px 24px;">
-                ${d.customer         ? `<span><b>Customer:</b> ${d.customer}</span>` : ''}
-                ${d.assy_no          ? `<span><b>Assy No.:</b> ${d.assy_no}</span>` : ''}
-                ${d.reference_no     ? `<span><b>Reference No.:</b> ${d.reference_no}</span>` : ''}
+            <div class="lot-summary">
+                <div class="summary-box">
+                    <div class="sb-label">Model</div>
+                    <div class="sb-value" style="font-size:14px;">${d.model || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Lot Qty</div>
+                    <div class="sb-value blue">${d.lot_quantity || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Line</div>
+                    <div class="sb-value" style="font-size:14px;">${d.line || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Shift</div>
+                    <div class="sb-value" style="font-size:14px;">${d.shift || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Customer</div>
+                    <div class="sb-value" style="font-size:13px;">${d.customer || '—'}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="sb-label">Assy No.</div>
+                    <div class="sb-value" style="font-size:13px;">${d.assy_no || '—'}</div>
+                </div>
             </div>
+
+            ${d.reference_no ? `<div style="font-size:13px; color:#555; margin-bottom:12px;"><b>Reference No.:</b> ${d.reference_no}</div>` : ''}
 
             ${d.lot_result === 'ACCEPT' && (d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
             <div style="font-size:12px; background:#f9f9f9; border:1px solid #eee; border-radius:6px; padding:10px 14px; margin-bottom:12px;">
@@ -474,10 +497,13 @@ function printLotDetail(lot, d) {
         <div class="sub">Printed ${new Date().toLocaleString('en-PH')}</div>
 
         <div class="lot-summary">
-            <div class="summary-box">
+        <div class="summary-box">
                 <div class="sb-label">Result</div>
                 <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
             </div>
+        </div>
+
+        <div class="lot-summary">
             <div class="summary-box">
                 <div class="sb-label">Judgement</div>
                 <div class="sb-value" style="font-size:12px;">${d.judgement || '—'}</div>
@@ -504,11 +530,34 @@ function printLotDetail(lot, d) {
             </div>
         </div>
 
-        <div class="meta-row">
-            ${d.customer     ? `<span><b>Customer:</b> ${d.customer}</span>` : ''}
-            ${d.assy_no      ? `<span><b>Assy No.:</b> ${d.assy_no}</span>` : ''}
-            ${d.reference_no ? `<span><b>Reference No.:</b> ${d.reference_no}</span>` : ''}
+        <div class="lot-summary">
+            <div class="summary-box">
+                <div class="sb-label">Model</div>
+                <div class="sb-value" style="font-size:13px;">${d.model || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Lot Qty</div>
+                <div class="sb-value blue">${d.lot_quantity || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Line</div>
+                <div class="sb-value" style="font-size:13px;">${d.line || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Shift</div>
+                <div class="sb-value" style="font-size:13px;">${d.shift || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Customer</div>
+                <div class="sb-value" style="font-size:12px;">${d.customer || '—'}</div>
+            </div>
+            <div class="summary-box">
+                <div class="sb-label">Assy No.</div>
+                <div class="sb-value" style="font-size:12px;">${d.assy_no || '—'}</div>
+            </div>
         </div>
+
+        ${d.reference_no ? `<div class="meta-row"><span><b>Reference No.:</b> ${d.reference_no}</span></div>` : ''}
 
         ${d.lot_result === 'ACCEPT' && (d.parts_appearance || d.pcb_appearance || d.solder_condition || d.labels_markings || d.subassembly_condition || d.package_condition) ? `
         <div class="remarks-box">
