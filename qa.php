@@ -108,10 +108,18 @@ try {
                     <label class="form-label">Line:</label>
                     <select class="form-input" id="line">
                         <option value="">— Select Line —</option>
-                        <option value="AV1">AV1</option>
-                        <option value="AV2">AV2</option>
-                        <option value="RG31">RG31</option>
-                        <option value="RG2">RG2</option>
+                        <option value="Line 1">Line 1</option>
+                        <option value="Line 2">Line 2</option>
+                        <option value="Line 3">Line 3</option>
+                        <option value="Line 4">Line 4</option>
+                        <option value="Line 5">Line 5</option>
+                        <option value="Line 6">Line 6</option>
+                        <option value="Line 7">Line 7</option>
+                        <option value="Line 8">Line 8</option>
+                        <option value="Line 9">Line 9</option>
+                        <option value="Line 10">Line 10</option>
+                        <option value="Line 11">Line 11</option>
+                        <option value="Line 12">Line 12</option>
                     </select>
                 </div>
                 <div style="margin-top:20px;">
