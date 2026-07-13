@@ -153,6 +153,7 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
             border-radius: 6px;
             padding: 10px;
             text-align: center;
+            box-sizing: border-box;
         }
         .summary-box .sb-label {
             font-size: 10px;
@@ -194,6 +195,7 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
         .result-banner .sb-value {
             font-size: 26px !important;
             letter-spacing: 1px;
+            overflow-wrap: break-word;
         }
     </style>
 </head>
@@ -489,7 +491,7 @@ function printLotDetail(lot, d) {
     const ngCount   = d.serials.filter(s => s.status === 'NO GOOD').length;
     const goodCount = d.serials.filter(s => s.status === 'GOOD').length;
     const printSerials = showAllSerials ? d.serials : d.serials.filter(s => s.status === 'NO GOOD');
-    const resultClass = d.lot_result === 'ACCEPT' ? 'rb-accept' : 'rb-reject';
+    const resultClass = d.status === 'IN_PROGRESS' ? 'rb-progress' : (d.lot_result === 'ACCEPT' ? 'rb-accept' : 'rb-reject');
 
 
     const printHtml = `
@@ -503,7 +505,7 @@ function printLotDetail(lot, d) {
             h1 { font-size: 18px; margin-bottom: 4px; }
             .sub { font-size: 12px; color:#666; margin-bottom: 18px; }
             .lot-summary { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
-            .summary-box { flex:1; min-width:80px; border:1px solid #ccc; border-radius:6px; padding:8px; text-align:center; }
+            .summary-box { flex:1; min-width:80px; border:1px solid #ccc; border-radius:6px; padding:8px; text-align:center; box-sizing:border-box; }
             .sb-label { font-size:10px; font-weight:bold; text-transform:uppercase; color:#888; letter-spacing:1px; margin-bottom:4px; }
             .sb-value { font-size:15px; font-weight:bold; }
             .accept { color:#16a34a; }
@@ -522,8 +524,9 @@ function printLotDetail(lot, d) {
             .result-banner { flex:none; width:100%; padding:14px; border-width:2px; }
             .result-banner.rb-accept { background:#dcfce7; border-color:#86efac; }
             .result-banner.rb-reject { background:#fee2e2; border-color:#fca5a5; }
+            .result-banner.rb-progress { background:#fef9c3; border-color:#fde047; }
             .result-banner .sb-label { font-size:11px; }
-            .result-banner .sb-value { font-size:22px; letter-spacing:1px; }
+            .result-banner .sb-value { font-size:22px; letter-spacing:1px; overflow-wrap:break-word; }
             @media print { body { padding: 0; } }
         </style>
     </head>
@@ -534,7 +537,7 @@ function printLotDetail(lot, d) {
         <div class="lot-summary">
             <div class="summary-box result-banner ${resultClass}">
                 <div class="sb-label">Result</div>
-                <div class="sb-value ${d.lot_result === 'ACCEPT' ? 'accept' : 'reject'}">${d.lot_result}</div>
+                <div class="sb-value ${d.status === 'IN_PROGRESS' ? '' : (d.lot_result === 'ACCEPT' ? 'accept' : 'reject')}" style="${d.status === 'IN_PROGRESS' ? 'color:#a16207;' : ''}">${d.status === 'IN_PROGRESS' ? 'IN PROGRESS' : d.lot_result}</div>
             </div>
         </div>
 
