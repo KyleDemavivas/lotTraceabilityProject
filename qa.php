@@ -524,16 +524,20 @@ function updateJudgement() {
     const failed015 = aqlParams.aql015.re !== null && defects015 >= aqlParams.aql015.re;
     const failed10  = aqlParams.aql10.re  !== null && defects10  >= aqlParams.aql10.re;
     const rejected  = failed015 || failed10;
+    const complete  = scanned.length >= sampleSize;
 
     if (rejected) {
         banner.className = 'judgement-banner fail';
         banner.textContent = '✕ REJECT — Defect threshold exceeded';
-        $('#serial_input').prop('disabled', true).val('');
-        $('#ngBtn').prop('disabled', true);
         document.getElementById('serial_error').style.display = 'none';
         // enable finalize so they can still submit
         document.getElementById('finalizeBtn').disabled = false;
-    } else if (scanned.length >= sampleSize) {
+        // Don't lock scanning just because REJECT triggered — for fullcheck (sample
+        // size = lot qty) the operator still needs to document the rest of the lot.
+        // Only stop once every unit has actually been scanned.
+        $('#serial_input').prop('disabled', complete).val(complete ? '' : $('#serial_input').val());
+        $('#ngBtn').prop('disabled', complete);
+    } else if (complete) {
         banner.className = 'judgement-banner pass';
         banner.textContent = '✓ ACCEPT — Inspection complete';
         $('#serial_input').prop('disabled', true).val('');
@@ -1085,13 +1089,18 @@ $('#kepi_lot').on('input change', function() {
                 $('#continueBtn').hide();
                 setSetupFieldsDisabled(false);
 
+                // attempt_count can arrive as a string from the backend (e.g. an
+                // uncast SQL COUNT()) — force it to a number so "+1" adds instead
+                // of concatenating (was showing "attempt #11" instead of "#2").
+                const attemptCount = Number(check.attempt_count) || 0;
+
                 if (check.accepted) {
                     $('#lot_dupe_warning').show().text(
-                        `⚠ This lot was already ACCEPTED on attempt #${check.attempt_count}. This will be recorded as attempt #${check.attempt_count + 1}.`
+                        `⚠ This lot was already ACCEPTED on attempt #${attemptCount}. This will be recorded as attempt #${attemptCount + 1}.`
                     );
-                } else if (check.attempt_count > 0) {
+                } else if (attemptCount > 0) {
                     $('#lot_dupe_warning').show().text(
-                        `This lot has ${check.attempt_count} prior attempt(s), most recent result: ${check.last_result}.`
+                        `This lot has ${attemptCount} prior attempt(s), most recent result: ${check.last_result}.`
                     );
                 } else {
                     $('#lot_dupe_warning').hide();
