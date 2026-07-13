@@ -710,7 +710,7 @@ function checkStartReady() {
 
     if (letterStr && method && AQL_DATA[letterStr] && modelname) {
         if (method === 'fullcheck') {
-            $('#sample_size').val(5);
+            $('#sample_size').val(qty);
         } else {
             $('#sample_size').val(AQL_DATA[letterStr].sample[method]);
         }
@@ -732,7 +732,7 @@ $('#startBtn').on('click', function() {
     }
     const data   = AQL_DATA[letter];
     const params = method === 'fullcheck' ? data.normal : data[method];
-    const sample = method === 'fullcheck' ? 5 : data.sample[method];
+    const sample = method === 'fullcheck' ? qty : data.sample[method];
     const $btn = $(this).prop('disabled', true).text('STARTING...');
 
     $.post('QA/qa_session.php', {
