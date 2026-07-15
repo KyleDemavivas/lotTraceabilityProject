@@ -14,7 +14,7 @@ if (
             throw new Exception('Origin is NULL.');
         }
 
-        $main_table = $origin === 'main' ? 'partside_process' : 'partside_batchlot';
+        $main_table = $origin === 'main' ? 'fviss_process' : 'partside_batchlot';
 
         $qr_code = trim($_POST['qr_code']);
         $serial_code = trim($_POST['serial_code']);

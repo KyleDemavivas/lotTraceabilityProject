@@ -13,7 +13,7 @@ if (
             throw new Exception('Origin is NULL.');
             exit;
         }
-        $main_table = $origin === 'main' ? 'partside2_process' : 'partside2_batchlot';
+        $main_table = $origin === 'main' ? 'partside_process' : 'partside2_batchlot';
 
         $qr_code = trim($_POST['qr_code']);
         $serial_code = trim($_POST['serial_code']);

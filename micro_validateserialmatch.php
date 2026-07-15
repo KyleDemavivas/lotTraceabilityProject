@@ -14,7 +14,7 @@ try {
     if (empty($origin)) {
         throw new Exception('Origin is NULL.');
     }
-    $main_table = $origin === 'main' ? 'micro_process' : 'micro_batchlot';
+    $main_table = $origin === 'main' ? 'partside2_process' : 'micro_batchlot';
 
     if (empty($_POST['serial_code'])) {
         $response['message'] = 'Serial code is required.';

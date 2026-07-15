@@ -28,7 +28,7 @@ try {
     $source = $_POST['source'] ?? '';
     $qrFromClient = $_POST['qr_code'] ?? '';
 
-    $stmt = $conn->prepare("SELECT qr_code, serial_status FROM $main_table WHERE serial_code = :serial");
+    $stmt = $conn->prepare("SELECT qr_code, serial_status FROM fviss_process WHERE serial_code = :serial");
     $stmt->execute([':serial' => $serial]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
