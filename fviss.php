@@ -367,48 +367,67 @@ try {
                 const formData = new FormData(this);
                 formData.append('source', 'main');
 
-                $.ajax({
-                    url: 'fviss_processform.php',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    dataType: 'json',
-                    success: function(response) {
-                        isSubmitting = false;
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success!',
-                                message: 'Board has been recorded',
-                                toast: true,
-                                showConfirmButton: false,
-                                position: 'top-right',
-                                timer: 1500,
-                                didOpen: () => {
-                                    $("#qr_code").select().focus();
-                                    $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput));
-                                }
-                            })
-                        } else {
+                Swal.fire({
+                    title: 'Confirm Result',
+                    text: "Is everything good?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'GOOD',
+                    cancelButtonText: 'NO GOOD',
+                    reverseButtons: true,
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formData.append('board_result', 'GOOD');
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        formData.append('board_result', 'NO GOOD');
+                    } else {
+                        return;
+                    }
+
+                    $.ajax({
+                        url: 'fviss_processform.php',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function(response) {
+                            isSubmitting = false;
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    message: 'Board has been recorded',
+                                    toast: true,
+                                    showConfirmButton: false,
+                                    position: 'top-right',
+                                    timer: 1500,
+                                    didOpen: () => {
+                                        $("#qr_code").select().focus();
+                                        $('input[name="final_qtyinput"]').val(parseInt(response.final_qtyinput));
+                                    }
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message,
+                                    didOpen: () => {
+                                        $('#qr_code').focus().select();
+                                    }
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            isSubmitting = false;
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Error',
-                                text: response.message,
-                                didOpen: () => {
-                                    $('#qr_code').focus().select();
-                                }
+                                title: 'AJAX Error',
+                                html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`
                             });
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        isSubmitting = false;
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'AJAX Error',
-                            html: `<strong>Status:</strong> ${status}<br><strong>Error:</strong> ${error}<br><strong>Response:</strong><br>${xhr.responseText}`
-                        });
-                    }
+                    });
                 });
             });
 
