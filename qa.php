@@ -120,6 +120,26 @@ try {
                         <option value="Line 10">Line 10</option>
                         <option value="Line 11">Line 11</option>
                         <option value="Line 12">Line 12</option>
+                        <option value="LINE A">LINE A</option>
+                        <option value="LINE I">LINE I</option>
+                        <option value="LINE O">LINE O</option>
+                        <option value="LINE B">LINE B</option>
+                        <option value="LINE H">LINE H</option>
+                        <option value="LINE P">LINE P</option>
+                        <option value="LINE J">LINE J</option>
+                        <option value="LINE M">LINE M</option>
+                        <option value="LINE N">LINE N</option>
+                        <option value="LINE R">LINE R</option>
+                        <option value="LINE D">LINE D</option>
+                        <option value="LINE C">LINE C</option>
+                        <option value="LINE L">LINE L</option>
+                        <option value="LINE F">LINE F</option>
+                        <option value="LINE K">LINE K</option>
+                        <option value="LINE Q">LINE Q</option>
+                        <option value="LINE X">LINE X</option>
+                        <option value="FG 1">FG 1</option>
+                        <option value="FG 2">FG 2</option>
+                        <option value="FG 3">FG 3</option>
                     </select>
                 </div>
                 <div style="margin-top:20px;">
