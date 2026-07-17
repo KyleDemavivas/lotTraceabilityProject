@@ -20,7 +20,7 @@ try {
         exit;
     }
 
-    $main_table = $source === 'main' ? 'micro_process' : 'micro_batchlot';
+    $main_table = $source === 'main' ? 'micro_process' : 'partside2_batchlot';
     $main_table2 = $source === 'main' ? 'wi_process' : 'wi_batchlot';
 
     $stmt = $conn->prepare("SELECT qr_code, assy_code, model_name, kepi_lot, operator_name, shift, asmline, line, qty_input FROM $main_table WHERE TRIM(UPPER(serial_code)) = :serial_code");

@@ -12,7 +12,7 @@ if (
         if (empty($origin)) {
             throw new Exception('Origin is NULL.');
         }
-        $main_table = $origin === 'main' ? 'wi_process' : 'wi_batchlot';
+        $main_table = $origin === 'main' ? 'micro_process' : 'wi_batchlot';
 
         $qr_code = trim($_POST['qr_code']);
         $serial_code = trim($_POST['serial_code']);
