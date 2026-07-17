@@ -406,8 +406,9 @@ let state = {
     active: false, letter: null, method: null, sampleSize: 0, lotQty: 0,
     scanned: [], currentSerial: null,
     defects015: 0, defects10: 0, aqlParams: null,
-    scanCountForSpec: 0,   // tracks GOOD boards seen so far, for the first-5 Parts Spec popup
+    scanCountForSpec: 0,
     inspectionId: null, attemptNumber: null,
+    awaitingConfirm: false,   // ← add this
 };
 
 // ── SERVER SYNC HELPERS ──────────────────────────────────────────────────────
@@ -718,141 +719,59 @@ function defectRowTemplate() {
     </div>`;
 }
 
-// ── SETUP ─────────────────────────────────────────────────────────────────────
-function checkStartReady() {
-    const qty    = parseInt($('#lot_qty').val());
-    const method = $('#inspection_method').val();
-    const modelname = $('#model_name').val();
-    const ok = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim() && modelname;
-    const letterStr = qty > 0 ? getCodeLetter(qty) : null;
+// ── SERIAL SCAN ───────────────────────────────────────────────────────────────
+let scanDebounceTimer = null;
+const SCAN_DEBOUNCE_MS = 800;   // fallback debounce for non-13-char input
+const SCAN_SETTLE_MS   = 800;   // fixed delay after hitting 13 chars, before processing
 
-    $('#code_letter').val(letterStr || '—');
+$('#serial_input').on('input', function() {
+    this.value = this.value.toUpperCase();
+    clearTimeout(scanDebounceTimer);
 
-    if (letterStr && method && AQL_DATA[letterStr] && modelname) {
-        if (method === 'fullcheck') {
-            $('#sample_size').val(qty);
-        } else {
-            $('#sample_size').val(AQL_DATA[letterStr].sample[method]);
-        }
-    } else {
-        $('#sample_size').val('—');
-    }
-    $('#startBtn').prop('disabled', !ok);
-}
-
-$('#lot_qty, #inspection_method, #shift, #line, #kepi_lot').on('input change', checkStartReady);
-
-$('#startBtn').on('click', function() {
-    const qty    = parseInt($('#lot_qty').val());
-    const method = $('#inspection_method').val();
-    const letter = getCodeLetter(qty);
-    if (!letter || !AQL_DATA[letter]) {
-        Swal.fire({ icon:'error', title:'Error', text:'Cannot determine code letter for this quantity.' });
+    if (this.value.length === 13) {
+        scanDebounceTimer = setTimeout(processSerialScan, SCAN_SETTLE_MS);
         return;
     }
-    const data   = AQL_DATA[letter];
-    const params = method === 'fullcheck' ? data.normal : data[method];
-    const sample = method === 'fullcheck' ? qty : data.sample[method];
-    const $btn = $(this).prop('disabled', true).text('STARTING...');
 
-    $.post('QA/qa_session.php', {
-        kepi_lot: $('#kepi_lot').val().trim(),
-        model: $('#model_name').val(),
-        inspection_method: method,
-        code_letter: letter,
-        sample_size: sample,
-        lot_qty: qty,
-        line: $('#line').val(),
-        shift: $('#shift').val(),
-        operator_id: '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>',
-        customer: $('#customer').val().trim(),
-        assy_no: $('#assy_no').val().trim(),
-        inspection_level: $('#inspection_level').val(),
-    }, null, 'json')
-    .done(function(res) {
-        if (res.status !== 'success') {
-            Swal.fire({ icon:'error', title:'Error', text: res.message || 'Failed to start inspection.' });
-            $btn.prop('disabled', false).text('START INSPECTION');
-            return;
-        }
-
-        if (res.joined) {
-            const lot = res.lot;
-            const jLetter = lot.code_letter, jMethod = lot.inspection_method, jSample = lot.sample_size;
-            const jData = AQL_DATA[jLetter];
-            const jParams = jMethod === 'fullcheck' ? jData.normal : jData[jMethod];
-
-            state = {
-                active: true, letter: jLetter, method: jMethod, sampleSize: jSample, lotQty: lot.lot_quantity,
-                aqlParams: jParams, scanned: [], currentSerial: null,
-                defects015: lot.defects_015, defects10: lot.defects_10,
-                scanCountForSpec: 0, inspectionId: lot.id, attemptNumber: lot.attempt_number,
-            };
-            applyServerSerials(res.serials);
-
-            $('#disp_letter').text(jLetter);
-            $('#disp_sample').text(jSample);
-            $('#disp_method').text(jMethod.charAt(0).toUpperCase() + jMethod.slice(1));
-            $('#disp_lotqty').text(lot.lot_quantity);
-            $('#re_015').text(fmtAcRe(jParams.aql015.re));
-            $('#re_10').text(fmtAcRe(jParams.aql10.re));
-            $('#sample_total').text(jSample);
-
-            Swal.fire({ icon:'info', title:'Joined In-Progress Inspection',
-                text:`Attempt #${lot.attempt_number} is already being inspected. You're now scanning the same session — the method/sample size are locked to what was started first.`,
-                toast:true, position:'top-end', timer:4000, showConfirmButton:false });
-        } else {
-            state = {
-                active: true, letter, method, sampleSize: sample, lotQty: qty,
-                aqlParams: params, scanned: [], currentSerial: null,
-                defects015: 0, defects10: 0,
-                scanCountForSpec: 0, inspectionId: res.lot_id, attemptNumber: res.attempt_number,
-            };
-            $('#disp_letter').text(letter);
-            $('#disp_sample').text(sample);
-            $('#disp_method').text(method.charAt(0).toUpperCase() + method.slice(1));
-            $('#disp_lotqty').text(qty);
-            $('#re_015').text(fmtAcRe(params.aql015.re));
-            $('#re_10').text(fmtAcRe(params.aql10.re));
-            $('#sample_total').text(sample);
-        }
-
-        $('#inspection_method, #inspection_level, #lot_qty').prop('disabled', true);
-        $('#aqlPanel, #scanPanel').show();
-        $('#serial_input').prop('disabled', false).focus();
-        $('#ngBtn').prop('disabled', false);
-        $btn.text('ACTIVE');
-$('#continueBtn').hide();
-        updateJudgement();
-        renderSerialList();
-        updateCounts();
-        startPolling();
-    })
-    .fail(function() {
-        Swal.fire({ icon:'error', title:'Network Error', text:'Could not reach the server to start inspection.' });
-        $btn.prop('disabled', false).text('START INSPECTION');
-    });
+    scanDebounceTimer = setTimeout(() => {
+        if (this.value.trim().length > 0) processSerialScan();
+    }, SCAN_DEBOUNCE_MS);
 });
-
-// ── SERIAL SCAN ───────────────────────────────────────────────────────────────
-$('#serial_input').on('input', function() { this.value = this.value.toUpperCase(); });
 
 $('#serial_input').on('keydown', function(e) {
     if (e.key !== 'Enter') return;
     e.preventDefault();
-    const serial = $(this).val().trim().toUpperCase();
+    clearTimeout(scanDebounceTimer);
+    processSerialScan();
+});
+
+function processSerialScan() {
+    if (state.awaitingConfirm) return;
+
+    const $input = $('#serial_input');
+    const serial = $input.val().trim().toUpperCase();
     const errEl  = document.getElementById('serial_error');
     errEl.style.display = 'none';
+
     if (!state.active) return;
+    if (!serial) return;
+
     if (state.scanned.length >= state.sampleSize) {
-        errEl.textContent = 'Sample size reached.'; errEl.style.display = 'block'; return;
+        errEl.textContent = 'Sample size reached.'; errEl.style.display = 'block';
+        $input.val('');
+        return;
     }
     if (serial.length !== 13) {
-        errEl.textContent = 'Serial must be 13 characters.'; errEl.style.display = 'block'; return;
+        errEl.textContent = 'Serial must be 13 characters.'; errEl.style.display = 'block';
+        return;
     }
     if (state.scanned.find(s => s.serial === serial)) {
-        errEl.textContent = 'Duplicate serial.'; errEl.style.display = 'block'; $(this).select(); return;
+        errEl.textContent = 'Duplicate serial.'; errEl.style.display = 'block';
+        $input.select();
+        return;
     }
+
+    state.awaitingConfirm = true;
     Swal.fire({
         title: serial,
         text: 'Inspection result for this unit?',
@@ -863,15 +782,16 @@ $('#serial_input').on('keydown', function(e) {
         reverseButtons: true,
         allowOutsideClick: false,
     }).then(result => {
-       if (result.isConfirmed) {
-        const spec = state.scanCountForSpec < 5 ? "Part Spec" : null;
-        submitScan(serial, 'GOOD', null, null, null, spec, 0, 0);
+        state.awaitingConfirm = false;
+        if (result.isConfirmed) {
+            const spec = state.scanCountForSpec < 5 ? "Part Spec" : null;
+            submitScan(serial, 'GOOD', null, null, null, spec, 0, 0);
         } else {
             state.currentSerial = serial;
             openNgModal(serial);
         }
     });
-});
+}
 
 // ── NO GOOD MODAL ─────────────────────────────────────────────────────────────
 function initSelect2InRow(row) {
@@ -896,6 +816,7 @@ function openNgModal(serial) {
 
 function closeNgModal() {
     $('#ngModal').removeClass('active');
+    state.awaitingConfirm = false;   // ← add this
     $('#serial_input').val('').focus();
 }
 
