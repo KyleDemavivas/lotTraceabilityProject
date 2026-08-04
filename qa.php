@@ -719,10 +719,128 @@ function defectRowTemplate() {
     </div>`;
 }
 
+// ── SETUP ─────────────────────────────────────────────────────────────────────
+function checkStartReady() {
+    const qty    = parseInt($('#lot_qty').val());
+    const method = $('#inspection_method').val();
+    const modelname = $('#model_name').val();
+    const ok = qty > 0 && method && $('#shift').val() && $('#line').val() && $('#kepi_lot').val().trim() && modelname;
+    const letterStr = qty > 0 ? getCodeLetter(qty) : null;
+
+    $('#code_letter').val(letterStr || '—');
+
+    if (letterStr && method && AQL_DATA[letterStr] && modelname) {
+        if (method === 'fullcheck') {
+            $('#sample_size').val(qty);
+        } else {
+            $('#sample_size').val(AQL_DATA[letterStr].sample[method]);
+        }
+    } else {
+        $('#sample_size').val('—');
+    }
+    $('#startBtn').prop('disabled', !ok);
+}
+
+$('#lot_qty, #inspection_method, #shift, #line, #kepi_lot').on('input change', checkStartReady);
+
+$('#startBtn').on('click', function() {
+    const qty    = parseInt($('#lot_qty').val());
+    const method = $('#inspection_method').val();
+    const letter = getCodeLetter(qty);
+    if (!letter || !AQL_DATA[letter]) {
+        Swal.fire({ icon:'error', title:'Error', text:'Cannot determine code letter for this quantity.' });
+        return;
+    }
+    const data   = AQL_DATA[letter];
+    const params = method === 'fullcheck' ? data.normal : data[method];
+    const sample = method === 'fullcheck' ? qty : data.sample[method];
+    const $btn = $(this).prop('disabled', true).text('STARTING...');
+
+    $.post('QA/qa_session.php', {
+        kepi_lot: $('#kepi_lot').val().trim(),
+        model: $('#model_name').val(),
+        inspection_method: method,
+        code_letter: letter,
+        sample_size: sample,
+        lot_qty: qty,
+        line: $('#line').val(),
+        shift: $('#shift').val(),
+        operator_id: '<?php echo htmlspecialchars($_SESSION['user_namefl'] ?? 'Unknown'); ?>',
+        customer: $('#customer').val().trim(),
+        assy_no: $('#assy_no').val().trim(),
+        inspection_level: $('#inspection_level').val(),
+    }, null, 'json')
+    .done(function(res) {
+        if (res.status !== 'success') {
+            Swal.fire({ icon:'error', title:'Error', text: res.message || 'Failed to start inspection.' });
+            $btn.prop('disabled', false).text('START INSPECTION');
+            return;
+        }
+
+        if (res.joined) {
+            const lot = res.lot;
+            const jLetter = lot.code_letter, jMethod = lot.inspection_method, jSample = lot.sample_size;
+            const jData = AQL_DATA[jLetter];
+            const jParams = jMethod === 'fullcheck' ? jData.normal : jData[jMethod];
+
+            state = {
+                active: true, letter: jLetter, method: jMethod, sampleSize: jSample, lotQty: lot.lot_quantity,
+                aqlParams: jParams, scanned: [], currentSerial: null,
+                defects015: lot.defects_015, defects10: lot.defects_10,
+                scanCountForSpec: 0, inspectionId: lot.id, attemptNumber: lot.attempt_number,
+                awaitingConfirm: false,
+            };
+            applyServerSerials(res.serials);
+
+            $('#disp_letter').text(jLetter);
+            $('#disp_sample').text(jSample);
+            $('#disp_method').text(jMethod.charAt(0).toUpperCase() + jMethod.slice(1));
+            $('#disp_lotqty').text(lot.lot_quantity);
+            $('#re_015').text(fmtAcRe(jParams.aql015.re));
+            $('#re_10').text(fmtAcRe(jParams.aql10.re));
+            $('#sample_total').text(jSample);
+
+            Swal.fire({ icon:'info', title:'Joined In-Progress Inspection',
+                text:`Attempt #${lot.attempt_number} is already being inspected. You're now scanning the same session — the method/sample size are locked to what was started first.`,
+                toast:true, position:'top-end', timer:4000, showConfirmButton:false });
+        } else {
+            state = {
+                active: true, letter, method, sampleSize: sample, lotQty: qty,
+                aqlParams: params, scanned: [], currentSerial: null,
+                defects015: 0, defects10: 0,
+                scanCountForSpec: 0, inspectionId: res.lot_id, attemptNumber: res.attempt_number,
+                awaitingConfirm: false,
+            };
+            $('#disp_letter').text(letter);
+            $('#disp_sample').text(sample);
+            $('#disp_method').text(method.charAt(0).toUpperCase() + method.slice(1));
+            $('#disp_lotqty').text(qty);
+            $('#re_015').text(fmtAcRe(params.aql015.re));
+            $('#re_10').text(fmtAcRe(params.aql10.re));
+            $('#sample_total').text(sample);
+        }
+
+        $('#inspection_method, #inspection_level, #lot_qty').prop('disabled', true);
+        $('#aqlPanel, #scanPanel').show();
+        $('#serial_input').prop('disabled', false).focus();
+        $('#ngBtn').prop('disabled', false);
+        $btn.text('ACTIVE');
+        $('#continueBtn').hide();
+        updateJudgement();
+        renderSerialList();
+        updateCounts();
+        startPolling();
+    })
+    .fail(function() {
+        Swal.fire({ icon:'error', title:'Network Error', text:'Could not reach the server to start inspection.' });
+        $btn.prop('disabled', false).text('START INSPECTION');
+    });
+});
+
 // ── SERIAL SCAN ───────────────────────────────────────────────────────────────
 let scanDebounceTimer = null;
-const SCAN_DEBOUNCE_MS = 800;   // fallback debounce for non-13-char input
-const SCAN_SETTLE_MS   = 800;   // fixed delay after hitting 13 chars, before processing
+const SCAN_DEBOUNCE_MS = 150;   // fallback debounce for non-13-char input
+const SCAN_SETTLE_MS   = 200;   // fixed delay after hitting 13 chars, before processing
 
 $('#serial_input').on('input', function() {
     this.value = this.value.toUpperCase();
