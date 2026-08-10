@@ -5,8 +5,8 @@ include $_SERVER['DOCUMENT_ROOT'].'/traceabilitydev/db_connect.ini';
 if (isset($_POST['qr_code'])) {
     $qr_code = $_POST['qr_code'];
 
-    $query = 'SELECT assy_code, model_name, kepi_lot,operator_name, shift, line, qty_input
-              FROM mounter_process WHERE qr_code = :qr_code';
+    $query = 'SELECT assy_code, model_name, kepi_lot, operator_name, shift, line, qty_input
+              FROM spa_process WHERE qr_code = :qr_code';
     try {
         $stmt = $conn->prepare($query);
         $stmt->execute([':qr_code' => $qr_code]);
